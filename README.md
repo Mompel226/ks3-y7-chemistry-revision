@@ -77,6 +77,7 @@ The `tools/` named here stay on Daniel's computer: they are not in this reposito
   melts and boils at the marked points; every particle box moves in calm slow motion) and `node tools/claims-check.mjs`
   (every picture does what it says: the size before heating stays still, counts match their keys, the graph ruler sits
   on the curve, beads stop in the right layer, each hint names a real button, scrolling brings up the right picture) and
-  `node tools/faults-check.mjs` (Part 9: every fault has a part to tap, a right part tapped counts once, Show the faults
-  only after two, Fix every fault draws the perfect graph, the keyboard alone finds a fault, the hidden pictures open).
+  `node tools/faults-check.mjs` (Part 9: every fault has a part to tap, each press area sits on its own part and a press
+  on a part selects it, a right part tapped counts once, Show the faults only after two, Fix every fault draws the
+  perfect graph, the keyboard alone finds a fault, the hidden pictures open).
 </details>
