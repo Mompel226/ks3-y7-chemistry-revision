@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Dr Daniel Mompel Riera">
+<meta name="description" content="Year 7 Chemistry revision: states of matter, changes of state, atoms, elements, compounds, mixtures, solutions and separating mixtures, with pictures to explore and checks as you go.">
+<title>Y7 Chemistry revision: states of matter, atoms and mixtures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
+<link rel="stylesheet" href="css/app.css?v=202610251708">
+<!-- Bright or dark: the reader's choice for the whole site (biology.theme), else the computer's setting. -->
+<script>(function () { try { var t = localStorage.getItem('biology.theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
+</head>
+<body>
+<div class="top">
+  <div class="upbar"><a class="up" href="https://nlcsbiology.com/biology-hub/">← Back to Biology Hub</a><div class="lessonbar" id="lessonBar" hidden></div><span class="upbtns"><button class="pill" id="btnRestart" type="button">↺ Start <span class="lg">the page </span>again</button><button class="pill" id="btnTheme" type="button" hidden></button></span></div>
+  <div class="head">
+    <div>
+      <div class="eyebrow">KS3 Science</div>
+      <h1>Y7 Chemistry revision: states of matter, atoms and mixtures</h1>
+      <p class="by">Revise the whole topic, explore each idea in a picture, and check yourself as you go · Made by <a href="https://github.com/Mompel226" target="_blank" rel="noopener">Dr Daniel Mompel Riera</a> · NLCS Jeju</p>
+    </div>
+    <p class="timing">About 60 minutes: 8 parts, about 7 minutes each. Purple boxes are extension.</p>
+  </div>
+</div>
+
+<nav class="partbar" aria-label="Parts of the revision">
+  <div class="partbar__in">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-1" aria-controls="part-1" aria-selected="true"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="5" cy="15" r="2.6" fill="#2E7FD9"/><circle cx="10" cy="15" r="2.6" fill="#2E7FD9"/><circle cx="15" cy="15" r="2.6" fill="#2E7FD9"/><circle cx="7.5" cy="10" r="2.6" fill="#2E7FD9"/><circle cx="12.5" cy="10" r="2.6" fill="#2E7FD9"/><circle cx="10" cy="4.6" r="2.4" fill="#7FB4EE"/></svg></span><span class="lbl">States of matter</span></button>
+      <button role="tab" id="tab-2" aria-controls="part-2" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 16V4" stroke="#C2410C" stroke-width="2.2" stroke-linecap="round"/><path d="M2.5 7 5 3.6 7.5 7" fill="none" stroke="#C2410C" stroke-width="2" stroke-linejoin="round"/><path d="M14 4v12" stroke="#1D5FBF" stroke-width="2.2" stroke-linecap="round"/><path d="M11.5 13 14 16.4 16.5 13" fill="none" stroke="#1D5FBF" stroke-width="2" stroke-linejoin="round"/></svg></span><span class="lbl">Changes of state</span></button>
+      <button role="tab" id="tab-3" aria-controls="part-3" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="10" rx="8" ry="3.4" fill="none" stroke="#5C6679" stroke-width="1.3"/><ellipse cx="10" cy="10" rx="8" ry="3.4" fill="none" stroke="#5C6679" stroke-width="1.3" transform="rotate(60 10 10)"/><ellipse cx="10" cy="10" rx="8" ry="3.4" fill="none" stroke="#5C6679" stroke-width="1.3" transform="rotate(-60 10 10)"/><circle cx="10" cy="10" r="2.4" fill="#D9483B"/></svg></span><span class="lbl">Atoms</span></button>
+      <button role="tab" id="tab-4" aria-controls="part-4" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="4.6" fill="#E0533F"/><circle cx="4.6" cy="14.4" r="2.9" fill="#F4F6F8" stroke="#7D8794"/><circle cx="15.4" cy="14.4" r="2.9" fill="#F4F6F8" stroke="#7D8794"/></svg></span><span class="lbl">Compounds</span></button>
+      <button role="tab" id="tab-5" aria-controls="part-5" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="6" cy="7" r="3" fill="#2E7FD9"/><circle cx="13.5" cy="6" r="3" fill="#E9BC34"/><circle cx="9" cy="13.5" r="3" fill="#E9BC34"/><circle cx="15" cy="13.5" r="2.4" fill="#2E7FD9"/></svg></span><span class="lbl">Mixtures</span></button>
+      <button role="tab" id="tab-6" aria-controls="part-6" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3h12l-1 14H5z" fill="#F4D9E6" stroke="#5C6679" stroke-width="1.3" stroke-linejoin="round"/><circle cx="8" cy="11" r="1.5" fill="#9C2A6B"/><circle cx="12" cy="9" r="1.5" fill="#9C2A6B"/><circle cx="11" cy="14" r="1.5" fill="#9C2A6B"/></svg></span><span class="lbl">Solutions</span></button>
+      <button role="tab" id="tab-7" aria-controls="part-7" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14l-5.5 7v6h-3v-6z" fill="#EDE6CF" stroke="#5C6679" stroke-width="1.3" stroke-linejoin="round"/></svg></span><span class="lbl">Separating 1</span></button>
+      <button role="tab" id="tab-8" aria-controls="part-8" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="2.5" width="10" height="15" rx="1" fill="#FBFBF7" stroke="#5C6679" stroke-width="1.2"/><circle cx="10" cy="6" r="1.8" fill="#E9BC34"/><circle cx="10" cy="9.5" r="1.8" fill="#D9534F"/><circle cx="10" cy="13" r="1.8" fill="#2E7FD9"/></svg></span><span class="lbl">Separating 2</span></button>
+    </div>
+    <button class="wbbtn" id="wbBtn" type="button" aria-expanded="false" aria-controls="wb">Word bank <span class="lang"></span></button>
+  </div>
+</nav>
+
+<aside class="wb" id="wb" hidden aria-labelledby="wb-h" data-lang="all">
+  <div class="wb__top">
+    <h2 id="wb-h">Word bank <button class="close-x" id="wbClose" type="button" aria-label="Close the word bank">×</button></h2>
+    <p>Tap a word to see what it means. Words for the answers you type: spelling counts; capitals do not (only chemical symbols need capitals).</p>
+    <div class="langs" role="group" aria-label="Translations">
+      <button type="button" data-l="all" aria-pressed="true">한국어 + 中文</button>
+      <button type="button" data-l="ko" aria-pressed="false" lang="ko">한국어</button>
+      <button type="button" data-l="zh" aria-pressed="false" lang="zh-Hans">中文</button>
+      <button type="button" data-l="en" aria-pressed="false">English only</button>
+    </div>
+    <input class="wb__find" id="wbFind" type="search" placeholder="Find a word (English, 한국어 or 中文)" aria-label="Find a word">
+  </div>
+  <div class="wb__list" id="wbList"></div>
+</aside>
+
+<div class="layout">
+  <section class="panel" id="panel" aria-label="Pictures to explore"></section>
+
+  <main class="sheet">
+  <noscript><p>This page needs JavaScript to show its pictures and checks.</p></noscript>
+
+  <!-- ============ 1 ============ -->
+  <section class="part" id="part-1" role="tabpanel" aria-labelledby="tab-1">
+    <div class="task"><div><div class="k">Your task</div><p>Read the notes. <mark class="do">Press Solid, Liquid and Gas on the picture; then press Heat, Cool and Compress for each one.</mark> Then answer the checks.</p></div><span class="task__n"></span></div>
+    <h2>States of matter</h2>
+    <p class="sub">Everything is made of particles. How the particles are arranged and how they move decide the state: solid, liquid or gas.</p>
+    <div class="rem" data-scene="particles">
+      <p class="k3">Remember</p>
+      <p>Anything that has mass and fills space is <dfn data-w="matter">matter</dfn>. All matter is made of very small pieces, much too small to see: <dfn data-w="particle">particles</dfn>. The particles are <u>always moving</u>. Forces of attraction hold them together: strong in a solid, weaker in a liquid and very weak in a gas.</p>
+      <table class="tb">
+        <thead><tr><th></th><th><svg class="ico" data-fig="icoSolid"></svg><dfn data-w="solid">Solid</dfn></th><th><svg class="ico" data-fig="icoLiquid"></svg><dfn data-w="liquid">Liquid</dfn></th><th><svg class="ico" data-fig="icoGas"></svg><dfn data-w="gas">Gas</dfn></th></tr></thead>
+        <tbody>
+          <tr><th>Particles</th><td>touch, in a regular pattern</td><td>touch, with no pattern</td><td>far apart</td></tr>
+          <tr><th>Movement</th><td>move quickly backwards and forwards in one place: they <dfn data-w="vibrate">vibrate</dfn></td><td>slide past each other</td><td>move fast in all directions</td></tr>
+          <tr><th>Shape</th><td>fixed</td><td>takes the shape of its container</td><td>fills its container</td></tr>
+          <tr><th>The space it fills: its <dfn data-w="volume">volume</dfn>, in cubic centimetres (cm³)</th><td>fixed</td><td>fixed</td><td>fills its container</td></tr>
+          <tr><th>Flows?</th><td>no</td><td>yes</td><td>yes</td></tr>
+          <tr><th>Can you push it into a smaller volume (compress it)?</th><td>no</td><td>no</td><td>yes</td></tr>
+        </tbody>
+      </table>
+      <p class="k3">Heating, cooling and compressing</p>
+      <p>When you heat a substance, its particles gain <dfn data-w="energy">energy</dfn> and move faster. In a solid they vibrate more and the gaps between them get bigger, so the solid gets bigger: it <dfn data-w="expand">expands</dfn>. <u>The particles themselves do not get bigger.</u> When a substance cools, its particles lose energy, move more slowly and come closer together, so it gets smaller: it <dfn data-w="contract">contracts</dfn>.</p>
+      <p>You can push a gas into a smaller volume, because its particles are far apart, with empty space between them: you can <dfn data-w="compress">compress</dfn> a gas. You cannot compress a solid or a liquid: their particles already touch.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>From now on, write the scientific word. It is the word that scores marks; everyday words do not.</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the little bits”</td><td><b>particles</b></td></tr><tr><td>“it shakes (in a solid)”</td><td>the particles <b>vibrate</b></td></tr><tr><td>“it gets bigger when it is hot”</td><td>it <b>expands</b></td></tr><tr><td>“it gets smaller when it is cold”</td><td>it <b>contracts</b></td></tr><tr><td>“you can squash it”</td><td>you can <b>compress</b> it</td></tr><tr><td>“how much space it takes”</td><td>its <b>volume</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p1-sort-state" data-scene="particles"></div>
+    <div class="q" data-q="p1-q-squash" data-scene="particles"></div>
+    <div class="q" data-q="p1-gaps-move" data-scene="particles"></div>
+    <div class="q" data-q="p1-gaps-expand" data-scene="particles"></div>
+    <div class="q" data-q="p1-q-rail" data-scene="particles"></div>
+    <div class="q" data-q="p1-q-pour" data-scene="particles"></div>
+    <div class="partnav"><button class="next" type="button">Changes of state →</button></div>
+  </section>
+
+  <!-- ============ 2 ============ -->
+  <section class="part" id="part-2" role="tabpanel" aria-labelledby="tab-2" hidden>
+    <div class="task"><div><div class="k">Your task</div><p>Read the notes. <mark class="do">Press each change of state on the picture. Then press Heat and cool water above the picture.</mark></p></div><span class="task__n"></span></div>
+    <h2>Changes of state</h2>
+    <p class="sub">Heating or cooling can change the state of a substance. The particles stay the same; only how they are arranged and how they move changes.</p>
+    <div class="rem" data-scene="changes">
+      <p class="k3">Remember</p>
+      <ul>
+        <li>A solid changes to a liquid: <dfn data-w="melt">melting</dfn>. A liquid changes to a solid: <dfn data-w="freeze">freezing</dfn>.</li>
+        <li>A liquid changes to a gas: <dfn data-w="evaporate">evaporating</dfn>, or <dfn data-w="boil">boiling</dfn> when bubbles of gas form all through the liquid. A gas changes to a liquid: <dfn data-w="condense">condensing</dfn>.</li>
+        <li>A solid changes directly to a gas, with no liquid in between: <dfn data-w="sublimation">sublimation</dfn>. A gas changes directly to a solid, with no liquid in between: <dfn data-w="deposition">deposition</dfn>.</li>
+      </ul>
+      <p><u>Melting, evaporating, boiling and sublimation need energy</u>: you heat the substance, and its particles gain energy and move faster. In melting, they leave their fixed places and start to slide past each other. In evaporating, boiling and sublimation, they escape from the other particles and move far apart. <u>Freezing, condensing and deposition happen when it cools</u>: the particles lose energy and move more slowly. In condensing, they come close together again; in freezing and deposition, they become fixed in a regular pattern.</p>
+      <p>A pure substance (only one substance, with nothing else mixed with it) melts and freezes at the <u>same</u> temperature. That temperature is its <dfn data-w="melting-point">melting point</dfn>, and also its <dfn data-w="freezing-point">freezing point</dfn>: water melts and freezes at 0 °C. Water boils at 100 °C: its <dfn data-w="boiling-point">boiling point</dfn>. A liquid also evaporates slowly from its surface at lower temperatures, as when a puddle dries.</p>
+      <p>Water as a gas in the air is water <dfn data-w="vapour">vapour</dfn>. Drops on a cold window in winter are water vapour from the air that has condensed. Dry ice (solid carbon dioxide) shows sublimation: it never makes a puddle.</p>
+      <p>A change of state makes no new substance, so it is a <dfn data-w="physical-change">physical change</dfn>: the <dfn data-w="mass">mass</dfn> stays the same, and you can reverse it: it is <dfn data-w="reversible">reversible</dfn>. <dfn data-w="dissolve">Dissolving</dfn> sugar in tea and bending a wire are physical changes too: no new substance forms. When a new substance forms, as in burning, cooking or rusting, the change is a <dfn data-w="chemical-change">chemical change</dfn>.</p>
+      <p><b>The water cycle:</b> the Sun heats the sea and water evaporates; high in the sky the water vapour cools and condenses into the tiny drops of clouds; the drops fall to the ground as rain, snow or hail: <dfn data-w="precipitation">precipitation</dfn>.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>From now on, write the scientific word. It is the word that scores marks; everyday words do not.</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“ice turns into water”</td><td>it <b>melts</b></td></tr><tr><td>“water turns into ice”</td><td>it <b>freezes</b></td></tr><tr><td>“water turns into steam”</td><td>it <b>evaporates</b> (or <b>boils</b>)</td></tr><tr><td>“steam turns back into water”</td><td>it <b>condenses</b></td></tr><tr><td>“a solid goes straight to a gas”</td><td><b>sublimation</b></td></tr><tr><td>“a gas goes straight to a solid”</td><td><b>deposition</b></td></tr><tr><td>“rain, snow or hail”</td><td><b>precipitation</b></td></tr><tr><td>“a new thing is made”</td><td>a <b>chemical change</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p2-label-cycle" data-scene="changes"></div>
+    <div class="q" data-q="p2-sort-energy" data-scene="changes"></div>
+    <div class="q" data-q="p2-gaps-mp" data-scene="water"></div>
+    <div class="q" data-q="p2-q-mirror" data-scene="changes"></div>
+    <div class="q" data-q="p2-q-frost" data-scene="changes"></div>
+    <div class="q" data-q="p2-sort-change"></div>
+    <div class="q" data-q="p2-gaps-cycle"></div>
+    <div class="partnav"><button class="back" type="button">← States of matter</button><button class="next" type="button">Atoms and elements →</button></div>
+  </section>
+
+  <!-- ============ 3 ============ -->
+  <section class="part" id="part-3" role="tabpanel" aria-labelledby="tab-3" hidden>
+    <div class="task"><div><div class="k">Your task</div><p>Read the notes. <mark class="do">Press Protons, Neutrons and Electrons on the picture. Then press The elements above the picture.</mark></p></div><span class="task__n"></span></div>
+    <h2>Atoms and elements</h2>
+    <p class="sub">An element is made of only one type of atom. What is inside an atom decides which element it is.</p>
+    <div class="rem" data-scene="atom">
+      <p class="k3">Remember: inside an atom</p>
+      <p>The smallest particle of an element is an <dfn data-w="atom">atom</dfn>. In the centre of every atom is a tiny core: the <dfn data-w="nucleus">nucleus</dfn>. Some very small particles have an electric <dfn data-w="charge">charge</dfn>: positive (+) or negative (−). A positive charge and a negative charge attract each other.</p>
+      <ul>
+        <li>In the nucleus are particles with a positive charge (+): <dfn data-w="proton">protons</dfn>.</li>
+        <li>Also in the nucleus are particles with no charge: <dfn data-w="neutron">neutrons</dfn>. A particle with no charge is neutral.</li>
+        <li>Around the nucleus move very small particles with a negative charge (−): <dfn data-w="electron">electrons</dfn>.</li>
+      </ul>
+      <p>An atom has the same number of protons and electrons, so the charges cancel: the atom has no overall charge. The number of protons decides the element: every carbon atom has 6 protons.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>From now on, write the scientific word. It is the word that scores marks; everyday words do not.</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the middle of the atom”</td><td>the <b>nucleus</b></td></tr><tr><td>“plus and minus”</td><td>a <b>positive</b> and a <b>negative charge</b></td></tr><tr><td>“it has no charge”</td><td>it is <b>neutral</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p3-gaps-atom" data-scene="atom"></div>
+    <div class="ext" data-scene="atom">
+      <p class="k3">Extension · counting charges</p>
+      <div class="q" data-q="p3-num-elec" data-scene="atom"></div>
+    </div>
+    <div class="rem" data-scene="table">
+      <p class="k3">Remember: elements</p>
+      <p>A pure substance made of only one type of atom is an <dfn data-w="element">element</dfn>. It cannot be split into simpler substances. Each element has a short code of one or two letters: its <dfn data-w="chemical-symbol">chemical symbol</dfn>. It starts with a capital letter, sometimes followed by one small letter (Fe, never FE or fe). The table of all the elements is the <dfn data-w="periodic-table">periodic table</dfn>. The 13 elements you need:</p>
+      <div class="els">
+        <div class="el nm"><b>H</b><span>hydrogen</span></div><div class="el nm"><b>He</b><span>helium</span></div><div class="el nm"><b>C</b><span>carbon</span></div>
+        <div class="el nm"><b>N</b><span>nitrogen</span></div><div class="el nm"><b>O</b><span>oxygen</span></div><div class="el"><b>Na</b><span>sodium</span></div>
+        <div class="el"><b>Al</b><span>aluminium</span></div><div class="el nm"><b>Cl</b><span>chlorine</span></div><div class="el"><b>Ca</b><span>calcium</span></div>
+        <div class="el"><b>Fe</b><span>iron</span></div><div class="el"><b>Cu</b><span>copper</span></div><div class="el"><b>Ag</b><span>silver</span></div><div class="el"><b>Au</b><span>gold</span></div>
+      </div>
+      <p class="key"><span><i style="background:#3F6FD8"></i>metal</span><span><i style="background:#2E8B57"></i>non-metal</span></p>
+      <p>Some elements are shiny, and heat and electricity pass through them easily: they <dfn data-w="conduct">conduct</dfn> heat and electricity. These elements are <dfn data-w="metal">metals</dfn>. Most metals are solid at the temperature of a normal room, <dfn data-w="room-temperature">room temperature</dfn> (about 20 °C); mercury is a liquid. The other elements are <dfn data-w="non-metal">non-metals</dfn>: most are dull and do not conduct electricity. At room temperature some are solids (carbon, sulfur), many are gases (hydrogen, helium, nitrogen, oxygen, chlorine) and one, bromine, is a liquid. Mercury and bromine are the only two elements that are liquids at room temperature.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the letters for an element”</td><td>its <b>chemical symbol</b></td></tr><tr><td>“lets electricity through”</td><td><b>conducts</b> electricity</td></tr><tr><td>“normal temperature”</td><td><b>room temperature</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p3-gaps-sym" data-scene="table"></div>
+    <div class="q" data-q="p3-sort-mnm" data-scene="table"></div>
+    <div class="q" data-q="p3-sort-rt" data-scene="table"></div>
+    <div class="partnav"><button class="back" type="button">← Changes of state</button><button class="next" type="button">Molecules and compounds →</button></div>
+  </section>
+
+  <!-- ============ 4 ============ -->
+  <section class="part" id="part-4" role="tabpanel" aria-labelledby="tab-4" hidden>
+    <div class="task"><div><div class="k">Your task</div><p>Read the notes. <mark class="do">Press each box of particles on the picture. Then press Iron and sulfur above the picture.</mark></p></div><span class="task__n"></span></div>
+    <h2>Molecules and compounds</h2>
+    <p class="sub">Atoms can join together. What joins to what decides whether you have an element, a compound or a mixture.</p>
+    <div class="rem" data-scene="boxes">
+      <p class="k3">Remember</p>
+      <p>Atoms can join together; what holds two atoms together is a <dfn data-w="bond">bond</dfn>. A particle made of two or more atoms joined together is a <dfn data-w="molecule">molecule</dfn>.</p>
+      <ul>
+        <li>Some molecules have only <u>one type</u> of atom: they are still an element. Hydrogen (H₂), oxygen (O₂), nitrogen (N₂) and chlorine (Cl₂) are made of two atoms of the same element joined: they are <dfn data-w="diatomic">diatomic</dfn>.</li>
+        <li>When two or more <u>different</u> elements are chemically joined, the substance is a <dfn data-w="compound">compound</dfn>: water H₂O, carbon dioxide CO₂, methane CH₄, ammonia NH₃, glucose (a sugar) C₆H₁₂O₆. In a compound, the elements are always in the same <dfn data-w="ratio">ratio</dfn>: in water, always 2 hydrogen atoms for each oxygen atom. Salt (sodium chloride, NaCl) is a compound too, but it is made of particles with a charge, <dfn data-w="ion">ions</dfn>, held in a regular pattern, a <dfn data-w="lattice">lattice</dfn>, not molecules.</li>
+      </ul>
+      <p>Symbols and small numbers can show the atoms in a substance: this is its <dfn data-w="chemical-formula">chemical formula</dfn>. The small number after a symbol counts the atoms of that element; no number means one. CO₂ is 1 carbon atom and 2 oxygen atoms.</p>
+      <p class="k3">Reading a picture of particles</p>
+      <div class="cmp" style="--n:3">
+        <div><b class="h">Element</b>Only one type of atom: single atoms, or molecules of one type of atom.</div>
+        <div><b class="h">Compound</b>Every particle is the same, and each has different atoms joined.</div>
+        <div><b class="h">Mixture</b>Two or more different particles, not joined to each other.</div>
+      </div>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>From now on, write the scientific word. It is the word that scores marks; everyday words do not.</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“atoms stuck together”</td><td>atoms joined by <b>bonds</b>: a <b>molecule</b></td></tr><tr><td>“two of the same atom”</td><td>a <b>diatomic</b> molecule</td></tr><tr><td>“the letters and numbers”</td><td>the <b>chemical formula</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p4-sort-pics" data-scene="boxes"></div>
+    <div class="q" data-q="p4-gaps-formula" data-scene="boxes"></div>
+    <div class="q" data-q="p4-q-nitrogen" data-scene="boxes"></div>
+    <div class="rem" data-scene="fes">
+      <p class="k3">Remember: a compound has new properties</p>
+      <p>What a substance is like and how it behaves are its <dfn data-w="property">properties</dfn>. A compound has different properties from the elements that make it. Iron is grey and magnetic; sulfur is yellow. Heated together, they react and make iron sulfide: a dark grey solid that is not magnetic. Sodium (a soft metal) and chlorine (a poisonous gas) make salt, which you can eat.</p>
+      <p>In a <dfn data-w="mixture">mixture</dfn>, each substance keeps its own properties, you can mix the substances in any ratio, and you can separate them by a physical method, such as a <dfn data-w="magnet">magnet</dfn>. You can separate the elements of a compound only by a <dfn data-w="chemical-change">chemical reaction</dfn>.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“what it is like”</td><td>its <b>properties</b></td></tr><tr><td>“a new thing is made”</td><td>a <b>new substance</b> forms: a <b>compound</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p4-q-fes" data-scene="fes"></div>
+    <div class="q" data-q="p4-sort-cm" data-scene="fes"></div>
+    <div class="q" data-q="p4-q-logic"></div>
+    <div class="partnav"><button class="back" type="button">← Atoms and elements</button><button class="next" type="button">Mixtures →</button></div>
+  </section>
+
+  <!-- ============ 5 ============ -->
+  <section class="part" id="part-5" role="tabpanel" aria-labelledby="tab-5" hidden>
+    <div class="task"><div><div class="k">Your task</div><p>Read the notes. <mark class="do">Shine the torch through the three test tubes and leave them to stand. Then press Graph: salt on roads above the picture.</mark></p></div><span class="task__n"></span></div>
+    <h2>Mixtures</h2>
+    <p class="sub">Most things around you are mixtures. Their substances are not joined, so you can separate them.</p>
+    <div class="rem">
+      <p class="k3">Remember</p>
+      <p>When two or more substances are mixed but <u>not chemically joined</u>, you have a <dfn data-w="mixture">mixture</dfn>. Each substance keeps its own properties, so you can separate them by physical methods. You can change how much of each substance there is: one spoon of sugar in a cup of water, or five spoons, both make a mixture.</p>
+      <p>Only one substance, with no other substance mixed with it, is a <dfn data-w="pure">pure substance</dfn>: one element or one compound. Pure water, such as distilled water, melts at exactly 0 °C and boils at exactly 100 °C. Adding another substance changes these temperatures: salt water freezes below 0 °C and boils above 100 °C.</p>
+      <p>Mixtures around you: air (nitrogen, oxygen, argon, carbon dioxide and other gases), seawater (water with salts dissolved in it) and fruit juice. A metal mixed with other elements is an <dfn data-w="alloy">alloy</dfn>: brass (copper and zinc), bronze (copper and tin), steel (iron and carbon).</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>From now on, write the scientific word. It is the word that scores marks; everyday words do not.</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“only one thing in it”</td><td>a <b>pure substance</b></td></tr><tr><td>“things mixed together”</td><td>a <b>mixture</b></td></tr><tr><td>“metals mixed together”</td><td>an <b>alloy</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p5-sort-pure"></div>
+    <div class="q" data-q="p5-gaps-alloy"></div>
+    <div class="rem" data-scene="tubes">
+      <p class="k3">Three kinds of mixture</p>
+      <p>In water, the particles of some solids, such as sugar and salt, spread between the water particles until you cannot see the solid: the solid <dfn data-w="dissolve">dissolves</dfn>. A solid that does not dissolve, such as chalk or sand, is <dfn data-w="insoluble">insoluble</dfn> in water.</p>
+      <table class="tb">
+        <thead><tr><th></th><th><dfn data-w="solution">Solution</dfn></th><th><dfn data-w="suspension">Suspension</dfn></th><th><dfn data-w="colloid">Colloid</dfn></th></tr></thead>
+        <tbody>
+          <tr><th>What is spread through it</th><td>particles of a dissolved solid, far too small to see</td><td>small pieces of an insoluble solid</td><td>tiny droplets or pieces, too small to see</td></tr>
+          <tr><th>Can you see through it?</th><td>yes: it is <dfn data-w="transparent">transparent</dfn> (it may have a colour)</td><td>no: it is cloudy</td><td>no: it is cloudy</td></tr>
+          <tr><th>Leave it to stand (keep it still)</th><td>nothing <dfn data-w="settle">settles</dfn></td><td>the pieces settle to the bottom</td><td>nothing settles</td></tr>
+          <tr><th>Examples</th><td>salt water, sugar water</td><td>chalk powder or flour stirred into water</td><td>milk, fog</td></tr>
+        </tbody>
+      </table>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“see-through”</td><td><b>transparent</b></td></tr><tr><td>“it sinks to the bottom”</td><td>it <b>settles</b></td></tr><tr><td>“cloudy, with bits that sink”</td><td>a <b>suspension</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p5-sort-kind" data-scene="tubes"></div>
+    <div class="q" data-q="p5-q-stand" data-scene="tubes"></div>
+    <div class="q" data-q="p5-gaps-kind" data-scene="tubes"></div>
+    <div class="ext" data-scene="tubes">
+      <p class="k3">Extension · a torch in a colloid</p>
+      <p>A torch beam shows inside a colloid, because its tiny droplets scatter the light: the <dfn data-w="tyndall">Tyndall effect</dfn>.</p>
+      <div class="q" data-q="p5-ext-torch" data-scene="tubes"></div>
+    </div>
+    <div class="rem" data-scene="saltgraph">
+      <p class="k3">Reading a graph</p>
+      <p>In winter, salt is spread on icy roads. The graph shows the <dfn data-w="freezing-point">freezing point</dfn> of water with different masses of salt dissolved in it.</p>
+      <p>To read a graph: find your value on one axis, go straight to the line, then straight across (or down) to the other axis, and read its scale. <mark class="do">Drag the red ruler on the graph.</mark> Freezing points below 0 °C are negative: write the minus sign (−).</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the line goes down”</td><td>as the mass of salt <b>increases</b>, the freezing point <b>decreases</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p5-num-15" data-scene="saltgraph"></div>
+    <div class="q" data-q="p5-q-trend" data-scene="saltgraph"></div>
+    <div class="partnav"><button class="back" type="button">← Molecules and compounds</button><button class="next" type="button">Solutions →</button></div>
+  </section>
+
+  <!-- ============ 6 ============ -->
+  <section class="part" id="part-6" role="tabpanel" aria-labelledby="tab-6" hidden>
+    <div class="task"><div><div class="k">Your task</div><p>Read the notes. <mark class="do">Make the drink on the picture stronger and weaker. Then use the graph and the chart above the picture.</mark></p></div><span class="task__n"></span></div>
+    <h2>Solutions</h2>
+    <p class="sub">A solution forms when a solute dissolves in a solvent. You can say how strong it is, and how much of the solute will dissolve.</p>
+    <div class="rem" data-scene="drink">
+      <p class="k3">Remember</p>
+      <p>When the particles of a substance spread between the particles of a liquid, until you cannot see the solid, the substance <dfn data-w="dissolve">dissolves</dfn>. The substance that dissolves is the <dfn data-w="solute">solute</dfn>. The liquid it dissolves in is the <dfn data-w="solvent">solvent</dfn>. Together they make a <dfn data-w="solution">solution</dfn>. Sugar does not melt in tea: it dissolves (melting is a change of state). No new substance forms, and the mass stays the same: 10 g of salt in 100 g of water makes 110 g of salt water.</p>
+      <p>If a substance can dissolve in a solvent, it is <dfn data-w="soluble">soluble</dfn> in it; if it cannot, it is <dfn data-w="insoluble">insoluble</dfn>. This depends on the solvent: permanent-marker ink is insoluble in water, but it dissolves in ethanol.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>From now on, write the scientific word. It is the word that scores marks; everyday words do not.</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the stuff that dissolves”</td><td>the <b>solute</b></td></tr><tr><td>“the liquid it goes into”</td><td>the <b>solvent</b></td></tr><tr><td>“sugar melts in tea”</td><td>sugar <b>dissolves</b> in tea</td></tr><tr><td>“it cannot dissolve”</td><td>it is <b>insoluble</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p6-gaps-sss" data-scene="drink"></div>
+    <div class="q" data-q="p6-gaps-insol" data-scene="drink"></div>
+    <div class="rem" data-scene="drink">
+      <p class="k3">Concentrated or dilute</p>
+      <p>How strong a solution is depends on the mass of solute in each cm³ of solution: its <dfn data-w="concentration">concentration</dfn>. A solution with many solute particles in each part is <dfn data-w="concentrated">concentrated</dfn>; a solution with few is <dfn data-w="dilute">dilute</dfn>. Add more solute to the same volume: more concentrated. Add more solvent (water): more dilute.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“a strong drink”</td><td>a <b>concentrated</b> solution</td></tr><tr><td>“a weak drink”</td><td>a <b>dilute</b> solution</td></tr><tr><td>“the amount of sugar”</td><td>the <b>mass</b> of sugar, in g</td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p6-q-conc" data-scene="drink"></div>
+    <div class="q" data-q="p6-q-dilute" data-scene="drink"></div>
+    <div class="rem" data-scene="solgraph">
+      <p class="k3">Solubility</p>
+      <p>The greatest mass of a solute that can dissolve in 100 g of water, at a particular temperature, is its <dfn data-w="solubility">solubility</dfn>. When no more solute can dissolve, the solution is <dfn data-w="saturated">saturated</dfn>. Most solids are more soluble in hot water. The graph shows the solubility of potassium nitrate at each temperature. <mark class="do">Drag the red ruler on the graph.</mark></p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“how much will dissolve”</td><td>its <b>solubility</b></td></tr><tr><td>“no more will dissolve”</td><td>the solution is <b>saturated</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p6-num-sol" data-scene="solgraph"></div>
+    <div class="q" data-q="p6-gaps-sat" data-scene="solgraph"></div>
+    <div class="rem" data-scene="solgraph">
+      <p class="k3">Investigations</p>
+      <p>In an experiment, the thing you change is the <dfn data-w="independent-variable">independent variable</dfn>. The thing you measure is the <dfn data-w="dependent-variable">dependent variable</dfn>. The things you keep the same, so that the test is fair, are the <dfn data-w="control-variable">control variables</dfn>. On a graph, the independent variable is on the horizontal axis (the x-axis), and the dependent variable is on the vertical axis (the y-axis).</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the thing I changed”</td><td>the <b>independent variable</b></td></tr><tr><td>“the thing I measured”</td><td>the <b>dependent variable</b></td></tr><tr><td>“the things I kept the same”</td><td>the <b>control variables</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p6-gaps-ivdv" data-scene="solgraph"></div>
+    <div class="q" data-q="p6-sort-var"></div>
+    <div class="ext">
+      <p class="k3">Extension · dissolving faster</p>
+      <p>A solid dissolves faster in warmer water, when you stir it, and when its pieces are smaller.</p>
+      <div class="q" data-q="p6-sort-faster"></div>
+    </div>
+    <div class="rem" data-scene="solvents">
+      <p class="k3">Choosing with a chart</p>
+      <p>Sometimes a job needs two properties at once. Read the chart for both, and choose the one that is best at both. The chart shows four liquids: water, ethanol, ethyl ethanoate and propanone. A liquid with a lower boiling point evaporates more quickly.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“it dries quickly”</td><td>it <b>evaporates</b> quickly: it has a low <b>boiling point</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p6-q-solvent" data-scene="solvents"></div>
+    <div class="partnav"><button class="back" type="button">← Mixtures</button><button class="next" type="button">Sieve, filter, decant, magnet →</button></div>
+  </section>
+
+  <!-- ============ 7 ============ -->
+  <section class="part" id="part-7" role="tabpanel" aria-labelledby="tab-7" hidden>
+    <div class="task"><div><div class="k">Your task</div><p>Read the notes. <mark class="do">Run the filtration and the sieve on the picture. Then press Layers of liquids above the picture.</mark></p></div><span class="task__n"></span></div>
+    <h2>Sieve, filter, decant, magnet</h2>
+    <p class="sub">You can separate a mixture because its substances have different properties.</p>
+    <div class="rem" data-scene="filter">
+      <p class="k3">Remember</p>
+      <p>Each method uses a property that is different in the substances: <dfn data-w="size">size</dfn>, <dfn data-w="solubility">solubility</dfn>, <dfn data-w="magnetism">magnetism</dfn>, boiling point or density. The mass in each cubic centimetre of a substance is its <dfn data-w="density">density</dfn>, in g/cm³ (grams in each cm³). A liquid with more mass in each cm³ is denser. A less dense liquid <dfn data-w="float">floats</dfn> on a denser liquid that it does not mix with.</p>
+      <table class="tb">
+        <thead><tr><th>Method</th><th>What it separates</th><th>Property</th></tr></thead>
+        <tbody>
+          <tr><th><dfn data-w="sieve">Sieve</dfn></th><td>pieces of different sizes (rice and salt), or big pieces from a liquid (pasta and water). It cannot separate a dissolved solid: its particles pass through the holes.</td><td>size</td></tr>
+          <tr><th><dfn data-w="filtration">Filtration</dfn></th><td>an insoluble solid from a liquid (chalk and water). The solid left on the <dfn data-w="filter-paper">filter paper</dfn> in the <dfn data-w="funnel">funnel</dfn> is the <dfn data-w="residue">residue</dfn>; the liquid that passes through into a <dfn data-w="conical-flask">conical flask</dfn> is the <dfn data-w="filtrate">filtrate</dfn>. A dissolved solid passes through with the liquid.</td><td>size and solubility</td></tr>
+          <tr><th><dfn data-w="decanting">Decanting</dfn></th><td>a liquid from a solid that has settled at the bottom: pour the liquid carefully into another container; the solid remains</td><td>density</td></tr>
+          <tr><th><dfn data-w="funnel-sep">Separating funnel</dfn></th><td>two liquids that do not mix, <dfn data-w="immiscible">immiscible</dfn> liquids, such as oil and water: open the tap, and the lower, denser liquid flows through the tap first</td><td>density</td></tr>
+          <tr><th><dfn data-w="magnet">Magnet</dfn></th><td>iron or steel from a mixture (iron filings and sulfur powder)</td><td>magnetism</td></tr>
+        </tbody>
+      </table>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>From now on, write the scientific word. It is the word that scores marks; everyday words do not.</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the stuff left on the paper”</td><td>the <b>residue</b></td></tr><tr><td>“the liquid that goes through”</td><td>the <b>filtrate</b></td></tr><tr><td>“pour off the top”</td><td><b>decant</b></td></tr><tr><td>“liquids that do not mix”</td><td><b>immiscible</b> liquids</td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p7-label-filter" data-scene="filter"></div>
+    <div class="q" data-q="p7-sort-sieve" data-scene="sieve"></div>
+    <div class="q" data-q="p7-sort-method"></div>
+    <div class="q" data-q="p7-q-oil"></div>
+    <div class="q" data-q="p7-gaps-imm"></div>
+    <div class="rem" data-scene="layers">
+      <p class="k3">Layers of liquids</p>
+      <p>Liquids that do not mix form layers: the less dense liquid floats on the denser one. Liquids that can mix, such as honey and water, also form layers for a while if you pour them in slowly, one at a time, and do not stir. An object floats on a liquid that is denser than it, and sinks through a liquid that is less dense than it. So it stops on top of the first liquid that is denser than it.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the heavier liquid”</td><td>the <b>denser</b> liquid (the one with more mass in each cm³)</td></tr><tr><td>“it stays on top”</td><td>it <b>floats</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p7-order-layers" data-scene="layers"></div>
+    <div class="q" data-q="p7-q-bead" data-scene="layers"></div>
+    <div class="partnav"><button class="back" type="button">← Solutions</button><button class="next" type="button">Evaporation, distillation, chromatography →</button></div>
+  </section>
+
+  <!-- ============ 8 ============ -->
+  <section class="part" id="part-8" role="tabpanel" aria-labelledby="tab-8" hidden>
+    <div class="task"><div><div class="k">Your task</div><p>Read the notes. <mark class="do">Run the distillation, the evaporation and the chromatography on the picture.</mark> Then answer the checks and write two answers.</p></div><span class="task__n"></span></div>
+    <h2>Evaporation, distillation, chromatography</h2>
+    <p class="sub">Three ways to separate a solution: keep the solid, keep the liquid too, or separate the dyes.</p>
+    <div class="rem" data-scene="distil">
+      <p class="k3">Remember: evaporation</p>
+      <p>Heat the solution in an <dfn data-w="basin">evaporating basin</dfn> until the solvent changes to a gas and leaves: this is <dfn data-w="evaporation">evaporation</dfn>. The solute is left as solid pieces with flat faces: <dfn data-w="crystal">crystals</dfn>. You keep the solid, but the solvent is lost. To grow bigger crystals, heat only until the solution is saturated, then leave it to cool slowly: <dfn data-w="crystallisation">crystallisation</dfn>.</p>
+      <p class="k3">Remember: simple distillation</p>
+      <p>Heat the solution in a <dfn data-w="flask">flask</dfn> over a <dfn data-w="bunsen">Bunsen burner</dfn>. The solvent boils and changes to <dfn data-w="vapour">vapour</dfn>. The vapour moves into a glass tube cooled by cold water, the <dfn data-w="condenser">condenser</dfn>, where it condenses: it changes to a liquid again. This pure liquid drips into a beaker: it is the <dfn data-w="distillate">distillate</dfn>. The solute stays in the flask. A <dfn data-w="thermometer">thermometer</dfn> at the top shows the boiling point. The whole method is <dfn data-w="distillation">simple distillation</dfn>.</p>
+      <p>Distillation keeps <u>both</u>: the solvent is collected, and the solute remains in the flask. But it needs more apparatus and more energy than evaporation. Collecting a substance again from a mixture is <dfn data-w="recover">recovering</dfn> it. Evaporation and distillation can recover <u>all</u> of a dissolved solid; filtration cannot, because dissolved particles pass through the filter paper.</p>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>From now on, write the scientific word. It is the word that scores marks; everyday words do not.</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the water you collect”</td><td>the <b>distillate</b></td></tr><tr><td>“the steam turns back into water”</td><td>the vapour <b>condenses</b></td></tr><tr><td>“the cooling tube”</td><td>the <b>condenser</b></td></tr><tr><td>“the water dries up and salt is left”</td><td>the water <b>evaporates</b> and salt <b>crystals</b> are left</td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p8-order-distil" data-scene="distil"></div>
+    <div class="q" data-q="p8-gaps-evdist" data-scene="evap"></div>
+    <div class="q" data-q="p8-sort-getback"></div>
+    <div class="rem" data-scene="chroma">
+      <p class="k3">Remember: chromatography</p>
+      <p>The coloured substances in an ink or a food colouring are its <dfn data-w="dye">dyes</dfn>. A way to separate them on paper is <dfn data-w="chromatography">chromatography</dfn>. Draw a line in pencil near the bottom of the paper: the <dfn data-w="baseline">start line</dfn> (pencil does not dissolve). Put a small spot of each sample on the line. Stand the paper in a solvent, with the solvent <u>below</u> the line. The solvent rises through the paper and carries the dyes with it; each dye travels a different distance, so the dyes separate. The top of the wet part of the paper is the <dfn data-w="solvent-front">solvent front</dfn>. The pattern of spots you get is the <dfn data-w="chromatogram">chromatogram</dfn>.</p>
+      <ul>
+        <li>Two samples have the same dyes when <u>all</u> their spots match: the same colours at the same heights.</li>
+        <li>A sample contains a dye when it has a spot at the same height, with the same colour, as that dye.</li>
+        <li>A spot that stays on the start line is a dye that is insoluble in that solvent.</li>
+      </ul>
+      <div class="sci"><p class="k3">Say it like a scientist</p><p>Write the scientific word:</p><table class="tb sci__t"><thead><tr><th>Instead of …</th><th>write …</th></tr></thead><tbody><tr><td>“the colours in the ink”</td><td>the <b>dyes</b></td></tr><tr><td>“the pencil line”</td><td>the <b>start line</b></td></tr><tr><td>“how far the solvent got”</td><td>the <b>solvent front</b></td></tr><tr><td>“the pattern of spots”</td><td>the <b>chromatogram</b></td></tr></tbody></table></div>
+    </div>
+    <div class="q" data-q="p8-gaps-chroma" data-scene="chroma"></div>
+    <div class="ext" data-scene="chroma">
+      <p class="k3">Extension · the pencil line</p>
+      <div class="q" data-q="p8-q-pencil" data-scene="chroma"></div>
+    </div>
+    <div class="q" data-q="p8-q-brown" data-scene="chroma"></div>
+    <div class="q" data-q="p8-q-same" data-scene="chroma"></div>
+    <div class="rem" data-scene="tray">
+      <p class="k3">Writing an explanation</p>
+      <p>To explain how a set-up distils a liquid, write each step, using these words:</p>
+      <div class="frame"><ol>
+        <li>The liquid <b>evaporates</b> (or boils) because it is heated.</li>
+        <li>The vapour <b>cools</b> and <b>condenses</b> on a cold surface.</li>
+        <li>The pure liquid is <b>collected</b> in a separate container.</li>
+        <li>The dissolved solid (or dirt) <b>remains</b> in the container, because it does not evaporate.</li>
+      </ol></div>
+      <p>To explain a chromatogram, write your <b>conclusion</b> first, then the <b>evidence</b>: which spots match, at which heights.</p>
+    </div>
+    <div class="q" data-q="p8-write-tray" data-scene="tray"></div>
+    <div class="q" data-q="p8-write-red" data-scene="chroma"></div>
+    <div class="done-all" id="doneAll" hidden></div>
+    <div class="partnav"><button class="back" type="button">← Sieve, filter, decant, magnet</button></div>
+  </section>
+  </main>
+</div>
+
+<footer>
+  <p><b>Y7 Chemistry revision: states of matter, atoms and mixtures</b> · made by Dr Daniel Mompel Riera, NLCS Jeju. Something wrong, or a suggestion? <a href="mailto:dmompelriera@nlcsjeju.kr">dmompelriera@nlcsjeju.kr</a></p>
+  <p>Every picture on this page was drawn for it. Data on the graphs: freezing points of salt water from the CRC Handbook of Chemistry and Physics (rounded); solubility of potassium nitrate and boiling points from published data tables.</p>
+  <p>Code: AGPL-3.0. Teaching material: CC BY-NC-SA 4.0: free for teaching, not for selling.</p>
+</footer>
+
+<script src="https://accounts.google.com/gsi/client?hl=en-GB" async defer></script>
+<script src="js/config.js?v=202610251708"></script>
+<script src="js/signin.js?v=202610251708"></script>
+<script src="js/lesson.js?v=202610251708"></script>
+<script src="js/glossary.js?v=202610251708"></script>
+<script src="js/words.js?v=202610251708"></script>
+<script src="js/core.js?v=202610251708"></script>
+<script src="js/draw.js?v=202610251708"></script>
+<script src="js/checks.js?v=202610251708"></script>
+<script src="js/questions.js?v=202610251708"></script>
+<script src="js/panel.js?v=202610251708"></script>
+<script src="js/scenes1.js?v=202610251708"></script>
+<script src="js/scenes2.js?v=202610251708"></script>
+</body>
+</html>

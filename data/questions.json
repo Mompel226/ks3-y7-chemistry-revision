@@ -1,0 +1,649 @@
+{
+ "id": "ks3-y7-chemistry-revision",
+ "v": 1,
+ "parts": [
+  {
+   "n": 1,
+   "title": "States of matter"
+  },
+  {
+   "n": 2,
+   "title": "Changes of state"
+  },
+  {
+   "n": 3,
+   "title": "Atoms and elements"
+  },
+  {
+   "n": 4,
+   "title": "Molecules and compounds"
+  },
+  {
+   "n": 5,
+   "title": "Mixtures"
+  },
+  {
+   "n": 6,
+   "title": "Solutions"
+  },
+  {
+   "n": 7,
+   "title": "Sieve, filter, decant, magnet"
+  },
+  {
+   "n": 8,
+   "title": "Evaporation, distillation, chromatography"
+  }
+ ],
+ "groups": [],
+ "questions": [
+  {
+   "id": "p1-sort-state",
+   "part": 1,
+   "title": "Solid, liquid or gas?",
+   "short": "sort",
+   "kind": "sort"
+  },
+  {
+   "id": "p1-q-squash",
+   "part": 1,
+   "title": "Why can you compress a gas?",
+   "short": "q1",
+   "kind": "mcq",
+   "opts": [
+    "The gas particles are far apart, so they can move closer; the liquid particles already touch.",
+    "The gas particles are smaller, so more of them fit into the space when you push the lid.",
+    "The gas particles are soft, so they change shape; the liquid particles are hard, so they cannot.",
+    "The liquid particles stay still, so nothing can push them closer, but the gas particles move."
+   ]
+  },
+  {
+   "id": "p1-gaps-move",
+   "part": 1,
+   "title": "Moving particles",
+   "short": "gaps 1",
+   "kind": "gaps",
+   "gaps": [
+    "moving",
+    "energy",
+    "faster",
+    "compress"
+   ]
+  },
+  {
+   "id": "p1-gaps-expand",
+   "part": 1,
+   "title": "A stuck lid",
+   "short": "gaps 2",
+   "kind": "gaps",
+   "gaps": [
+    "vibrate",
+    "bigger",
+    "expands",
+    "size",
+    "contracts"
+   ]
+  },
+  {
+   "id": "p1-q-rail",
+   "part": 1,
+   "title": "Gaps between rails",
+   "short": "q2",
+   "kind": "mcq",
+   "opts": [
+    "On hot days the rails expand, so the gaps stop them pushing into each other and bending.",
+    "The gaps let rainwater flow away from the rails, so the metal does not rust in wet weather.",
+    "On cold days the rails expand, so the gaps stop the cold metal from breaking into pieces.",
+    "The gaps make each rail lighter and cheaper, so trains can travel along the track faster."
+   ]
+  },
+  {
+   "id": "p1-q-pour",
+   "part": 1,
+   "title": "Pouring water",
+   "short": "q3",
+   "kind": "mcq",
+   "opts": [
+    "Its shape changes, but its volume stays 100 cm³.",
+    "Its shape and its volume both change.",
+    "Its shape stays the same, but its volume gets bigger.",
+    "Its volume gets smaller, because the bowl is much wider."
+   ]
+  },
+  {
+   "id": "p2-label-cycle",
+   "part": 2,
+   "title": "Name the six changes",
+   "short": "label",
+   "kind": "label"
+  },
+  {
+   "id": "p2-sort-energy",
+   "part": 2,
+   "title": "Energy in or out?",
+   "short": "sort 1",
+   "kind": "sort"
+  },
+  {
+   "id": "p2-gaps-mp",
+   "part": 2,
+   "title": "Melting and freezing",
+   "short": "gaps 1",
+   "kind": "gaps",
+   "gaps": [
+    "0",
+    "same",
+    "reversible"
+   ]
+  },
+  {
+   "id": "p2-q-mirror",
+   "part": 2,
+   "title": "A misty mirror",
+   "short": "q1",
+   "kind": "mcq",
+   "opts": [
+    "Condensing: water vapour in the air cools on the mirror and becomes a liquid.",
+    "Evaporating: liquid water on the mirror gains energy and becomes water vapour.",
+    "Freezing: liquid water on the mirror loses energy and becomes solid ice.",
+    "Deposition: water vapour in the air loses energy and becomes solid ice directly."
+   ]
+  },
+  {
+   "id": "p2-q-frost",
+   "part": 2,
+   "title": "Ice in a freezer",
+   "short": "q2",
+   "kind": "mcq",
+   "opts": [
+    "Deposition",
+    "Condensing",
+    "Freezing",
+    "Sublimation"
+   ]
+  },
+  {
+   "id": "p2-sort-change",
+   "part": 2,
+   "title": "Physical or chemical change?",
+   "short": "sort 2",
+   "kind": "sort"
+  },
+  {
+   "id": "p2-gaps-cycle",
+   "part": 2,
+   "title": "The water cycle",
+   "short": "gaps 2",
+   "kind": "gaps",
+   "gaps": [
+    "evaporates",
+    "condenses",
+    "precipitation"
+   ]
+  },
+  {
+   "id": "p3-gaps-atom",
+   "part": 3,
+   "title": "Inside an atom",
+   "short": "gaps 1",
+   "kind": "gaps",
+   "gaps": [
+    "positive",
+    "negative",
+    "neutral",
+    "nucleus"
+   ]
+  },
+  {
+   "id": "p3-num-elec",
+   "part": 3,
+   "title": "Electrons in carbon",
+   "short": "ext",
+   "kind": "num",
+   "ext": 1
+  },
+  {
+   "id": "p3-gaps-sym",
+   "part": 3,
+   "title": "Chemical symbols",
+   "short": "gaps 2",
+   "kind": "gaps",
+   "gaps": [
+    "Fe",
+    "Cu",
+    "Na",
+    "Ag",
+    "Au",
+    "Ca"
+   ]
+  },
+  {
+   "id": "p3-sort-mnm",
+   "part": 3,
+   "title": "Metal or non-metal?",
+   "short": "sort 1",
+   "kind": "sort"
+  },
+  {
+   "id": "p3-sort-rt",
+   "part": 3,
+   "title": "Solid, liquid or gas at room temperature?",
+   "short": "sort 2",
+   "kind": "sort"
+  },
+  {
+   "id": "p4-sort-pics",
+   "part": 4,
+   "title": "Element, compound or mixture?",
+   "short": "sort 1",
+   "kind": "sort"
+  },
+  {
+   "id": "p4-gaps-formula",
+   "part": 4,
+   "title": "Reading a formula",
+   "short": "gaps",
+   "kind": "gaps",
+   "gaps": [
+    "1",
+    "4",
+    "3"
+   ]
+  },
+  {
+   "id": "p4-q-nitrogen",
+   "part": 4,
+   "title": "Nitrogen gas",
+   "short": "q1",
+   "kind": "mcq",
+   "opts": [
+    "An element: its molecules have only one type of atom.",
+    "A compound: its atoms are joined by a bond.",
+    "A mixture: it has two atoms in each particle.",
+    "A compound: it has more than one atom in each molecule."
+   ]
+  },
+  {
+   "id": "p4-q-fes",
+   "part": 4,
+   "title": "Iron sulfide and a magnet",
+   "short": "q2",
+   "kind": "mcq",
+   "opts": [
+    "The iron and sulfur reacted to make a new substance, iron sulfide, with new properties.",
+    "The heat destroyed all of the iron atoms, so there is no iron left in the test tube.",
+    "The yellow sulfur covers each piece of iron, so the magnet cannot reach the iron.",
+    "Heating a metal removes its properties for ever, so hot iron is never magnetic again."
+   ]
+  },
+  {
+   "id": "p4-sort-cm",
+   "part": 4,
+   "title": "Compound or mixture?",
+   "short": "sort 2",
+   "kind": "sort"
+  },
+  {
+   "id": "p4-q-logic",
+   "part": 4,
+   "title": "Which must be true?",
+   "short": "q3",
+   "kind": "mcq",
+   "opts": [
+    "A compound made of ions, such as salt, has two or more different elements.",
+    "Every particle made of two or more atoms joined together is a compound.",
+    "Every compound is made of molecules, each with two or more atoms joined.",
+    "A substance made of molecules must be a compound of different elements."
+   ]
+  },
+  {
+   "id": "p5-sort-pure",
+   "part": 5,
+   "title": "Pure substance or mixture?",
+   "short": "sort 1",
+   "kind": "sort"
+  },
+  {
+   "id": "p5-gaps-alloy",
+   "part": 5,
+   "title": "Alloys",
+   "short": "gaps 1",
+   "kind": "gaps",
+   "gaps": [
+    "mixture",
+    "zinc"
+   ]
+  },
+  {
+   "id": "p5-sort-kind",
+   "part": 5,
+   "title": "Solution, suspension or colloid?",
+   "short": "sort 2",
+   "kind": "sort"
+  },
+  {
+   "id": "p5-q-stand",
+   "part": 5,
+   "title": "Which one is a suspension?",
+   "short": "q1",
+   "kind": "mcq",
+   "opts": [
+    "B, chalk in water: it is cloudy, and the chalk settles when it is left to stand.",
+    "A, copper sulfate in water: it has a blue colour, so it must have solid pieces in it.",
+    "C, milk in water: it is cloudy, so its pieces must settle when it is left to stand.",
+    "All three: every mixture settles to the bottom when it is left to stand long enough."
+   ]
+  },
+  {
+   "id": "p5-gaps-kind",
+   "part": 5,
+   "title": "Words for mixtures",
+   "short": "gaps 2",
+   "kind": "gaps",
+   "gaps": [
+    "transparent",
+    "settle",
+    "colloid"
+   ]
+  },
+  {
+   "id": "p5-ext-torch",
+   "part": 5,
+   "title": "The torch beam (extension)",
+   "short": "ext",
+   "kind": "mcq",
+   "opts": [
+    "Its droplets of fat are big enough to scatter light; dissolved particles are too small.",
+    "Copper sulfate absorbs all of the light, so no beam can pass through the blue solution.",
+    "Milky water is a solution, and a beam of light is always seen inside a solution.",
+    "The torch shines more brightly on the milk than on the copper sulfate solution."
+   ],
+   "ext": 1
+  },
+  {
+   "id": "p5-num-15",
+   "part": 5,
+   "title": "Read the graph: 15 g of salt",
+   "short": "graph 1",
+   "kind": "num"
+  },
+  {
+   "id": "p5-q-trend",
+   "part": 5,
+   "title": "What the graph shows",
+   "short": "graph 2",
+   "kind": "mcq",
+   "opts": [
+    "The more salt is dissolved, the lower the freezing point of the water.",
+    "The more salt is dissolved, the higher the freezing point of the water.",
+    "Salt does not change the freezing point of the water at all.",
+    "Water with salt in it still freezes at 0 °C, like pure water."
+   ]
+  },
+  {
+   "id": "p6-gaps-sss",
+   "part": 6,
+   "title": "Sugar in tea",
+   "short": "gaps 1",
+   "kind": "gaps",
+   "gaps": [
+    "solute",
+    "solvent",
+    "solution"
+   ]
+  },
+  {
+   "id": "p6-gaps-insol",
+   "part": 6,
+   "title": "Permanent marker",
+   "short": "gaps 2",
+   "kind": "gaps",
+   "gaps": [
+    "insoluble",
+    "solvent"
+   ]
+  },
+  {
+   "id": "p6-q-conc",
+   "part": 6,
+   "title": "Which glass is more concentrated?",
+   "short": "q1",
+   "kind": "mcq",
+   "opts": [
+    "Glass B is more concentrated: it has more solute particles in the same volume.",
+    "Glass A is more concentrated: its solute particles have more space between them.",
+    "They are equally concentrated, because the two glasses hold the same volume.",
+    "Glass B is more dilute, because it has more solute particles in the same glass."
+   ]
+  },
+  {
+   "id": "p6-q-dilute",
+   "part": 6,
+   "title": "Too strong",
+   "short": "q2",
+   "kind": "mcq",
+   "opts": [
+    "Add more water to the same glass of drink.",
+    "Add more drink powder to the same glass.",
+    "Heat it until some of the water evaporates.",
+    "Put it in the fridge to make it much colder."
+   ]
+  },
+  {
+   "id": "p6-num-sol",
+   "part": 6,
+   "title": "Read the graph: 40 °C",
+   "short": "graph 1",
+   "kind": "num"
+  },
+  {
+   "id": "p6-gaps-sat",
+   "part": 6,
+   "title": "A saturated solution",
+   "short": "gaps 3",
+   "kind": "gaps",
+   "gaps": [
+    "saturated",
+    "soluble"
+   ]
+  },
+  {
+   "id": "p6-gaps-ivdv",
+   "part": 6,
+   "title": "The variables of the graph",
+   "short": "graph 2",
+   "kind": "gaps",
+   "gaps": [
+    "independent",
+    "dependent"
+   ]
+  },
+  {
+   "id": "p6-sort-var",
+   "part": 6,
+   "title": "Variables",
+   "short": "sort",
+   "kind": "sort"
+  },
+  {
+   "id": "p6-sort-faster",
+   "part": 6,
+   "title": "Dissolving faster (extension)",
+   "short": "ext",
+   "kind": "sort",
+   "ext": 1
+  },
+  {
+   "id": "p6-q-solvent",
+   "part": 6,
+   "title": "Choosing a remover",
+   "short": "q3",
+   "kind": "mcq",
+   "opts": [
+    "Propanone",
+    "Ethyl ethanoate",
+    "Ethanol",
+    "Water"
+   ]
+  },
+  {
+   "id": "p7-label-filter",
+   "part": 7,
+   "title": "Label the filtration",
+   "short": "label",
+   "kind": "label"
+  },
+  {
+   "id": "p7-sort-sieve",
+   "part": 7,
+   "title": "Can a sieve do it?",
+   "short": "sort 1",
+   "kind": "sort"
+  },
+  {
+   "id": "p7-sort-method",
+   "part": 7,
+   "title": "Choose the method",
+   "short": "sort 2",
+   "kind": "sort"
+  },
+  {
+   "id": "p7-q-oil",
+   "part": 7,
+   "title": "Oil and water",
+   "short": "q1",
+   "kind": "mcq",
+   "opts": [
+    "A separating funnel: oil is less dense, so the water flows through the tap first.",
+    "Filtration: the oil particles are too big to pass through the holes in the filter paper.",
+    "A magnet: the water is attracted to the magnet, but the oil stays where it is.",
+    "Evaporation: the oil evaporates when it is heated, and only pure water remains."
+   ]
+  },
+  {
+   "id": "p7-gaps-imm",
+   "part": 7,
+   "title": "Liquids that do not mix",
+   "short": "gaps",
+   "kind": "gaps",
+   "gaps": [
+    "immiscible",
+    "layers",
+    "bottom"
+   ]
+  },
+  {
+   "id": "p7-order-layers",
+   "part": 7,
+   "title": "Which liquid is on top?",
+   "short": "order",
+   "kind": "order"
+  },
+  {
+   "id": "p7-q-bead",
+   "part": 7,
+   "title": "Where does the bead stop?",
+   "short": "q2",
+   "kind": "mcq",
+   "opts": [
+    "On top of the honey: denser than the other three liquids, less dense than honey.",
+    "On top of the oil: it is a solid, and a solid object always floats on any liquid.",
+    "At the very bottom: it is a solid, and a solid object always sinks in any liquid.",
+    "On top of the water: it is less dense than water but denser than the oil."
+   ]
+  },
+  {
+   "id": "p8-order-distil",
+   "part": 8,
+   "title": "The steps of distillation",
+   "short": "order",
+   "kind": "order"
+  },
+  {
+   "id": "p8-gaps-evdist",
+   "part": 8,
+   "title": "Evaporation or distillation?",
+   "short": "gaps 1",
+   "kind": "gaps",
+   "gaps": [
+    "crystals",
+    "lost",
+    "collected",
+    "flask"
+   ]
+  },
+  {
+   "id": "p8-sort-getback",
+   "part": 8,
+   "title": "Recovering a dissolved solid",
+   "short": "sort",
+   "kind": "sort"
+  },
+  {
+   "id": "p8-gaps-chroma",
+   "part": 8,
+   "title": "Chromatography words",
+   "short": "gaps 2",
+   "kind": "gaps",
+   "gaps": [
+    "start line",
+    "solvent front",
+    "chromatogram"
+   ]
+  },
+  {
+   "id": "p8-q-pencil",
+   "part": 8,
+   "title": "A pencil start line (extension)",
+   "short": "ext",
+   "kind": "mcq",
+   "opts": [
+    "Pencil is insoluble in the solvent, so the line stays where it is.",
+    "Pencil lines are darker than ink, so the dyes travel further up the paper.",
+    "Pencil helps the solvent rise through the paper more quickly.",
+    "Ink lines are too thin to see once the paper is wet with solvent."
+   ],
+   "ext": 1
+  },
+  {
+   "id": "p8-q-brown",
+   "part": 8,
+   "title": "The brown sweet",
+   "short": "q1",
+   "kind": "mcq",
+   "opts": [
+    "Yellow (E102), red (E129) and blue (E133)",
+    "Yellow (E102) and blue (E133), but no red",
+    "Red (E129) and blue (E133), but no yellow",
+    "Yellow (E102) and red (E129), but no blue"
+   ]
+  },
+  {
+   "id": "p8-q-same",
+   "part": 8,
+   "title": "Sweet or drink?",
+   "short": "q2",
+   "kind": "mcq",
+   "opts": [
+    "No: the drink has a pink spot that the sweet does not have, so the dyes differ.",
+    "Yes: the sweet and the drink both look orange, so they must have the same dyes.",
+    "Yes: both have a yellow spot at the same height, so all their dyes are the same.",
+    "No: the sweet has more spots than the drink, so the sweet has an extra dye."
+   ]
+  },
+  {
+   "id": "p8-write-tray",
+   "part": 8,
+   "title": "Explain: the cold tray",
+   "short": "write 1",
+   "kind": "write"
+  },
+  {
+   "id": "p8-write-red",
+   "part": 8,
+   "title": "Explain: the banned dye",
+   "short": "write 2",
+   "kind": "write"
+  }
+ ]
+}
