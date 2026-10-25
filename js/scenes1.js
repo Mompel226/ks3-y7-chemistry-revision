@@ -128,6 +128,23 @@
         else { A.vx += nx * rv * el; A.vy += ny * rv * el; B.vx -= nx * rv * el; B.vy -= ny * rv * el; }
       }
     }
+    /* the room a particle takes: in the pattern, a square of the spacing; in a liquid, its area ÷ how tightly a liquid packs */
+    const LIQ_A = Math.PI * r * r / (.72 / ((1 + LGAP) * (1 + LGAP)));
+    /* the level of the liquid: with part still solid, the liquid fills the room beside the solid first; while the solid
+       sticks out above that level, liquid on top of it runs off its edges, and once the liquid is deeper than the solid, it
+       lies over it in a level layer (never stacked against a wall) */
+    function level() {
+      const area = ps.filter(q => q.ph === 'l' && !q.mv).length * LIQ_A, solid = ps.filter(held), solidLeft = solid.length > 0, S0 = sites().out;
+      let band = box.y1 - area / W, bl = 0, br = 0, bt = 0, over = true;
+      if (solidLeft) {
+        bl = Math.min(...solid.map(q => q.mv ? S0[q.site][0] : q.x)) - r; br = Math.max(...solid.map(q => q.mv ? S0[q.site][0] : q.x)) + r;
+        bt = Math.min(...solid.map(q => S0[q.site][1])) - r;
+        const side = Math.max(2 * r, W - (br - bl)), low = side * (box.y1 - bt);
+        over = area > low;
+        band = over ? bt - (area - low) / W : box.y1 - area / side;
+      }
+      return { band, bl, br, bt, over, solidLeft, area };
+    }
     function step(dt) {
       t += dt;
       Ts += (T - Ts) * Math.min(1, dt * 5);
@@ -157,18 +174,7 @@
       if (!free.length) return;
       /* a liquid fills the bottom of its container with a level top (the band its particles would fill, with a little
          room to spare: their area ÷ how tightly a liquid packs ÷ the width), while no part of it is still solid */
-      const nl = free.filter(q => q.ph === 'l').length, solid = ps.filter(held), solidLeft = solid.length > 0;
-      const area = nl * Math.PI * r * r / (.72 / ((1 + LGAP) * (1 + LGAP)));
-      /* the level of the liquid: with part still solid, the liquid fills the room beside the solid first; while the solid
-         sticks out above that level, liquid on top of it runs off its edges, and once the liquid is deeper than the solid,
-         it lies over it in a level layer (never stacked against a wall) */
-      let band = box.y1 - area / W, bl = 0, br = 0, bt = 0, over = true;
-      if (solidLeft) {
-        bl = Math.min(...solid.map(q => q.x)) - r; br = Math.max(...solid.map(q => q.x)) + r; bt = Math.min(...solid.map(q => q.y)) - r;
-        const side = Math.max(2 * r, W - (br - bl)), low = side * (box.y1 - bt);
-        over = area > low;
-        band = over ? bt - (area - low) / W : box.y1 - area / side;
-      }
+      const { band, bl, br, bt, over, solidLeft } = level();
       const kick = (900 + 1300 * T) * sc * .7, N = 3, h = dt / N;
       for (let k = 0; k < N; k++) {
         free.forEach(q => {
@@ -212,6 +218,11 @@
       state: () => { if (events.length || ps.some(q => q.mv)) return 'mixed'; const p = ps[0].ph; return ps.every(q => q.ph === p) ? { s: 'solid', l: 'liquid', g: 'gas' }[p] : 'mixed'; },
       busy: () => events.length > 0 || ps.some(q => q.mv),
       count: ph => ps.filter(q => now(q) === ph).length,
+      /* the room the solid part and the liquid part take (square units), and how many particles are a gas: the picture's
+         volume reading */
+      areas: () => { const sp = sites().s; return { solid: ps.filter(held).length * sp * sp, liquid: ps.filter(q => q.ph === 'l' && !q.mv).length * LIQ_A, gas: ps.filter(q => q.ph === 'g' && !q.mv).length }; },
+      /* the top of what is not a gas (the solid's top edge, or the liquid's level): where a lid pushed down comes to rest */
+      surface: () => { const L = level(); if (!L.solidLeft && !L.area) return box.y1; return L.solidLeft ? Math.min(L.bt, L.area ? L.band : L.bt) : L.band; },
       depth: i => depth[i],
       temp(v) { if (v != null) T = v; return T; },
       top(y) { box.y0 = y; ps.forEach(q => { if (q.y < y + r) q.y = y + r; }); },
@@ -267,6 +278,25 @@
          as the change goes on, so a press that leaves the temperature still visibly does something (Daniel, 25 Oct 2026:
          the red "seems to get stuck" — "I reach melting point and I'm not there yet") */
       const prog = S('g', null, g);
+      /* Compress pushes the lid down with the SAME force every time (Daniel, 25 Oct 2026: a hot gas and a cold gas went down
+         to the same place, Compress did nothing while it melted, and with no number nobody could compare). The picture
+         reads the volume: the container under the raised lid is 100 cm³; a solid or a liquid takes the room its particles
+         take, whatever the lid does; a gas fills the space under the lid. Pushed down, a gas takes a volume that grows with
+         its temperature (Charles's law, for a substance that boils at 350 K and is 520 K at "hot"; 58 cm³ at its boiling
+         point), so the same push compresses a hot gas less; heated while pushed, it pushes the lid up. */
+      const volT = S('text', { class: 'lbl-sm', x: X0, y: 66 }, g, '');      /* clear of the lid's handle, wherever the lid is */
+      const WIN = X1 - X0 - 6, Y1 = YB - 3, K = 100 / (WIN * (Y1 - (TOP + 2)));
+      const Tabs = () => 350 + Math.max(0, T - BP) / (1 - BP) * 170;
+      const vols = () => { const a = sim.areas(); return { s: a.solid * K, l: a.liquid * K, g: a.gas }; };
+      const pushedGas = v => v.g / 32 * 58 * Tabs() / 350;
+      const volNow = () => { const v = vols(); return v.g ? (Y1 - (pistonY + 2)) * WIN * K : v.s + v.l; };
+      function lidTarget() {
+        if (!squeezed) return TOP;
+        const v = vols();
+        return v.g ? Math.max(TOP, Y1 - (v.s + v.l + pushedGas(v)) / (K * WIN) - 2) : Math.max(TOP, sim.surface() - 2);
+      }
+      /* after Heat or Cool with the lid pushed down on a gas: what the gas does to the lid */
+      const pushedNote = () => ` Pushed with the same force, the ${dir > 0 ? 'hotter' : 'cooler'} gas now fills ${Math.round(pushedGas(vols()))} cm³: it pushes the lid ${dir > 0 ? 'up' : 'less, and the lid moves down'}.`;
       const SAY = {
         solid: '<b>Solid.</b> Below its melting point, the substance is a solid. The particles touch, in a regular pattern, and vibrate in one place. So a solid keeps its shape and its volume.',
         liquid: '<b>Liquid.</b> Between its melting point and its boiling point, the substance is a liquid. The particles are close together, with no pattern, and slide past each other. So a liquid flows and takes the shape of its container, but keeps its volume.',
@@ -290,39 +320,44 @@
       let lead = null;                             /* what the last press did, in place of the state's description */
       const say = () => k.say(`<p>${lead || SAY[st] || ''}</p>` + DO);
       function setT(v) { T = Math.max(0, Math.min(1, Math.round(v * 1000) / 1000)); sim.temp(T); }
-      function release() { if (squeezed) { squeezed = false; target = TOP; sqz.set('Compress ⬇'); } }
+      function release() { if (squeezed) { squeezed = false; sqz.set('Compress ⬇'); } }
       const sb = {};
       [['solid', 'Solid', 105], ['liquid', 'Liquid', 158], ['gas', 'Gas', 211]].forEach(([s, t, y]) => {
         sb[s] = k.btn(t, 640, y, () => { st = s; f = 0; T = AT[s]; release(); sim.temp(T); sim.set(s); t0 = T; lead = null; paint(); say(); }, { cls: 'ghost' });
       });
       const heat = k.btn('🔥 Heat', 690, 318, () => {
         lead = null; dir = 1;
-        if (st === 'solid' && T + STEP >= MP - 1e-6) { release(); setT(MP); st = 'sl'; f = 1 / 3; sim.mix('s', 'l', f); lead = MELT[0]; }
+        if (st === 'solid' && T + STEP >= MP - 1e-6) { setT(MP); st = 'sl'; f = 1 / 3; sim.mix('s', 'l', f); lead = MELT[0]; }
         else if (st === 'sl') { f = Math.min(1, f + 1 / 3); sim.mix('s', 'l', f); if (f > .99) { st = 'liquid'; lead = MELT[2]; } else lead = MELT[f > .5 ? 1 : 0]; }
-        else if (st === 'liquid' && T + STEP >= BP - 1e-6) { release(); setT(BP); st = 'lg'; f = 1 / 3; sim.mix('l', 'g', f); lead = BOIL[0]; }
+        else if (st === 'liquid' && T + STEP >= BP - 1e-6) { setT(BP); st = 'lg'; f = 1 / 3; sim.mix('l', 'g', f); lead = BOIL[0]; }
         else if (st === 'lg') { f = Math.min(1, f + 1 / 3); sim.mix('l', 'g', f); if (f > .99) { st = 'gas'; lead = BOIL[2]; } else lead = BOIL[f > .5 ? 1 : 0]; }
-        else { setT(T + STEP); lead = st === 'solid' ? EXPAND : '<b>Heated:</b> the particles gain energy and move faster.'; }
+        else { setT(T + STEP); lead = st === 'solid' ? EXPAND : '<b>Heated:</b> the particles gain energy and move faster.' + (squeezed && st === 'gas' ? pushedNote() : ''); }
         say(); paint();
       }, { cls: 'warm' });
       const cool = k.btn('❄ Cool', 690, 392, () => {
         lead = null; dir = -1;
-        if (st === 'gas' && T - STEP <= BP + 1e-6) { release(); setT(BP); st = 'lg'; f = 2 / 3; sim.mix('l', 'g', f); lead = COND[0]; }
+        if (st === 'gas' && T - STEP <= BP + 1e-6) { setT(BP); st = 'lg'; f = 2 / 3; sim.mix('l', 'g', f); lead = COND[0]; }
         else if (st === 'lg') { f = Math.max(0, f - 1 / 3); sim.mix('l', 'g', f); if (f < .01) { st = 'liquid'; lead = COND[2]; } else lead = COND[f < .5 ? 1 : 0]; }
-        else if (st === 'liquid' && T - STEP <= MP + 1e-6) { release(); setT(MP); st = 'sl'; f = 2 / 3; sim.mix('s', 'l', f); lead = FREEZE[0]; }
+        else if (st === 'liquid' && T - STEP <= MP + 1e-6) { setT(MP); st = 'sl'; f = 2 / 3; sim.mix('s', 'l', f); lead = FREEZE[0]; }
         else if (st === 'sl') { f = Math.max(0, f - 1 / 3); sim.mix('s', 'l', f); if (f < .01) { st = 'solid'; t0 = T; lead = FREEZE[2]; } else lead = FREEZE[f < .5 ? 1 : 0]; }
         else {
           setT(T - STEP);
           if (st === 'solid') { t0 = Math.min(t0, T); lead = T > .005 ? '<b>Cooled:</b> the particles vibrate less and come a little closer: the solid contracts.' : '<b>Cooled:</b> the coldest this picture shows. The particles touch, and vibrate only a little.'; }
-          else lead = '<b>Cooled:</b> the particles lose energy and move more slowly.';
+          else lead = '<b>Cooled:</b> the particles lose energy and move more slowly.' + (squeezed && st === 'gas' ? pushedNote() : '');
         }
         say(); paint();
       }, { cls: 'cold' });
       const sqz = k.btn('Compress ⬇', 292, 40, () => {
         lead = null;
-        if (squeezed) { squeezed = false; target = TOP; sqz.set('Compress ⬇'); say(); return; }
+        const v = vols(), before = Math.round(volNow());
+        if (squeezed) {
+          squeezed = false; sqz.set('Compress ⬇');
+          lead = v.g ? '<b>Released:</b> the lid goes back up, and the gas fills the whole container again: 100 cm³.' : `<b>Released:</b> the lid goes back up. The volume is still ${before} cm³.`;
+          say(); return;
+        }
         squeezed = true; sqz.set('Release ⬆');
-        if (st === 'gas') { target = TOP + 150; lead = '<b>Compressed:</b> the gas now fills a smaller volume. There was empty space between the particles, so they could be pushed closer together. You can compress a gas.'; }
-        else { target = Math.max(TOP, sim.highest() - 2); lead = '<b>The lid stops.</b> The particles are already close together, so there is almost no empty space between them. You cannot compress a solid or a liquid.'; }
+        if (v.g) lead = `<b>Compressed:</b> the lid pushes with the same force each time. The gas particles had space between them, so they are pushed closer together: the volume falls from ${before} cm³ to ${Math.round(v.s + v.l + pushedGas(v))} cm³. A hotter gas pushes back harder, so it is compressed less.`;
+        else lead = `<b>The lid stops.</b> The lid pushes down with the same force, but the particles are already close together, with almost no empty space between them: the volume stays ${before} cm³. You cannot compress a solid or a liquid.`;
         say();
       }, { cls: 'r' });
       function paint() {
@@ -336,7 +371,6 @@
           for (let i = 0; i < 3; i++) S('rect', { x: TX + 20 + i * 17, y: y - 11, width: 13, height: 13, rx: 2, fill: i < done ? col : 'none', stroke: i < done ? col : 'var(--ink3)', 'stroke-width': 1.6 }, prog);
           S('text', { class: 'note', x: TX + 76, y }, prog, st === 'sl' ? (up ? 'melted' : 'frozen') : (up ? 'boiled' : 'condensed'));
         }
-        sqz.disabled = st === 'sl' || st === 'lg';          /* while it changes state, nothing to compress */
         th.set(T);
         /* the solid's size at its coldest since it became a solid (at the start, the coldest of all), on the outer edges of
            its particles, once it is warmer: its size before heating. The label stays above the hottest solid's top, so the
@@ -351,11 +385,14 @@
       }
       paint(); say();
       k.loop(dt => {
+        target = lidTarget();
         if (Math.abs(pistonY - target) > .3) { pistonY += (target - pistonY) * Math.min(1, dt * 3.2); }
         else pistonY = target;
         pis.setAttribute('transform', `translate(0 ${pistonY.toFixed(1)})`);
         sim.top(pistonY + 2);
         sim.step(dt); sim.draw();
+        const vt = 'Volume: ' + Math.round(volNow()) + ' cm³';
+        if (volT.textContent !== vt) volT.textContent = vt;
       });
     }
   }]);
