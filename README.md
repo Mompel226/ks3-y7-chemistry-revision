@@ -10,7 +10,7 @@ about 7 minutes. Pupils can use it instead of the paper booklet.
 
 | Part | The picture to explore | The checks practise |
 |---|---|---|
-| 1 States of matter | one substance as a solid, a liquid or a gas: heat it, cool it, compress it | particles and their movement, expansion and contraction (the particles do not grow), compressing a gas |
+| 1 States of matter | one substance (not water) whose temperature decides its state: heat it until it melts, then boils; cool it back; compress it | particles and their movement, expansion and contraction (the particles do not grow), compressing a gas |
 | 2 Changes of state | the six changes on an energy arrow, each shown in a lens; ice heated and cooled | melting, freezing, evaporating, condensing, sublimation, deposition; melting point = freezing point; physical and chemical change; the water cycle |
 | 3 Atoms and elements | inside a helium and a carbon atom; the 13 elements to know on the periodic table | protons (+), neutrons (no charge), electrons (−); symbols; metals and non-metals; states at room temperature |
 | 4 Molecules and compounds | boxes of particles; iron and sulfur, a mixture and then a compound | element, compound or mixture from a particle picture; formulae; diatomic elements; new properties of a compound; reading statements carefully |
@@ -67,5 +67,6 @@ The `tools/` named here stay on Daniel's computer: they are not in this reposito
   squares), `node tools/widths.mjs` (every picture after every press at six laptop window sizes, `--small-screens` for a
   tablet and a phone: no button over another, off the picture or over its words) and `node tools/phone-check.mjs` (a
   finger swipes the picture and drags a graph's ruler), `node tools/restart-check.mjs` (Start again, and the keyboard alone), `node tools/anyorder-check.mjs` (typed words that
-  may come in any order, and the first letter that fixes its gap).
+  may come in any order, and the first letter that fixes its gap), `node tools/particles-check.mjs` (Part 1's substance
+  melts and boils at the marked points; every particle box moves in calm slow motion).
 </details>

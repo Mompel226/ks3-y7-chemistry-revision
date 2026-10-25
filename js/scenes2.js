@@ -109,23 +109,24 @@
           if (t.kind === 'sol') S('text', { x: cx, y: cy + 5, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 800, fill: '#174C88' }, inn, 'no pieces');
         });
       }
+      let last = '';                               /* the caption says what the last press showed: the picture keeps the rest */
       function say() {
         const bits = [];
-        if (!torch && !stood && !looked) bits.push('Three mixtures that look almost the same at first. One is a solution, one is a suspension and one is a colloid.');
-        if (torch) bits.push('<b>Torch:</b> in A the light passes straight through: a solution is transparent. In B the chalk pieces block the light. In C you can see the beam inside the cloudy liquid: its tiny droplets scatter the light.');
-        if (stood) bits.push('<b>One day later:</b> only the chalk in B has settled to the bottom. A solution and a colloid never settle.');
-        if (looked) bits.push('<b>Microscope:</b> A shows no pieces (the dissolved particles are far too small to see). B shows big pieces of chalk. C shows many tiny droplets of fat.');
+        if (!last) bits.push('Three mixtures that look almost the same at first. One is a solution, one is a suspension and one is a colloid.');
+        if (last === 'torch' && torch) bits.push('<b>Torch:</b> in A the light passes straight through: a solution is transparent. In B the chalk pieces block the light. In C you can see the beam inside the cloudy liquid: its tiny droplets scatter the light.');
+        if (last === 'stand') bits.push('<b>One day later:</b> only the chalk in B has settled to the bottom. A solution and a colloid never settle.');
+        if (last === 'look' && looked) bits.push('<b>Microscope:</b> A shows no pieces (the dissolved particles are far too small to see). B shows big pieces of chalk. C shows many tiny droplets of fat.');
         k.say('<p>' + bits.join(' ') + '</p><p><mark class="do">Press 🔦 Torch, ⏱ Leave to stand and 🔬 Microscope.</mark></p>');
       }
-      const bt = k.btn('🔦 Torch', 92, 470, () => { torch = !torch; bt.on(torch); drawBeams(); say(); }, { cls: 'small' });
+      const bt = k.btn('🔦 Torch', 92, 470, () => { torch = !torch; last = 'torch'; bt.on(torch); drawBeams(); say(); }, { cls: 'small' });
       const bs = k.btn('⏱ Leave to stand', 250, 470, async () => {
         if (stood) return;
         bs.disabled = true; bs.set('⏱ One day later');
         const t = T[1];
         await k.anim(1800, u => { t.settled.setAttribute('opacity', u); t.liq.opacity(.96 - .7 * u); t.grain.setAttribute('opacity', 1 - u); });
-        stood = true; say();
+        stood = true; last = 'stand'; say();
       }, { cls: 'small' });
-      const bm = k.btn('🔬 Microscope', 560, 470, () => { looked = !looked; bm.on(looked); scope.setAttribute('opacity', looked ? 1 : 0); say(); }, { cls: 'small' });
+      const bm = k.btn('🔬 Microscope', 560, 470, () => { looked = !looked; last = 'look'; bm.on(looked); scope.setAttribute('opacity', looked ? 1 : 0); say(); }, { cls: 'small' });
       k.btn('↺', 720, 470, () => P.open(5, 'tubes'), { cls: 'small ghost', aria: 'Start again' });
       drawScope(); say();
     }
@@ -403,12 +404,12 @@
       let running = false;
       const STEPS = [
         '<b>1.</b> The salt water is heated and boils.',
-        '<b>2.</b> Water vapour (steam) rises and moves into the condenser. The thermometer reads 100 °C, the boiling point of water.',
-        '<b>3.</b> Cold water flows around the condenser. It cools the vapour, and the vapour condenses into liquid water.',
+        '<b>2.</b> Water vapour (steam) rises into the condenser. The thermometer reads 100 °C, the boiling point of water.',
+        '<b>3.</b> Cold water around the condenser cools the vapour: it condenses into liquid water.',
         '<b>4.</b> Pure water, the distillate, drips into the beaker.',
-        '<b>5.</b> The salt does not evaporate: it stays in the flask. Distillation keeps both the water and the salt.'
+        '<b>5.</b> The salt does not evaporate: it stays in the flask. Distillation keeps both.'
       ];
-      const sayTo = n => k.say('<p>' + STEPS.slice(0, n).join(' ') + '</p>' + (n < 5 ? '' : '<p><mark class="do">Press Start again to watch it again.</mark></p>'));
+      const sayTo = n => k.say('<p>' + STEPS.slice(0, n).join(' ') + '</p>');   /* at the end, ↺ Start again on the picture repeats it */
       async function go() {
         if (running) return; running = true; P.current()._busy = true; start.disabled = true;
         bun.on(true); sayTo(1);

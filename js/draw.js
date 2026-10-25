@@ -30,7 +30,7 @@
     Fe: { c: '#B5653A', s: '#6B3416', n: 'iron', r: .95 },    Na: { c: '#8E5BD6', s: '#4B2A86', n: 'sodium', r: .72 },
     He: { c: '#8FD8E8', s: '#2F7F92', n: 'helium', r: .7 },   Ne: { c: '#F29BC0', s: '#9A3A64', n: 'neon', r: .74 },
     Ar: { c: '#B9A3E8', s: '#5B4396', n: 'argon', r: .82 },   Cu: { c: '#D88A4E', s: '#7A4214', n: 'copper', r: .9 },
-    X: { c: '#2E7FD9', s: '#174C88', n: 'particle', r: 1 }
+    X: { c: '#8B95A1', s: '#4E5866', n: 'particle', r: 1 }   /* any one substance: grey, never water's blue (25 Oct 2026) */
   };
   /* one atom: a ball with a soft highlight, so it reads as a ball in bright and dark */
   function atom(p, x, y, r, el, o) {
