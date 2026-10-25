@@ -14,127 +14,204 @@
 
   /* ---------------- a box of moving particles ----------------
      o: { g, x0, x1, y0, y1 (the box), n, r, kind ('X' a particle, 'H2O' a water molecule), state, T (0 cold … 1 hot),
-          cols (solid), hb (draw hydrogen bonds), seed, grow (how much wider the gaps of a solid get from cold to hot:
-          0.16, or more where expansion is the lesson) } */
+          cols (solid), hb (draw hydrogen bonds), seed,
+          grow (how much wider the gaps of a solid get from cold to hot: 0.16), gap0 (the gap between neighbours in the
+          coldest solid, as a part of a particle's width: 0), solidT (the temperature as the solid's own scale: the same),
+          liqGap (the smallest gap between two particles of the liquid: 0, touching) }
+     Each particle has its own state (ph: s fixed in the regular pattern, l liquid, g gas), so a change of state happens a
+     part at a time, the way it does (Daniel, 25 Oct 2026: a solid that melted all at once, in a burst, "makes absolute no
+     sense"). Melting, sublimation and evaporation take the particles at the SURFACE first; freezing and deposition fill
+     the pattern from its middle and bottom; condensing takes the lowest gas particles first. mix(a, b, f, ms) moves
+     particles between two states (a has less energy) until the part f of them is in b, one after another over ms: a press
+     of Heat at the melting point is a third more; toState(st, ms) is a whole change, one after another. */
   function PSim(o) {
     const rnd = D.rng(o.seed || 3), ps = [], layer = S('g', null, o.g), bonds = o.hb ? S('g', null, layer) : null;
     const box = { x0: o.x0, x1: o.x1, y0: o.y0, y1: o.y1 };
-    let state = o.state || 'solid', T = o.T == null ? .25 : o.T, morph = null, t = 0;
-    const r = o.r, cols = o.cols || Math.max(1, Math.floor((box.x1 - box.x0) / (2 * r)));
-    for (let i = 0; i < o.n; i++) {
+    let T = o.T == null ? .25 : o.T, Ts = T, t = 0, events = [];
+    const r = o.r, n = o.n, cols = o.cols || Math.max(1, Math.floor((box.x1 - box.x0) / (2 * r))), rows = Math.ceil(n / cols);
+    const GROW = o.grow == null ? .16 : o.grow, GAP0 = o.gap0 || 0, LGAP = o.liqGap || 0, LT = o.solidT || (v => v);
+    for (let i = 0; i < n; i++) {
       const node = S('g', null, layer);
       if (o.kind === 'H2O') D.mol(node, 'H2O', 0, 0, r * .98, 0); else D.atom(node, 0, 0, r, o.el || 'X');
-      ps.push({ node, x: 0, y: 0, vx: 0, vy: 0, a: rnd() * 360, va: 0, sx: 0, sy: 0, p1: rnd() * 6.3, p2: rnd() * 6.3 });
+      ps.push({ node, x: 0, y: 0, vx: 0, vy: 0, a: rnd() * 360, va: 0, p1: rnd() * 6.3, p2: rnd() * 6.3, ph: 's', site: i, mv: null });
     }
+    /* the regular pattern at a temperature (the solid expands smoothly towards the temperature it is at): each site, the
+       spacing, and the outer edges of its particles; the bottom row rests on the floor */
     function sites(temp) {
-      const s = 2 * r * (1 + (o.grow || .16) * (temp == null ? T : temp)), rows = Math.ceil(ps.length / cols), out = [];
-      const w = cols * s, left = (box.x0 + box.x1) / 2 - w / 2 + s / 2;
-      for (let i = 0; i < ps.length; i++) { const c = i % cols, rw = Math.floor(i / cols); out.push([left + c * s + (o.kind === 'H2O' && rw % 2 ? s * .25 : 0), box.y1 - s / 2 - rw * s]); }
-      return { out, w, h: rows * s, s };
+      const s = 2 * r * (1 + GAP0 + GROW * LT(temp == null ? Ts : temp)), out = [], off = o.kind === 'H2O' ? s * .25 : 0;
+      const left = (box.x0 + box.x1) / 2 - (cols - 1) * s / 2;
+      for (let i = 0; i < n; i++) { const c = i % cols, rw = Math.floor(i / cols); out.push([left + c * s + (rw % 2 ? off : 0), box.y1 - r - rw * s]); }
+      return { out, s, w: cols * s, h: rows * s, edge: { l: left - r, r: left + (cols - 1) * s + r + (rows > 1 ? off : 0), t: box.y1 - 2 * r - (rows - 1) * s, b: box.y1 } };
     }
-    function place(st) {
-      if (st === 'solid') { const s = sites().out; ps.forEach((q, i) => { q.sx = s[i][0]; q.sy = s[i][1]; q.x = q.sx; q.y = q.sy; q.a = o.kind === 'H2O' ? (i % 2 ? 30 : -30) : q.a; }); return; }
-      const pos = D.spots(ps.length, box.x1 - box.x0, box.y1 - box.y0, 2 * r, st === 'liquid' ? 'liquid' : 'gas', (o.seed || 3) + 7);
-      ps.forEach((q, i) => { const p = pos[i] || [rnd() * (box.x1 - box.x0), rnd() * (box.y1 - box.y0)]; q.x = box.x0 + p[0]; q.y = box.y0 + p[1]; });
-      if (st === 'gas') ps.forEach(q => { const a = rnd() * 6.283, v = speed(); q.vx = Math.cos(a) * v; q.vy = Math.sin(a) * v; });
-      else ps.forEach(q => { q.vx = q.vy = 0; });
-    }
+    /* how deep each site lies below the surface of the pattern (0: nothing above it, or at a side), and the sites from the
+       surface inwards: the top row first, then the sides */
+    const depth = ps.map((_, i) => { const c = i % cols; return Math.min(Math.floor((n - 1 - i) / cols), c, cols - 1 - c); });
+    const SURFACE = ps.map((_, i) => i).sort((i, j) => depth[i] - depth[j] || Math.floor(j / cols) - Math.floor(i / cols) || Math.abs(j % cols - (cols - 1) / 2) - Math.abs(i % cols - (cols - 1) / 2));
+    const W = box.x1 - box.x0, sc = W / 360;
     /* Slow motion (Daniel, 25 Oct 2026: gas particles "moving so fast" were unnerving). Real gas particles move at hundreds
        of metres every second, which no picture can show, so every picture is slowed down, by the same amount for every
        box: speeds scale with its width, so a small lens is as calm as the big box (a gas particle crosses its box in about
        two seconds). Hotter is still faster, and a gas is still faster than a liquid. */
-    const W = box.x1 - box.x0, sc = W / 360;
     const speed = () => W * (.2 + .36 * T);
+    const held = q => q.ph === 's' || !!q.mv;            /* fixed in the pattern, or on its way into it */
+    function place(st) {
+      events = [];
+      const ph = st.charAt(0);
+      ps.forEach((q, i) => { q.ph = ph; q.mv = null; q.site = i; });
+      if (st === 'solid') { Ts = T; const s = sites().out; ps.forEach((q, i) => { q.x = s[i][0]; q.y = s[i][1]; q.vx = q.vy = 0; q.a = o.kind === 'H2O' ? (i % 2 ? 30 : -30) : q.a; }); return; }
+      const pos = D.spots(n, box.x1 - box.x0, box.y1 - box.y0, 2 * r * (1 + (st === 'liquid' ? LGAP : 0)), st === 'liquid' ? 'liquid' : 'gas', (o.seed || 3) + 7);
+      ps.forEach((q, i) => { const p = pos[i] || [rnd() * (box.x1 - box.x0), rnd() * (box.y1 - box.y0)]; q.x = box.x0 + p[0]; q.y = box.y0 + p[1]; });
+      if (st === 'gas') ps.forEach(q => { const a = rnd() * 6.283, v = speed(); q.vx = Math.cos(a) * v; q.vy = Math.sin(a) * v; });
+      else ps.forEach(q => { q.vx = q.vy = 0; });
+    }
+    /* one particle changes its state: leaving the pattern gently as a liquid (never a burst), flying off as a gas, or
+       slowing down into the liquid */
+    function go(q, ph) {
+      if (ph === 'l' && q.ph === 's') { q.vx = (rnd() - .5) * 50 * sc; q.vy = (rnd() - .5) * 20 * sc; q.va = (rnd() - .5) * 200; }
+      else if (ph === 'g') { const a = -Math.PI / 2 + (rnd() - .5) * 2.4, v = speed(); q.vx = Math.cos(a) * v; q.vy = Math.sin(a) * v; q.va = (rnd() - .5) * 120; }
+      else if (ph === 'l') { q.vx *= .4; q.vy *= .4; }
+      q.ph = ph;
+    }
+    const LV = { s: 0, l: 1, g: 2 };
+    const now = q => q.mv ? 's' : q.ph;
+    function mix(a, b, f, ms) {
+      const target = Math.round(Math.max(0, Math.min(1, f)) * n);
+      const count = () => ps.filter(q => now(q) === b).length + events.filter(e => e.to === b).length - events.filter(e => e.from === b).length;
+      /* a press the other way first takes back what the last one had still to do */
+      if (count() > target) events = events.filter(e => e.to !== b); else if (count() < target) events = events.filter(e => e.from !== b);
+      let k = count();
+      if (k === target) return;
+      const busy = new Set(events.map(e => e.q).filter(Boolean)), taken = new Set(events.map(e => e.site).filter(x => x != null));
+      const add = [];
+      if (k < target) {                                 /* a → b */
+        let list;
+        if (a === 's') list = SURFACE.map(i => ps.find(q => held(q) && q.site === i && !busy.has(q))).filter(Boolean);
+        else list = ps.filter(q => q.ph === a && !q.mv && !busy.has(q)).sort((p, q) => a === 'l' ? p.y - q.y : 0);
+        list.slice(0, target - k).forEach(q => add.push({ q, from: a, to: b }));
+      } else if (a === 's') {                           /* b → the pattern: the free sites, deepest first */
+        const used = new Set(ps.filter(held).map(q => q.site).concat([...taken]));
+        SURFACE.slice().reverse().filter(i => !used.has(i)).slice(0, k - target).forEach(site => add.push({ site, from: b, to: 's' }));
+      } else {                                          /* gas → liquid: the lowest first */
+        ps.filter(q => q.ph === b && !busy.has(q)).sort((p, q) => q.y - p.y).slice(0, k - target).forEach(q => add.push({ q, from: b, to: a }));
+      }
+      const start = Math.max(t, ...events.map(e => e.at)), gap = (ms == null ? 900 : ms) / 1000 / Math.max(1, add.length);
+      add.forEach((e, i) => { e.at = start + gap * (i + .5); events.push(e); });
+    }
+    function toState(st, ms) {
+      const to = st.charAt(0), free = ps.filter(q => !q.mv), from = free.length ? free[0].ph : 's';
+      if (from === to) return;
+      const up = LV[from] < LV[to];
+      mix(up ? from : to, up ? to : from, up ? 1 : 0, ms == null ? 1500 : ms);
+    }
     function walls(q) {
       const top = box.y0 + r, bot = box.y1 - r, lft = box.x0 + r, rgt = box.x1 - r;
       if (q.x < lft) { q.x = lft; q.vx = Math.abs(q.vx); } if (q.x > rgt) { q.x = rgt; q.vx = -Math.abs(q.vx); }
-      if (q.y < top) { q.y = top; q.vy = Math.abs(q.vy); } if (q.y > bot) { q.y = bot; q.vy = -Math.abs(q.vy) * (state === 'gas' ? 1 : .3); }
+      if (q.y < top) { q.y = top; q.vy = Math.abs(q.vy); } if (q.y > bot) { q.y = bot; q.vy = -Math.abs(q.vy) * (q.ph === 'g' ? 1 : .3); }
     }
-    function collide(elastic, h) {
-      for (let i = 0; i < ps.length; i++) for (let j = i + 1; j < ps.length; j++) {
-        const a = ps[i], b = ps[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || .01, m = 2 * r;
+    /* particles never overlap: two particles of the liquid keep at least their small gap; a particle held in the pattern
+       does not move when another meets it */
+    function collide() {
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+        const A = ps[i], B = ps[j], fa = held(A), fb = held(B);
+        if (fa && fb) continue;
+        const dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || .01, m = 2 * r * (A.ph === 'l' && B.ph === 'l' ? 1 + LGAP : 1);
         if (d >= m) continue;
-        const nx = dx / d, ny = dy / d, push = (m - d) / 2;
-        a.x -= nx * push; a.y -= ny * push; b.x += nx * push; b.y += ny * push;
-        const rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
-        if (rv < 0) { const k = elastic ? 1 : .55; a.vx += nx * rv * k; a.vy += ny * rv * k; b.vx -= nx * rv * k; b.vy -= ny * rv * k; }
+        const nx = dx / d, ny = dy / d, over = m - d, el = A.ph === 'g' || B.ph === 'g' ? 1 : .55;
+        if (fa) { B.x += nx * over; B.y += ny * over; } else if (fb) { A.x -= nx * over; A.y -= ny * over; }
+        else { A.x -= nx * over / 2; A.y -= ny * over / 2; B.x += nx * over / 2; B.y += ny * over / 2; }
+        const rv = (B.vx - A.vx) * nx + (B.vy - A.vy) * ny;
+        if (rv >= 0) continue;
+        if (fa) { B.vx -= nx * rv * (1 + el); B.vy -= ny * rv * (1 + el); }
+        else if (fb) { A.vx += nx * rv * (1 + el); A.vy += ny * rv * (1 + el); }
+        else { A.vx += nx * rv * el; A.vy += ny * rv * el; B.vx -= nx * rv * el; B.vy -= ny * rv * el; }
       }
     }
     function step(dt) {
       t += dt;
-      if (morph) {                                  /* moving into a regular pattern (freezing, deposition) */
-        morph.t = Math.min(1, morph.t + dt / morph.dur);
-        const e = morph.t * morph.t * (3 - 2 * morph.t);
-        ps.forEach((q, i) => { q.x = morph.from[i][0] + (morph.to[i][0] - morph.from[i][0]) * e; q.y = morph.from[i][1] + (morph.to[i][1] - morph.from[i][1]) * e; });
-        if (morph.t >= 1) { morph = null; }
-        return;
+      Ts += (T - Ts) * Math.min(1, dt * 5);
+      const S0 = sites().out;
+      /* the changes whose time has come: a particle leaves, or the free particle nearest a site moves into it */
+      events = events.filter(e => {
+        if (e.at > t) return true;
+        if (e.site == null) { go(e.q, e.to); return false; }
+        const busy = new Set(events.map(x => x.q).filter(Boolean));
+        let best = null, bd = Infinity;
+        ps.forEach(q => { if (q.ph !== e.from || q.mv || busy.has(q)) return; const d = Math.hypot(q.x - S0[e.site][0], q.y - S0[e.site][1]); if (d < bd) { bd = d; best = q; } });
+        if (best) { best.site = e.site; best.mv = { fx: best.x, fy: best.y, t: 0, dur: .9 }; best.vx = best.vy = 0; }
+        return false;
+      });
+      ps.forEach(q => {
+        if (!q.mv) return;
+        q.mv.t = Math.min(1, q.mv.t + dt / q.mv.dur);
+        const e = q.mv.t * q.mv.t * (3 - 2 * q.mv.t), [sx, sy] = S0[q.site];
+        q.x = q.mv.fx + (sx - q.mv.fx) * e; q.y = q.mv.fy + (sy - q.mv.fy) * e;
+        if (q.mv.t >= 1) { q.mv = null; q.ph = 's'; if (o.kind === 'H2O') q.a = q.site % 2 ? 30 : -30; }
+      });
+      /* the pattern: each particle vibrates about its own site, more when hotter */
+      const amp = (.8 + 1.6 * LT(T)) * r / 16, w = 5 + 6 * LT(T);
+      ps.forEach(q => { if (q.ph !== 's' || q.mv) return; const [sx, sy] = S0[q.site]; q.x = sx + amp * Math.sin(w * t + q.p1); q.y = sy + amp * Math.cos(w * 1.13 * t + q.p2); });
+      const free = ps.filter(q => !held(q));
+      if (!free.length) return;
+      /* a liquid fills the bottom of its container with a level top (the band its particles would fill, with a little
+         room to spare: their area ÷ how tightly a liquid packs ÷ the width), while no part of it is still solid */
+      const nl = free.filter(q => q.ph === 'l').length, solid = ps.filter(held), solidLeft = solid.length > 0;
+      const area = nl * Math.PI * r * r / (.72 / ((1 + LGAP) * (1 + LGAP)));
+      /* the level of the liquid: with part still solid, the liquid fills the room beside the solid first; while the solid
+         sticks out above that level, liquid on top of it runs off its edges, and once the liquid is deeper than the solid,
+         it lies over it in a level layer (never stacked against a wall) */
+      let band = box.y1 - area / W, bl = 0, br = 0, bt = 0, over = true;
+      if (solidLeft) {
+        bl = Math.min(...solid.map(q => q.x)) - r; br = Math.max(...solid.map(q => q.x)) + r; bt = Math.min(...solid.map(q => q.y)) - r;
+        const side = Math.max(2 * r, W - (br - bl)), low = side * (box.y1 - bt);
+        over = area > low;
+        band = over ? bt - (area - low) / W : box.y1 - area / side;
       }
-      if (state === 'solid') {
-        const amp = (.8 + 1.6 * T) * r / 16, w = 5 + 6 * T, s = sites().out;
-        ps.forEach((q, i) => { q.sx = s[i][0]; q.sy = s[i][1]; q.x = q.sx + amp * Math.sin(w * t + q.p1); q.y = q.sy + amp * Math.cos(w * 1.13 * t + q.p2); });
-        return;
-      }
-      const n = 3, h = dt / n;
-      for (let k = 0; k < n; k++) {
-        if (state === 'liquid') {
-          const kick = (900 + 1300 * T) * sc * .7;
-          /* a liquid fills the bottom of its container with a level top: the band its particles would fill, with a
-             little room to spare, so they touch, slide past each other and never settle into neat rows */
-          const band = box.y1 - ps.length * Math.PI * r * r / .72 / (box.x1 - box.x0);   /* the height the liquid fills: its particles' area ÷ 0.72 (how tightly a liquid packs) ÷ the width */
-          ps.forEach(q => { q.vx += (rnd() - .5) * kick * h * 4; q.vy += (rnd() - .5) * kick * h * 4 + 160 * sc * h; if (q.y < band + r) q.vy += (band + r - q.y) * 60 * h; q.vx *= 1 - 2.2 * h; q.vy *= 1 - 2.2 * h; q.va += (rnd() - .5) * 1400 * h; q.va *= 1 - 2.5 * h; });
-        } else {
-          const v = speed();
-          ps.forEach(q => { const sp = Math.hypot(q.vx, q.vy) || 1; const f = 1 + (v / sp - 1) * Math.min(1, 2 * h); q.vx *= f; q.vy *= f; q.va = (q.va || 60) ; });
-        }
-        ps.forEach(q => { q.x += q.vx * h; q.y += q.vy * h; q.a += q.va * h; });
-        collide(state === 'gas', h); collide(state === 'gas'); collide(state === 'gas');
-        ps.forEach(walls);
+      const kick = (900 + 1300 * T) * sc * .7, N = 3, h = dt / N;
+      for (let k = 0; k < N; k++) {
+        free.forEach(q => {
+          if (q.ph === 'l') {
+            q.vx += (rnd() - .5) * kick * h * 4; q.vy += (rnd() - .5) * kick * h * 4 + 160 * sc * h;
+            const onTop = solidLeft && q.y < bt && q.x > bl && q.x < br;
+            if (onTop && !over) q.vx += (q.x < (bl + br) / 2 ? -1 : 1) * 260 * sc * h;
+            else if (q.y < band + r) q.vy += (band + r - q.y) * 60 * h;
+            q.vx *= 1 - 2.2 * h; q.vy *= 1 - 2.2 * h; q.va += (rnd() - .5) * 1400 * h; q.va *= 1 - 2.5 * h;
+          } else {
+            const v = speed(), sp = Math.hypot(q.vx, q.vy) || 1, f = 1 + (v / sp - 1) * Math.min(1, 2 * h);
+            q.vx *= f; q.vy *= f; q.va = q.va || 60;
+          }
+          q.x += q.vx * h; q.y += q.vy * h; q.a += q.va * h;
+        });
+        collide(); collide(); collide();
+        free.forEach(walls);
       }
     }
     function draw() {
       ps.forEach(q => q.node.setAttribute('transform', `translate(${q.x.toFixed(1)} ${q.y.toFixed(1)}) rotate(${(q.a % 360).toFixed(0)})`));
       if (!bonds) return;
       while (bonds.firstChild) bonds.removeChild(bonds.firstChild);
-      if (state === 'gas' && !morph) return;
-      /* a hydrogen bond: from a hydrogen atom of one molecule to the oxygen atom of a neighbour, each hydrogen at most once */
-      const R = r * .98, used = new Set();
-      ps.forEach((a, i) => {
+      /* a hydrogen bond: from a hydrogen atom of one molecule to the oxygen atom of a neighbour, each hydrogen at most once;
+         molecules of the gas have none */
+      const R = r * .98, used = new Set(), near = ps.filter(q => q.ph !== 'g' || q.mv);
+      near.forEach((a, i) => {
         const ar = a.a * Math.PI / 180, hs = [[-.72 * R, .58 * R], [.72 * R, .58 * R]].map(([x, y]) => [a.x + x * Math.cos(ar) - y * Math.sin(ar), a.y + x * Math.sin(ar) + y * Math.cos(ar)]);
         hs.forEach((hp, hi) => {
           let best = null, bd = R * 1.9;
-          ps.forEach((b, j) => { if (j === i) return; const d = Math.hypot(b.x - hp[0], b.y - hp[1]); if (d < bd) { bd = d; best = b; } });
+          near.forEach((b2, j) => { if (j === i) return; const d = Math.hypot(b2.x - hp[0], b2.y - hp[1]); if (d < bd) { bd = d; best = b2; } });
           if (best && !used.has(i + ':' + hi)) { used.add(i + ':' + hi); S('line', { x1: hp[0].toFixed(1), y1: hp[1].toFixed(1), x2: best.x.toFixed(1), y2: best.y.toFixed(1), stroke: 'var(--ink3)', 'stroke-width': 1.6, 'stroke-dasharray': '3 3', opacity: .85 }, bonds); }
         });
       });
     }
-    function toState(st, dur) {
-      if (st === 'solid') {
-        const from = ps.map(q => [q.x, q.y]);
-        const s = sites().out.slice();
-        /* each particle to a near place in the pattern: both lists in the same order, bottom row first */
-        const ord = ps.map((q, i) => i).sort((i, j) => (ps[j].y - ps[i].y) || (ps[i].x - ps[j].x));
-        const sord = s.map((p, i) => i).sort((i, j) => (s[j][1] - s[i][1]) || (s[i][0] - s[j][0]));
-        const to = new Array(ps.length);
-        ord.forEach((pi, k) => { to[pi] = s[sord[k]]; });
-        state = 'solid';
-        morph = { from, to, t: 0, dur: (dur || 1500) / 1000 };
-        ps.forEach(q => { q.vx = q.vy = 0; });
-        return;
-      }
-      if (st === 'gas' && state !== 'gas') ps.forEach(q => { const a = -Math.PI / 2 + (rnd() - .5) * 2.4, v = speed(); q.vx = Math.cos(a) * v; q.vy = Math.sin(a) * v; });
-      if (st === 'liquid' && state === 'gas') ps.forEach(q => { q.vx *= .4; q.vy *= .4; });
-      if (st === 'liquid' && state === 'solid') ps.forEach(q => { q.vx = (rnd() - .5) * 320; q.vy = (rnd() - .5) * 220; q.va = (rnd() - .5) * 400; });   /* the pattern breaks up */
-      state = st; morph = null;
-    }
-    place(state);
+    place(o.state || 'solid');
     return {
-      ps, layer, box, step, draw, toState,
-      set(st) { state = st; morph = null; place(st); },
-      state: () => state, busy: () => !!morph,
+      ps, layer, box, step, draw, toState, mix, sites,
+      set(st) { place(st); },
+      state: () => { if (events.length || ps.some(q => q.mv)) return 'mixed'; const p = ps[0].ph; return ps.every(q => q.ph === p) ? { s: 'solid', l: 'liquid', g: 'gas' }[p] : 'mixed'; },
+      busy: () => events.length > 0 || ps.some(q => q.mv),
+      count: ph => ps.filter(q => now(q) === ph).length,
+      depth: i => depth[i],
       temp(v) { if (v != null) T = v; return T; },
       top(y) { box.y0 = y; ps.forEach(q => { if (q.y < y + r) q.y = y + r; }); },
-      highest() { return Math.min.apply(null, ps.map(q => q.y)) - r; },
-      sites
+      highest() { return Math.min.apply(null, ps.map(q => q.y)) - r; }
     };
   }
   window.PSIM = PSim;
@@ -148,18 +225,29 @@
          that never melted however hot it got, and three buttons that changed the state while the thermometer stood
          still, made each state look like a different substance). Below its melting point it is a solid; between its
          melting point and its boiling point, a liquid; above its boiling point, a gas. 🔥 Heat and ❄ Cool move the
-         temperature one step; reaching the melting point melts it, reaching the boiling point boils it, and the
-         temperature stays there while the state changes. Solid, Liquid and Gas take it to a temperature in that state.
-         The thermometer has no numbers: each substance has its own melting point and boiling point. */
+         temperature one step. At the melting point three presses melt it, a third at a time, the particles at the surface
+         first, while the thermometer stays at the melting point; boiling, freezing and condensing work the same way (a
+         change of state takes energy at one temperature; Daniel, 25 Oct 2026: a solid that melted in one burst "makes
+         absolute no sense"). Solid, Liquid and Gas take it to a temperature in that state; the thermometer has no numbers.
+         It starts at the coldest, and the dashed line keeps the solid's size there, on the outer edges of its particles:
+         its size before heating, shown from the first press of Heat (Daniel, the same day).
+         The particles of the coldest solid touch; heated, they vibrate more and move a little apart (a tenth of their
+         width at the melting point: far more than in a real solid, so that it shows, and never far apart like a gas). The
+         particles of the liquid keep a little more room than those of the hot solid, so melting never packs them closer
+         together: for most substances the liquid takes up a little more space than the solid (Daniel: the gaps must not
+         shrink when it melts). */
       const g = k.g, X0 = 60, X1 = 420, YB = 440, TOP = 128;
-      const MP = .34, BP = .68, STEP = .07, AT = { solid: .1, liquid: .51, gas: .86 };
-      let pistonY = TOP, target = TOP, squeezed = false, T = AT.solid, st = 'solid', t0 = AT.solid / MP;
-      const inner = () => st === 'solid' ? T / MP : T;            /* the box's own scale: a solid from cold to its melting point */
+      const MP = .34, BP = .68, STEP = .07, AT = { solid: 0, liquid: .51, gas: .86 };
+      /* st: solid · sl (part solid, part liquid: melting or freezing) · liquid · lg (part liquid, part gas) · gas;
+         f: the part in the state with more energy while it changes (a third at each press) */
+      let pistonY = TOP, target = TOP, squeezed = false, T = AT.solid, st = 'solid', t0 = T, f = 0;
       S('text', { class: 'note', x: X0, y: 466 }, g, 'Each circle is one particle of one substance. It is not water.');
       const layer = S('g', null, g);
       const outline = S('rect', { x: 0, y: 0, width: 0, height: 0, fill: 'none', stroke: '#C2410C', 'stroke-width': 3, 'stroke-dasharray': '8 6', rx: 4, opacity: 0 }, g);
       const outlineT = S('text', { class: 'lbl-sm', x: 0, y: 0, 'text-anchor': 'middle', fill: '#C2410C', opacity: 0 }, g, 'size before heating');
-      const sim = PSim({ g: layer, x0: X0 + 3, x1: X1 - 3, y0: TOP + 3, y1: YB - 3, n: 32, r: 16, cols: 8, state: 'solid', T: inner(), seed: 5, grow: .3 });   /* expansion exaggerated so that it shows (Daniel, 25 Oct 2026: the dashed line looked as if it grew with the solid) */
+      const sim = PSim({ g: layer, x0: X0 + 3, x1: X1 - 3, y0: TOP + 3, y1: YB - 3, n: 32, r: 16, cols: 8, state: 'solid', T, seed: 5,
+                         gap0: .02, grow: .08, liqGap: .13, solidT: v => Math.min(1, v / MP) });
+      k.svg.sim = sim;                                  /* read by tools/particles-check.mjs */
       S('path', { d: `M${X0},${TOP - 50} L${X0},${YB} L${X1},${YB} L${X1},${TOP - 50}`, fill: 'none', stroke: 'var(--glass)', 'stroke-width': 5, 'stroke-linejoin': 'round' }, g);
       const pis = S('g', null, g);
       S('rect', { x: X0 + 4, y: -14, width: X1 - X0 - 8, height: 14, rx: 3, fill: 'var(--metal-2)', stroke: 'var(--bench-edge)', 'stroke-width': 1.5 }, pis);
@@ -173,45 +261,50 @@
       });
       const SAY = {
         solid: '<b>Solid.</b> Below its melting point, the substance is a solid. The particles touch, in a regular pattern, and vibrate in one place. So a solid keeps its shape and its volume.',
-        liquid: '<b>Liquid.</b> Between its melting point and its boiling point, the substance is a liquid. The particles touch, with no pattern, and slide past each other. So a liquid flows and takes the shape of its container, but keeps its volume.',
+        liquid: '<b>Liquid.</b> Between its melting point and its boiling point, the substance is a liquid. The particles are close together, with no pattern, and slide past each other. So a liquid flows and takes the shape of its container, but keeps its volume.',
         gas: '<b>Gas.</b> Above its boiling point, the substance is a gas. The particles are far apart and move fast in all directions, so a gas fills its whole container. (Slow motion: in air, the particles move at about 500 metres every second.)'
       };
-      const CHANGE = {
-        melt: '<b>Melting.</b> At its melting point, the particles have enough energy to leave their fixed places: the solid becomes a liquid. While it melts, the temperature stays at the melting point.',
-        boil: '<b>Boiling.</b> At its boiling point, the particles have enough energy to escape from the liquid and move far apart: it becomes a gas. While it boils, the temperature stays at the boiling point.',
-        condense: '<b>Condensing.</b> At the boiling point, the particles lose energy and come close together again: the gas becomes a liquid.',
-        freeze: '<b>Freezing.</b> At the melting point (also its freezing point), the particles lose energy and become fixed in a regular pattern: the liquid becomes a solid.'
-      };
-      const EXPAND = '<b>Heated:</b> the particles vibrate more and the gaps between them get bigger, so the solid expands. The orange dashed line shows its size before heating. <u>The particles do not get bigger.</u>';
+      /* a change of state, a third at each press: [first, second, last] */
+      const MELT = ['<b>Melting.</b> At the melting point, the particles at the surface leave their fixed places first and slide past each other. While it melts, the temperature stays at the melting point.',
+        '<b>Still melting.</b> More particles leave the regular pattern. The temperature still stays at the melting point.',
+        '<b>All melted.</b> The particles are close together, a little further apart than in the solid, with no pattern. Only now can heating make it hotter.'];
+      const FREEZE = ['<b>Freezing.</b> At the freezing point (the same as the melting point), particles lose energy and become fixed in a regular pattern. While it freezes, the temperature stays there.',
+        '<b>Still freezing.</b> More particles become fixed in the pattern, at the same temperature.',
+        '<b>All frozen.</b> It is all a solid again. Only now can cooling make it colder.'];
+      const BOIL = ['<b>Boiling.</b> At the boiling point, particles escape from the liquid and move far apart: a gas. While it boils, the temperature stays at the boiling point.',
+        '<b>Still boiling.</b> More particles escape from the liquid. The temperature still stays at the boiling point.',
+        '<b>All boiled.</b> It is all a gas. Only now can heating make it hotter.'];
+      const COND = ['<b>Condensing.</b> At the boiling point, gas particles lose energy and come close together again: a liquid. While it condenses, the temperature stays there.',
+        '<b>Still condensing.</b> More particles join the liquid, at the same temperature.',
+        '<b>All condensed.</b> It is all a liquid again. Only now can cooling make it colder.'];
+      const EXPAND = '<b>Heated:</b> the particles vibrate more and move a little further apart, so the solid expands (a real solid expands much less). The dashed line shows its size before heating. <u>The particles do not get bigger.</u>';
       const DO = '<p><mark class="do">Press 🔥 Heat again and again, then ❄ Cool.</mark></p>';
       let lead = null;                             /* what the last press did, in place of the state's description */
-      const say = () => k.say(`<p>${lead || SAY[st]}</p>` + DO);
-      function setT(v) { T = Math.max(0, Math.min(1, Math.round(v * 1000) / 1000)); sim.temp(inner()); }
+      const say = () => k.say(`<p>${lead || SAY[st] || ''}</p>` + DO);
+      function setT(v) { T = Math.max(0, Math.min(1, Math.round(v * 1000) / 1000)); sim.temp(T); }
       function release() { if (squeezed) { squeezed = false; target = TOP; sqz.set('Compress ⬇'); } }
-      function change(to, word) {
-        st = to; release(); sim.temp(inner());
-        sim.toState(to, to === 'solid' ? 1500 : undefined);
-        if (to === 'solid') t0 = inner();
-        lead = CHANGE[word];
-      }
       const sb = {};
       [['solid', 'Solid', 105], ['liquid', 'Liquid', 158], ['gas', 'Gas', 211]].forEach(([s, t, y]) => {
-        sb[s] = k.btn(t, 640, y, () => { st = s; T = AT[s]; release(); sim.temp(inner()); sim.set(s); t0 = inner(); lead = null; paint(); say(); }, { cls: 'ghost' });
+        sb[s] = k.btn(t, 640, y, () => { st = s; f = 0; T = AT[s]; release(); sim.temp(T); sim.set(s); t0 = T; lead = null; paint(); say(); }, { cls: 'ghost' });
       });
       const heat = k.btn('🔥 Heat', 690, 318, () => {
         lead = null;
-        if (st === 'solid' && T + STEP >= MP - 1e-6) { setT(MP); change('liquid', 'melt'); }
-        else if (st === 'liquid' && T + STEP >= BP - 1e-6) { setT(BP); change('gas', 'boil'); }
+        if (st === 'solid' && T + STEP >= MP - 1e-6) { release(); setT(MP); st = 'sl'; f = 1 / 3; sim.mix('s', 'l', f); lead = MELT[0]; }
+        else if (st === 'sl') { f = Math.min(1, f + 1 / 3); sim.mix('s', 'l', f); if (f > .99) { st = 'liquid'; lead = MELT[2]; } else lead = MELT[f > .5 ? 1 : 0]; }
+        else if (st === 'liquid' && T + STEP >= BP - 1e-6) { release(); setT(BP); st = 'lg'; f = 1 / 3; sim.mix('l', 'g', f); lead = BOIL[0]; }
+        else if (st === 'lg') { f = Math.min(1, f + 1 / 3); sim.mix('l', 'g', f); if (f > .99) { st = 'gas'; lead = BOIL[2]; } else lead = BOIL[f > .5 ? 1 : 0]; }
         else { setT(T + STEP); lead = st === 'solid' ? EXPAND : '<b>Heated:</b> the particles gain energy and move faster.'; }
         say(); paint();
       }, { cls: 'warm' });
       const cool = k.btn('❄ Cool', 690, 392, () => {
         lead = null;
-        if (st === 'gas' && T - STEP <= BP + 1e-6) { setT(BP); change('liquid', 'condense'); }
-        else if (st === 'liquid' && T - STEP <= MP + 1e-6) { setT(MP); change('solid', 'freeze'); }
+        if (st === 'gas' && T - STEP <= BP + 1e-6) { release(); setT(BP); st = 'lg'; f = 2 / 3; sim.mix('l', 'g', f); lead = COND[0]; }
+        else if (st === 'lg') { f = Math.max(0, f - 1 / 3); sim.mix('l', 'g', f); if (f < .01) { st = 'liquid'; lead = COND[2]; } else lead = COND[f < .5 ? 1 : 0]; }
+        else if (st === 'liquid' && T - STEP <= MP + 1e-6) { release(); setT(MP); st = 'sl'; f = 2 / 3; sim.mix('s', 'l', f); lead = FREEZE[0]; }
+        else if (st === 'sl') { f = Math.max(0, f - 1 / 3); sim.mix('s', 'l', f); if (f < .01) { st = 'solid'; t0 = T; lead = FREEZE[2]; } else lead = FREEZE[f < .5 ? 1 : 0]; }
         else {
           setT(T - STEP);
-          if (st === 'solid') { t0 = Math.min(t0, inner()); lead = T > .005 ? '<b>Cooled:</b> the particles vibrate less and come closer: the solid contracts.' : '<b>Cooled:</b> the particles vibrate as little as they can here.'; }
+          if (st === 'solid') { t0 = Math.min(t0, T); lead = T > .005 ? '<b>Cooled:</b> the particles vibrate less and come a little closer: the solid contracts.' : '<b>Cooled:</b> the coldest this picture shows. The particles touch, and vibrate only a little.'; }
           else lead = '<b>Cooled:</b> the particles lose energy and move more slowly.';
         }
         say(); paint();
@@ -221,23 +314,22 @@
         if (squeezed) { squeezed = false; target = TOP; sqz.set('Compress ⬇'); say(); return; }
         squeezed = true; sqz.set('Release ⬆');
         if (st === 'gas') { target = TOP + 150; lead = '<b>Compressed:</b> the gas now fills a smaller volume. There was empty space between the particles, so they could be pushed closer together. You can compress a gas.'; }
-        else { target = Math.max(TOP, sim.highest() - 2); lead = '<b>The lid stops.</b> The particles already touch, so there is no empty space between them. You cannot compress a solid or a liquid.'; }
+        else { target = Math.max(TOP, sim.highest() - 2); lead = '<b>The lid stops.</b> The particles are already close together, so there is almost no empty space between them. You cannot compress a solid or a liquid.'; }
         say();
       }, { cls: 'r' });
       function paint() {
         Object.keys(sb).forEach(s => sb[s].on(s === st));
-        heat.disabled = T >= 1 - 1e-6; cool.disabled = T <= 1e-6;
+        heat.disabled = st === 'gas' && T >= 1 - 1e-6; cool.disabled = st === 'solid' && T <= 1e-6;
+        sqz.disabled = st === 'sl' || st === 'lg';          /* while it changes state, nothing to compress */
         th.set(T);
-        /* the solid's size before heating (its coldest since it became a solid), as a dashed line, once it is warmer */
-        const warmer = st === 'solid' && inner() > t0 + .02;
+        /* the solid's size at its coldest since it became a solid (at the start, the coldest of all), on the outer edges of
+           its particles, once it is warmer: its size before heating. The label stays above the hottest solid's top, so the
+           solid never covers it and it never moves with the solid. */
+        const warmer = st === 'solid' && T > t0 + .005;
         if (warmer) {
-          const s0 = sim.sites(t0);
-          outline.setAttribute('x', (X0 + X1) / 2 - s0.w / 2 - 3); outline.setAttribute('y', YB - 3 - s0.h - 3);
-          outline.setAttribute('width', s0.w + 6); outline.setAttribute('height', s0.h + 3);
-          /* the label belongs to the dashed line (the size BEFORE heating), so it stays where that size was, above the
-             hottest solid's top, never moving with the solid */
-          outlineT.setAttribute('x', (X0 + X1) / 2); outlineT.setAttribute('y', YB - 3 - sim.sites(1).h - 12);
-          outlineT.setAttribute('fill', '#C2410C');
+          const e = sim.sites(t0).edge;
+          outline.setAttribute('x', e.l); outline.setAttribute('y', e.t); outline.setAttribute('width', e.r - e.l); outline.setAttribute('height', e.b - e.t);
+          outlineT.setAttribute('x', (X0 + X1) / 2); outlineT.setAttribute('y', sim.sites(MP).edge.t - 12);
         }
         outline.setAttribute('opacity', warmer ? 1 : 0); outlineT.setAttribute('opacity', warmer ? 1 : 0);
       }
@@ -346,6 +438,7 @@
       S('circle', { class: 'lens-ring', cx: LX, cy: LY, r: LR }, g);
       const inner = S('g', { 'clip-path': `url(#${cid})` }, g);
       const lens = PSim({ g: inner, x0: LX - 86, x1: LX + 86, y0: LY - 84, y1: LY + 74, n: 15, r: 15, cols: 5, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8 });
+      k.svg.lens = lens;                                /* read by tools/particles-check.mjs */
       const lt = S('text', { class: 'ttl', x: LX, y: LY + LR + 28, 'text-anchor': 'middle' }, g, 'Ice');
       S('text', { class: 'note', x: LX, y: LY + LR + 50, 'text-anchor': 'middle' }, g, 'water molecules · - - - hydrogen bonds');
       const rec = S('g', null, g);
@@ -376,23 +469,31 @@
       function heatStep() {
         heatOn = true;
         if (phase === 'ice' && temp < 0) temp += 10;
-        else if (phase === 'ice') { phase = 'melting'; frac = 0; lens.temp(.4); lens.toState('liquid'); seen.melt = 1; frac = .34; }
-        else if (phase === 'melting' || phase === 'freezing') { if (phase === 'freezing') { phase = 'melting'; frac = 1 - frac; lens.toState('liquid'); } frac += .33; if (frac > .99) { phase = 'water'; frac = 0; } }
+        else if (phase === 'ice') { phase = 'melting'; seen.melt = 1; frac = .34; }
+        else if (phase === 'melting' || phase === 'freezing') { if (phase === 'freezing') { phase = 'melting'; frac = 1 - frac; } frac += .33; if (frac > .99) { phase = 'water'; frac = 0; } }
         else if (phase === 'water' && temp < 100) temp = Math.min(100, temp + 20);
         else if (phase === 'water') { phase = 'boiling'; frac = .34; seen.boil = 1; }
         else if (phase === 'boiling') frac = Math.min(1, frac + .33);
         lens.temp(phase === 'ice' ? .1 + (temp + 20) / 60 : phase === 'boiling' ? 1 : .35 + temp / 250);
-        scene(); say(); btnState();
+        lensSync(); scene(); say(); btnState();
       }
       function coolStep() {
         heatOn = false;
         if (phase === 'boiling') { phase = 'water'; frac = 0; }
         else if (phase === 'water' && temp > 0) temp = Math.max(0, temp - 20);
-        else if (phase === 'water') { phase = 'freezing'; frac = .34; seen.freeze = 1; block = true; lens.temp(.15); lens.toState('solid', 1800); }
-        else if (phase === 'freezing' || phase === 'melting') { if (phase === 'melting') { phase = 'freezing'; frac = 1 - frac; seen.freeze = 1; block = true; lens.temp(.15); lens.toState('solid', 1800); } frac += .33; if (frac > .99) { phase = 'ice'; frac = 0; } }
+        else if (phase === 'water') { phase = 'freezing'; frac = .34; seen.freeze = 1; block = true; }
+        else if (phase === 'freezing' || phase === 'melting') { if (phase === 'melting') { phase = 'freezing'; frac = 1 - frac; seen.freeze = 1; block = true; } frac += .33; if (frac > .99) { phase = 'ice'; frac = 0; } }
         else if (phase === 'ice' && temp > -20) temp -= 10;
         lens.temp(phase === 'ice' ? .1 + (temp + 20) / 60 : phase === 'boiling' ? 1 : .35 + temp / 250);
-        scene(); say(); btnState();
+        lensSync(); scene(); say(); btnState();
+      }
+      /* the lens shows what the beaker shows (25 Oct 2026; before, the whole lens turned to water at the first press while
+         the beaker was still two thirds ice, and no molecule ever left as steam): the part of the ice melted or frozen, a
+         third at each press, and while the water boils, a few molecules escaping as a gas (about as much as the level falls) */
+      function lensSync() {
+        const L = phase === 'ice' ? 0 : phase === 'melting' ? frac : phase === 'freezing' ? 1 - frac : 1, G = phase === 'boiling' ? .25 * frac : 0;
+        if (L < 1 || lens.count('s')) lens.mix('s', 'l', L, 900);
+        if (L >= 1) lens.mix('l', 'g', G, 900);
       }
       const hb = k.btn('🔥 Heat', 560, 462, heatStep, { cls: 'warm' });
       const cb = k.btn('❄ Cool', 700, 462, coolStep, { cls: 'cold' });
