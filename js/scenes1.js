@@ -280,16 +280,20 @@
       const prog = S('g', null, g);
       /* Compress pushes the lid down with the SAME force every time (Daniel, 25 Oct 2026: a hot gas and a cold gas went down
          to the same place, Compress did nothing while it melted, and with no number nobody could compare). The picture
-         reads the volume: the container under the raised lid is 100 cm³; a solid or a liquid takes the room its particles
-         take, whatever the lid does; a gas fills the space under the lid. Pushed down, a gas takes a volume that grows with
-         its temperature (Charles's law, for a substance that boils at 350 K and is 520 K at "hot"; 58 cm³ at its boiling
-         point), so the same push compresses a hot gas less; heated while pushed, it pushes the lid up. */
-      const volT = S('text', { class: 'lbl-sm', x: X0, y: 66 }, g, '');      /* clear of the lid's handle, wherever the lid is */
+         reads what the lid measures, the volume under it (Daniel, the same night: a volume that grew with heating while
+         nothing was compressed "doesn't make any sense"): 100 cm³ while the lid is up, whatever the temperature; pushed
+         down, the lid stops on top of a solid or a liquid, or squeezes a gas to a volume that grows with its temperature
+         (Charles's law, for a substance that boils at 350 K and is 520 K at "hot"; 58 cm³ at its boiling point), so the
+         same push compresses a hot gas less; heated while pushed, a gas lifts the lid. */
+      /* the reading rides on the lid, at its right end, clear of the rod and the handle: what the lid measures */
+      S('text', { class: 'note', x: X1 - 8, y: -38, 'text-anchor': 'end' }, pis, 'volume under the lid');
+      const volT = S('text', { class: 'lbl-sm', x: X1 - 8, y: -18, 'text-anchor': 'end' }, pis, '');
       const WIN = X1 - X0 - 6, Y1 = YB - 3, K = 100 / (WIN * (Y1 - (TOP + 2)));
       const Tabs = () => 350 + Math.max(0, T - BP) / (1 - BP) * 170;
       const vols = () => { const a = sim.areas(); return { s: a.solid * K, l: a.liquid * K, g: a.gas }; };
       const pushedGas = v => v.g / 32 * 58 * Tabs() / 350;
-      const volNow = () => { const v = vols(); return v.g ? (Y1 - (pistonY + 2)) * WIN * K : v.s + v.l; };
+      const volAt = y => (Y1 - (y + 2)) * WIN * K;             /* the volume under the lid at y */
+      const volNow = () => volAt(pistonY);
       function lidTarget() {
         if (!squeezed) return TOP;
         const v = vols();
@@ -352,13 +356,14 @@
         const v = vols(), before = Math.round(volNow());
         if (squeezed) {
           squeezed = false; sqz.set('Compress ⬇');
-          lead = v.g ? '<b>Released:</b> the lid goes back up, and the gas fills the whole container again: 100 cm³.' : `<b>Released:</b> the lid goes back up. The volume is still ${before} cm³.`;
-          say(); return;
+          lead = v.g ? '<b>Released:</b> the lid goes back up, and the gas fills the whole container again: 100 cm³ under the lid.' : '<b>Released:</b> the lid goes back up: 100 cm³ under it again.';
+          say(); paint(); return;
         }
         squeezed = true; sqz.set('Release ⬆');
-        if (v.g) lead = `<b>Compressed:</b> the lid pushes with the same force each time. The gas particles had space between them, so they are pushed closer together: the volume falls from ${before} cm³ to ${Math.round(v.s + v.l + pushedGas(v))} cm³. A hotter gas pushes back harder, so it is compressed less.`;
-        else lead = `<b>The lid stops.</b> The lid pushes down with the same force, but the particles are already close together, with almost no empty space between them: the volume stays ${before} cm³. You cannot compress a solid or a liquid.`;
-        say();
+        const after = Math.round(volAt(lidTarget())), what = st === 'solid' ? 'solid' : st === 'liquid' ? 'liquid' : 'substance';
+        if (v.g) lead = `<b>Compressed:</b> the lid pushes with the same force each time. The gas particles had space between them, so they are pushed closer together: the volume falls from ${before} cm³ to ${after} cm³. A hotter gas pushes back harder, so it is compressed less.`;
+        else lead = `<b>The lid stops</b> on top of the ${what}, at ${after} cm³: it only pushed out the empty space above it. The ${what} itself is not squeezed: its particles are already close together. You cannot compress a solid or a liquid.`;
+        say(); paint();
       }, { cls: 'r' });
       function paint() {
         /* while it changes state, both states are there: both their buttons are lit (Daniel, 25 Oct 2026: it looked all
@@ -381,7 +386,8 @@
           outline.setAttribute('x', e.l); outline.setAttribute('y', e.t); outline.setAttribute('width', e.r - e.l); outline.setAttribute('height', e.b - e.t);
           outlineT.setAttribute('x', (X0 + X1) / 2); outlineT.setAttribute('y', sim.sites(MP).edge.t - 12);
         }
-        outline.setAttribute('opacity', warmer ? 1 : 0); outlineT.setAttribute('opacity', warmer ? 1 : 0);
+        /* the lid pushed down rests where the label is: the label waits until it goes up again (the dashed line stays) */
+        outline.setAttribute('opacity', warmer ? 1 : 0); outlineT.setAttribute('opacity', warmer && !squeezed ? 1 : 0);
       }
       paint(); say();
       k.loop(dt => {
@@ -391,7 +397,7 @@
         pis.setAttribute('transform', `translate(0 ${pistonY.toFixed(1)})`);
         sim.top(pistonY + 2);
         sim.step(dt); sim.draw();
-        const vt = 'Volume: ' + Math.round(volNow()) + ' cm³';
+        const vt = Math.round(volNow()) + ' cm³';
         if (volT.textContent !== vt) volT.textContent = vt;
       });
     }

@@ -10,7 +10,7 @@ about 6 or 7 minutes. Pupils can use it instead of the paper booklet.
 
 | Part | The picture to explore | The checks practise |
 |---|---|---|
-| 1 States of matter | one substance (not water) whose temperature decides its state, from the coldest: heat it until it melts, then boils, each change a third at a time at one temperature, starting at the surface; cool it back; compress it with the same push each time and read its volume (a hotter gas is compressed less) | particles and their movement, expansion and contraction (the particles do not grow), compressing a gas |
+| 1 States of matter | one substance (not water) whose temperature decides its state, from the coldest: heat it until it melts, then boils, each change a third at a time at one temperature, starting at the surface; cool it back; compress it with the same push each time and read the volume under the lid (a hotter gas is compressed less) | particles and their movement, expansion and contraction (the particles do not grow), compressing a gas |
 | 2 Changes of state | the six changes on an energy arrow, each shown in a lens; ice heated and cooled | melting, freezing, evaporating, condensing, sublimation, deposition; melting point = freezing point; physical and chemical change; the water cycle |
 | 3 Atoms and elements | inside a helium and a carbon atom; the 13 elements to know on the periodic table | protons (+), neutrons (no charge), electrons (−); symbols; metals and non-metals; states at room temperature |
 | 4 Molecules and compounds | boxes of particles; iron and sulfur, a mixture and then a compound | element, compound or mixture from a particle picture; formulae; diatomic elements; new properties of a compound; reading statements carefully |
