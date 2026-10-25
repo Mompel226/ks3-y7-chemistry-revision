@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
-<link rel="stylesheet" href="css/app.css?v=202610251750">
+<link rel="stylesheet" href="css/app.css?v=202610251939">
 <!-- Bright or dark: the reader's choice for the whole site (biology.theme), else the computer's setting. -->
 <script>(function () { try { var t = localStorage.getItem('biology.theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
 </head>
@@ -37,6 +37,7 @@
       <button role="tab" id="tab-6" aria-controls="part-6" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3h12l-1 14H5z" fill="#F4D9E6" stroke="#5C6679" stroke-width="1.3" stroke-linejoin="round"/><circle cx="8" cy="11" r="1.5" fill="#9C2A6B"/><circle cx="12" cy="9" r="1.5" fill="#9C2A6B"/><circle cx="11" cy="14" r="1.5" fill="#9C2A6B"/></svg></span><span class="lbl">Solutions</span></button>
       <button role="tab" id="tab-7" aria-controls="part-7" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14l-5.5 7v6h-3v-6z" fill="#EDE6CF" stroke="#5C6679" stroke-width="1.3" stroke-linejoin="round"/></svg></span><span class="lbl">Separating 1</span></button>
       <button role="tab" id="tab-8" aria-controls="part-8" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="2.5" width="10" height="15" rx="1" fill="#FBFBF7" stroke="#5C6679" stroke-width="1.2"/><circle cx="10" cy="6" r="1.8" fill="#E9BC34"/><circle cx="10" cy="9.5" r="1.8" fill="#D9534F"/><circle cx="10" cy="13" r="1.8" fill="#2E7FD9"/></svg></span><span class="lbl">Separating 2</span></button>
+      <button role="tab" id="tab-9" aria-controls="part-9" aria-selected="false"><span class="ic"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 2.5v14h14" fill="none" stroke="#5C6679" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.3 5.3C9 9.6 11.6 12 15.2 13" fill="none" stroke="#2E7FD9" stroke-width="1.6" stroke-linecap="round"/><path d="M5.3 4.3l2 2M7.3 4.3l-2 2M9.6 8.4l2 2M11.6 8.4l-2 2M14.2 12l2 2M16.2 12l-2 2" stroke="#E0533F" stroke-width="1.4" stroke-linecap="round"/></svg></span><span class="lbl">Graphs</span></button>
     </div>
     <button class="wbbtn" id="wbBtn" type="button" aria-expanded="false" aria-controls="wb">Word bank <span class="lang"></span></button>
   </div>
@@ -377,8 +378,24 @@
     </div>
     <div class="q" data-q="p8-write-tray" data-scene="tray"></div>
     <div class="q" data-q="p8-write-red" data-scene="chroma"></div>
+    <div class="partnav"><button class="back" type="button">← Sieve, filter, decant, magnet</button><button class="next" type="button">Graphs and tables →</button></div>
+  </section>
+
+  <!-- ============ 9 ============ -->
+  <section class="part" id="part-9" role="tabpanel" aria-labelledby="tab-9" hidden>
+    <div class="task"><div><div class="k">Your task</div><p>Find the faults in a student’s graphs and table: <mark class="do">tap each part that is wrong.</mark> Then press Show it on the picture, and compare.</p></div><span class="task__n"></span></div>
+    <h2>Graphs and tables</h2>
+    <p class="sub">In class, you learnt how to draw a perfect table and a perfect graph. Do you remember every rule?</p>
+    <div class="rem" data-scene="pgraph">
+      <p class="k3">Before you start</p>
+      <p>Try the checks <u>without</u> looking at the rules. Each fault you find shows its rule. When you finish, press <b>Show it</b> on the picture: it shows the perfect graph and the perfect table, with every rule numbered.</p>
+    </div>
+    <div class="q" data-q="p9-faults-line" data-scene="pgraph"></div>
+    <div class="q" data-q="p9-faults-bar" data-scene="pgraph"></div>
+    <div class="q" data-q="p9-label-table" data-scene="ptable"></div>
+    <div class="q" data-q="p9-gaps-title" data-scene="pgraph"></div>
     <div class="done-all" id="doneAll" hidden></div>
-    <div class="partnav"><button class="back" type="button">← Sieve, filter, decant, magnet</button></div>
+    <div class="partnav"><button class="back" type="button">← Evaporation, distillation, chromatography</button></div>
   </section>
   </main>
 </div>
@@ -390,17 +407,17 @@
 </footer>
 
 <script src="https://accounts.google.com/gsi/client?hl=en-GB" async defer></script>
-<script src="js/config.js?v=202610251750"></script>
-<script src="js/signin.js?v=202610251750"></script>
-<script src="js/lesson.js?v=202610251750"></script>
-<script src="js/glossary.js?v=202610251750"></script>
-<script src="js/words.js?v=202610251750"></script>
-<script src="js/core.js?v=202610251750"></script>
-<script src="js/draw.js?v=202610251750"></script>
-<script src="js/checks.js?v=202610251750"></script>
-<script src="js/questions.js?v=202610251750"></script>
-<script src="js/panel.js?v=202610251750"></script>
-<script src="js/scenes1.js?v=202610251750"></script>
-<script src="js/scenes2.js?v=202610251750"></script>
+<script src="js/config.js?v=202610251939"></script>
+<script src="js/signin.js?v=202610251939"></script>
+<script src="js/lesson.js?v=202610251939"></script>
+<script src="js/glossary.js?v=202610251939"></script>
+<script src="js/words.js?v=202610251939"></script>
+<script src="js/core.js?v=202610251939"></script>
+<script src="js/draw.js?v=202610251939"></script>
+<script src="js/checks.js?v=202610251939"></script>
+<script src="js/questions.js?v=202610251939"></script>
+<script src="js/panel.js?v=202610251939"></script>
+<script src="js/scenes1.js?v=202610251939"></script>
+<script src="js/scenes2.js?v=202610251939"></script>
 </body>
 </html>

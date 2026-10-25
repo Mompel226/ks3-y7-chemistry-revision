@@ -255,7 +255,9 @@
     const g = S('g', null, p);
     const d = o.smooth ? smoothPath(pts.map(([a, b]) => [sc.X(a), sc.Y(b)])) : 'M' + pts.map(([a, b]) => sc.X(a) + ',' + sc.Y(b)).join(' L');
     S('path', { d, fill: 'none', stroke: color, 'stroke-width': 3.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, g);
-    if (o.dots !== false) pts.forEach(([a, b]) => S('circle', { cx: sc.X(a), cy: sc.Y(b), r: 5, fill: color, stroke: 'var(--sheet)', 'stroke-width': 1.5 }, g));
+    /* each value a cross, as pupils plot on graph paper (Daniel, 25 Oct 2026), in dark pencil ink over the coloured line */
+    if (o.dots !== false) pts.forEach(([a, b]) => { const x = sc.X(a), y = sc.Y(b), k = 5.5;
+      S('path', { class: 'pt', d: `M${x - k},${y - k} L${x + k},${y + k} M${x - k},${y + k} L${x + k},${y - k}`, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g); });
     return g;
   }
   function smoothPath(P) {
@@ -265,6 +267,17 @@
       d += ` C${p1[0] + (p2[0] - p0[0]) / 6},${p1[1] + (p2[1] - p0[1]) / 6} ${p2[0] - (p3[0] - p1[0]) / 6},${p2[1] - (p3[1] - p1[1]) / 6} ${p2[0]},${p2[1]}`;
     }
     return d;
+  }
+  /* points along smoothPath's curve (its own Bézier segments), n to a segment: where a press on the drawn line lands */
+  function smoothPts(P, n) {
+    const out = [];
+    for (let i = 0; i < P.length - 1; i++) {
+      const p0 = P[i - 1] || P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] || p2;
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      for (let k = 0; k < n; k++) { const t = k / n, u = 1 - t; out.push([0, 1].map(d => u * u * u * p1[d] + 3 * u * u * t * c1[d] + 3 * u * t * t * c2[d] + t * t * t * p2[d])); }
+    }
+    out.push(P[P.length - 1]);
+    return out;
   }
   /* the y of a polyline at x (the points sorted by x) */
   function interp(pts, x) {
@@ -412,7 +425,127 @@
   }
   document.addEventListener('chemrev:build', fillFigures);
 
+  /* ---------------- part 9: a student's graphs and table with faults, and the same work done perfectly (25 Oct 2026) ----------------
+     The rules are Daniel's (KS3/Criteria for a Perfect Table and Graph.pdf, his lesson on the perfect graph, memory
+     table-figure-titles and graph-axes-and-lines). A graph: the title BELOW it, "Figure N. <type of graph> showing …"; the
+     independent variable on the x-axis and the dependent variable on the y-axis, each labelled with its unit; each scale in
+     equal steps, with a tick mark at each number; each value a small cross; one smooth line; bars of one width, from 0.
+     A table: the title ABOVE it; the first column for what you change; units in the headings, never in the cells;
+     the same number of decimal places; no empty cell; lines around every cell.
+     Each drawing takes o.fixed (false: the student's work, with its faults; true: the same work done perfectly) and returns
+     its PARTS: a name → the boxes [x, y, w, h] where that part is, in the drawing's own units. The tap-the-faults check
+     (checks.js drawFaults) lays a button over each box; which parts are faults, and why, is the check's own (questions.js). */
+  /* time for 10 g of sugar to dissolve in 100 cm³ of water, stirred, at five temperatures (a class's results, rounded) */
+  const SUGAR = [[20, 110], [30, 81], [40, 60], [50, 45], [60, 33]];
+  const boxer = parts => (k, b) => { (parts[k] = parts[k] || []).push(b.map(v => Math.round(v))); };
+  function sugarGraph(s, o) {
+    const fx = !!(o && o.fixed), PX = 96, PY = 46, PW = 420, PH = 236, parts = {}, box = boxer(parts);
+    const X = v => PX + v / 70 * PW, Y = v => PY + PH - v / 160 * PH;
+    box('plot', [PX, PY, PW, PH]);
+    for (let v = 0; v <= 70; v += 10) S('line', { class: 'gridl', x1: X(v), y1: PY, x2: X(v), y2: Y(0) }, s);
+    for (let v = 0; v <= 160; v += 20) S('line', { class: 'gridl', x1: PX, y1: Y(v), x2: X(70), y2: Y(v) }, s);
+    S('path', { class: 'axis', d: `M${PX},${PY - 6} L${PX},${Y(0)} L${X(70) + 6},${Y(0)}` }, s);
+    /* the x-axis scale: a tick mark at each number (the student wrote the numbers, but no tick marks) */
+    for (let v = 0; v <= 70; v += 10) {
+      if (fx) S('line', { class: 'tick', x1: X(v), y1: Y(0), x2: X(v), y2: Y(0) + 7 }, s);
+      S('text', { class: 'axlbl', x: X(v), y: Y(0) + 24, 'text-anchor': 'middle' }, s, String(v));
+    }
+    box('xscale', [PX - 8, Y(0) - 1, PW + 22, 31]);
+    /* the y-axis scale: equal steps of 20 s (the student's numbers on the same tick marks do not go up in equal steps) */
+    (fx ? [0, 20, 40, 60, 80, 100, 120, 140, 160] : [0, 20, 40, 50, 60, 80, 100, 140, 160]).forEach((t, i) => {
+      S('line', { class: 'tick', x1: PX - 7, y1: Y(20 * i), x2: PX, y2: Y(20 * i) }, s);
+      S('text', { class: 'axlbl', x: PX - 11, y: Y(20 * i) + 5, 'text-anchor': 'end' }, s, String(t));
+    });
+    box('yscale', [PX - 46, PY - 12, 45, PH + 26]);
+    S('text', { class: 'axttl', x: X(35), y: Y(0) + 54, 'text-anchor': 'middle' }, s, fx ? 'Temperature of the water (°C)' : 'Temperature');
+    box('xlabel', fx ? [X(35) - 135, Y(0) + 34, 270, 28] : [X(35) - 62, Y(0) + 34, 124, 28]);
+    S('text', { class: 'axttl', x: 0, y: 0, 'text-anchor': 'middle', transform: `translate(${PX - 62} ${PY + PH / 2}) rotate(-90)` }, s, 'Time to dissolve (s)');
+    box('ylabel', [PX - 82, PY + PH / 2 - 92, 32, 184]);
+    /* one smooth line, from the first value to the last; its press boxes follow the drawn curve from value to value (the
+       values' own boxes lie over them at each value) */
+    const LP = SUGAR.map(([a, b]) => [X(a), Y(b)]);
+    S('path', { d: smoothPath(LP), fill: 'none', stroke: '#2E7FD9', 'stroke-width': 3, 'stroke-linecap': 'round' }, s);
+    smoothPts(LP, 24).filter((p, i) => i % 4 === 2 && LP.every(q => Math.abs(p[0] - q[0]) >= 10)).forEach(([x, y]) => box('line', [x - 7, y - 13, 14, 26]));
+    /* the values: small crosses (the student's: big dots, which hide the exact value) */
+    SUGAR.forEach(([a, b]) => {
+      const x = X(a), y = Y(b), k = 5.5;
+      if (fx) S('path', { d: `M${x - k},${y - k} L${x + k},${y + k} M${x - k},${y + k} L${x + k},${y - k}`, fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, s);
+      else S('circle', { cx: x, cy: y, r: 8.5, fill: 'var(--ink)' }, s);
+      box('points', [x - 13, y - 13, 26, 26]);
+    });
+    /* the title: below the graph, the type of graph and both variables (the student's: above, and it names neither) */
+    if (fx) {
+      ['Figure 1. Line graph showing the effect of temperature', 'on the time for sugar to dissolve'].forEach((t, i) => S('text', { class: 'note', x: X(35), y: 360 + 20 * i, 'text-anchor': 'middle' }, s, t));
+      box('title', [X(35) - 210, 344, 420, 42]);
+    } else {
+      S('text', { class: 'ttl', x: X(35), y: 28, 'text-anchor': 'middle' }, s, 'Sugar graph');
+      box('title', [X(35) - 72, 8, 144, 28]);
+    }
+    return parts;
+  }
+  /* the boiling points of four liquids (Part 6's chart, drawn by a student) */
+  function boilBar(s, o) {
+    const fx = !!(o && o.fixed), PX = 104, PY = 30, PW = 432, PH = 250, lo = fx ? 0 : 40, hi = fx ? 120 : 110, step = fx ? 20 : 10;
+    const Y = v => PY + PH - (v - lo) / (hi - lo) * PH, parts = {}, box = boxer(parts);
+    box('plot', [PX, PY, PW, PH]);
+    for (let v = lo; v <= hi; v += step) S('line', { class: 'gridl', x1: PX, y1: Y(v), x2: PX + PW, y2: Y(v) }, s);
+    /* the bars: one width, with equal gaps (the student's: three widths) */
+    const W = fx ? [64, 64, 64, 64] : [56, 56, 98, 44];
+    SOLVENTS.forEach((d, i) => {
+      const cx = PX + PW * (i + .5) / 4, w = W[i];
+      S('rect', { x: cx - w / 2, y: Y(d.bp), width: w, height: Y(lo) - Y(d.bp), fill: '#2E7FD9' }, s);
+      box('bars', [cx - w / 2, Y(d.bp), w, Y(lo) - Y(d.bp)]);
+      d.n.split(' ').forEach((t, j) => S('text', { class: 'axlbl', x: cx, y: Y(lo) + 22 + 18 * j, 'text-anchor': 'middle' }, s, t));
+    });
+    box('xnames', [PX, Y(lo) + 5, PW, 40]);
+    S('path', { class: 'axis', d: `M${PX},${PY - 6} L${PX},${Y(lo)} L${PX + PW + 6},${Y(lo)}` }, s);
+    /* the y-axis scale: from 0 (the student's starts at 40 °C, so each bar's height no longer shows its value) */
+    for (let v = lo; v <= hi; v += step) {
+      S('line', { class: 'tick', x1: PX - 7, y1: Y(v), x2: PX, y2: Y(v) }, s);
+      S('text', { class: 'axlbl', x: PX - 11, y: Y(v) + 5, 'text-anchor': 'end' }, s, String(v));
+    }
+    box('yscale', [PX - 46, PY - 12, 45, PH + 26]);
+    /* the y-axis label: the dependent variable and its unit (the student's: none) */
+    if (fx) S('text', { class: 'axttl', x: 0, y: 0, 'text-anchor': 'middle', transform: `translate(${PX - 62} ${PY + PH / 2}) rotate(-90)` }, s, 'Boiling point (°C)');
+    box('ylabel', [PX - 82, PY + 30, 34, PH - 60]);
+    S('text', { class: 'axttl', x: PX + PW / 2, y: Y(lo) + 70, 'text-anchor': 'middle' }, s, 'Liquid');
+    box('xlabel', [PX + PW / 2 - 44, Y(lo) + 50, 88, 28]);
+    /* the title: below, the type of graph and what it shows (the student's: below, but it names neither) */
+    S('text', { class: 'note', x: PX + PW / 2, y: 384, 'text-anchor': 'middle' }, s, fx ? 'Figure 2. Bar chart showing the boiling points of four liquids' : 'Figure 2. Boiling points');
+    box('title', fx ? [PX + PW / 2 - 230, 364, 460, 28] : [PX + PW / 2 - 92, 364, 184, 28]);
+    return parts;
+  }
+  /* the freezing point of water with different masses of salt dissolved in 100 g of it (Part 5's graph, as a table) */
+  function saltTable(s, o) {
+    const fx = !!(o && o.fixed), X0 = o && o.x0 != null ? o.x0 : 200, CW = 140, HH = 56, RH = 36, T0 = fx ? 78 : 20;
+    const cols = fx
+      ? [[['Mass of salt', '(g)'], ['0', '5', '10', '15', '20']], [['Freezing point', '(°C)'], ['0.0', '−2.9', '−5.9', '−9.1', '−12.4']]]
+      : [[['Freezing point', '(°C)'], ['0', '−2.9', '−5.85', '−9.1', '−12.40']], [['Mass of salt'], ['0 g', '5 g', '10 g', '15 g', '20 g']]];
+    S('rect', { x: X0, y: T0, width: 2 * CW, height: HH + 5 * RH, fill: 'var(--sheet)', stroke: 'var(--ink)', 'stroke-width': 2 }, s);
+    S('rect', { x: X0, y: T0, width: 2 * CW, height: HH, fill: 'var(--surface)', stroke: 'var(--ink)', 'stroke-width': 2 }, s);
+    for (let r = 1; r < 5; r++) S('line', { x1: X0, y1: T0 + HH + r * RH, x2: X0 + 2 * CW, y2: T0 + HH + r * RH, stroke: 'var(--ink)', 'stroke-width': 1.2 }, s);
+    S('line', { x1: X0 + CW, y1: T0, x2: X0 + CW, y2: T0 + HH + 5 * RH, stroke: 'var(--ink)', 'stroke-width': 2 }, s);
+    cols.forEach(([head, cells], c) => {
+      const cx = X0 + CW * (c + .5);
+      head.forEach((t, j) => S('text', { class: 'lbl-sm', x: cx, y: T0 + (head.length > 1 ? 24 + 20 * j : 34), 'text-anchor': 'middle' }, s, t));
+      cells.forEach((t, r) => S('text', { class: 'axlbl', x: cx, y: T0 + HH + r * RH + 24, 'text-anchor': 'middle' }, s, t));
+    });
+    const mid = X0 + CW;
+    if (fx) ['Table 1. Data showing the effect', 'of the mass of salt on the', 'freezing point of water'].forEach((t, i) => S('text', { class: 'note', x: mid, y: 20 + 20 * i, 'text-anchor': 'middle' }, s, t));
+    else S('text', { class: 'note', x: mid, y: T0 + HH + 5 * RH + 36, 'text-anchor': 'middle' }, s, 'Salt results');
+    return { X0, CW, T0, HH, RH, bottom: T0 + HH + 5 * RH };
+  }
+  FIG.badLine = { vb: [560, 392], alt: 'A student\'s line graph of the time for sugar to dissolve in water at five temperatures', draw: (s, o) => sugarGraph(s, o) };
+  FIG.badBar = { vb: [560, 400], alt: 'A student\'s bar chart of the boiling points of water, ethanol, ethyl ethanoate and propanone', draw: (s, o) => boilBar(s, o) };
+  /* the label check: four numbered boxes, two each side, each joined by a level line to the fault it names (memory
+     label-lines-never-cross: a row apart, ending on the part) */
+  FIG.badTable = { vb: [680, 330], alt: 'A student\'s table of the freezing point of water with different masses of salt',
+    slots: { head: [96, 48], dv: [96, 166], iv: [584, 166], title: [584, 292] },
+    draw(s) {
+      const t = saltTable(s), L = (x1, y, x2) => S('line', { x1, y1: y, x2, y2: y, stroke: 'var(--ink2)', 'stroke-width': 2 }, s);
+      L(150, 48, t.X0 + 14); L(150, 166, t.X0 + 46); L(t.X0 + 2 * t.CW - 40, 166, 530); L(t.X0 + t.CW + 56, 292, 530);
+    } };
   window.DRAW = { S, id, EL, atom, MOL, mol, rng, spots, particleBox, lattice, label, arrowHead, curveArrow, C, liquid, beaker, conical, rbFlask, funnel, bunsen, tripod, thermometer, stand,
-                  axes, line, smoothPath, interp, SALT_FP, KNO3, SOLVENTS, stateIcon, triangle, TRI, trayPic };
+                  axes, line, smoothPath, interp, SALT_FP, KNO3, SOLVENTS, stateIcon, triangle, TRI, trayPic, sugarGraph, boilBar, saltTable };
   window.FIG = FIG;
 })();

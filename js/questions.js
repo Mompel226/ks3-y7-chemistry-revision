@@ -358,5 +358,70 @@ window.QS = {
     points: ['<b>Conclusion:</b> the cherry drink contains Red X, the banned dye.',
              '<b>Explanation:</b> the drink has a red spot at the same height as the spot of Red X.',
              'The drink also has another dye (the purple spot), which Red X does not have.'],
-    rule: '2 marks: the conclusion and the explanation. The third point is a good extra.', need: 10 }
+    rule: '2 marks: the conclusion and the explanation. The third point is a good extra.', need: 10 },
+
+  /* ---------- 9. Graphs and tables (25 Oct 2026) ----------
+     Daniel: pictures of a student's graphs and table with faults, as in the Write-Up Lab, to check that pupils remember
+     the rules of his lesson on the perfect graph (KS3/Criteria for a Perfect Table and Graph.pdf): the title and what it
+     says, where each label goes, the units, the tick marks, the scales, the crosses, the bars. Each drawing's parts are
+     named in draw.js; here, which parts are faults (tag: a few words for the list; why: the rule; fixed: what the
+     perfect one has instead) and why the other parts are right (fine). The table is a label check: the boxes show where
+     its faults are, and the pupil names each one. */
+  'p9-faults-line': { part: 9, kind: 'faults', title: 'Faults in a line graph', short: 'graph 1', fig: 'badLine', thing: 'graph',
+    stem: 'A student measured the time for 10 g of sugar to dissolve in water at five temperatures, and drew this line graph. It has <b>5 faults</b>. Tap each part of the graph that is wrong.',
+    names: { title: 'the title', xlabel: 'the x-axis label', ylabel: 'the y-axis label', xscale: 'the x-axis scale', yscale: 'the y-axis scale', points: 'the values', line: 'the line', plot: 'the grid' },
+    faults: [
+      { part: 'title', tag: 'above the graph, and it does not name the variables',
+        why: 'The title of a graph goes <u>below</u> it. It says the type of graph, then the effect of what you change on what you measure: “Figure 1. Line graph showing the effect of temperature on the time for sugar to dissolve”.',
+        fixed: 'below the graph, with the type of graph and both variables.' },
+      { part: 'xlabel', tag: 'no unit',
+        why: 'An axis label gives the variable <u>and</u> its unit, in brackets: “Temperature of the water (°C)”.',
+        fixed: 'the variable and its unit: Temperature of the water (°C).' },
+      { part: 'xscale', tag: 'no tick marks',
+        why: 'Each number of a scale needs a small tick mark on the axis, so you can see exactly where that number is.',
+        fixed: 'a tick mark at each number.' },
+      { part: 'yscale', tag: 'the steps are not equal',
+        why: 'The numbers increase in steps of 20, then 10, then 20 again, then 40. Every step of a scale must be the same: 0, 20, 40, 60, 80 …',
+        fixed: 'equal steps of 20, with a tick mark at each number.' },
+      { part: 'points', tag: 'big dots, not crosses',
+        why: 'A big dot hides the exact value. Plot each value as a small cross (×), with its centre on the value.',
+        fixed: 'each value is a small cross.' }
+    ],
+    fine: { ylabel: 'It gives the variable and its unit: Time to dissolve (s). What you measure, the dependent variable, is on the y-axis.',
+            line: 'One smooth line joins the values, from the first to the last.',
+            plot: 'This is the grid. Tap a label, a scale, the values, the line or the title.' },
+    hint: 'Check every part: the title, the label and the scale of each axis, the values and the line.',
+    why: 'A perfect graph: the title below it; each axis labelled with its variable and its unit; scales in equal steps, with a tick mark at each number; each value a small cross; one smooth line.' },
+  'p9-faults-bar': { part: 9, kind: 'faults', title: 'Faults in a bar chart', short: 'graph 2', fig: 'badBar', thing: 'bar chart',
+    stem: 'Another student drew a bar chart of the boiling points of four liquids. It has <b>4 faults</b>. Tap each part that is wrong, or the place where something is missing.',
+    names: { title: 'the title', ylabel: 'the y-axis label', xlabel: 'the x-axis label', yscale: 'the y-axis scale', bars: 'the bars', xnames: 'the names of the liquids', plot: 'the grid' },
+    faults: [
+      { part: 'bars', tag: 'not all the same width',
+        why: 'Every bar of a bar chart has the same width, with equal gaps between the bars.',
+        fixed: 'every bar has the same width, with equal gaps.' },
+      { part: 'yscale', tag: 'it starts at 40, not at 0',
+        why: 'The y-axis of a bar chart starts at 0. Here the bar of propanone is about a quarter of the height of water’s bar, but its boiling point is more than half of water’s.',
+        fixed: 'it starts at 0, so the height of each bar shows its whole value.' },
+      { part: 'ylabel', tag: 'missing',
+        why: 'Every axis needs a label: the variable and its unit. Here: “Boiling point (°C)”.',
+        fixed: 'Boiling point (°C): what was measured, with its unit.' },
+      { part: 'title', tag: 'it does not say the type of graph or what it shows',
+        why: 'A title says the type of graph, then what it shows: “Figure 2. Bar chart showing the boiling points of four liquids”. It is below the graph: that part is right.',
+        fixed: 'below the graph, with the type of graph and what it shows.' }
+    ],
+    fine: { xnames: 'Each bar has the name of its liquid.',
+            xlabel: 'It names what is compared: Liquid. It needs no unit, because the liquids are names, not numbers.',
+            plot: 'This is the grid. Tap a label, a scale, the bars or the title.' },
+    hint: 'Look at the bars, and at both axes: where each axis starts, and what it says.',
+    why: 'A perfect bar chart: bars of the same width, with gaps; a y-axis that starts at 0; a label on each axis (with a unit for numbers); a title below it with the type of graph and what it shows.' },
+  'p9-label-table': { part: 9, kind: 'label', title: 'Faults in a table', short: 'table', label: 'Name the faults', fig: 'badTable',
+    stem: 'A student measured the freezing point of water with different masses of salt dissolved in it. Their table has 4 faults, and each box points to one. Put the right fault in each box. Two of the labels are not faults of this table.',
+    words: ['title below the table', 'columns in the wrong order', 'units in the cells', 'decimal places not the same', 'no lines around the cells', 'a value is missing'],
+    slots: [{ k: 'head', w: 'columns in the wrong order' }, { k: 'dv', w: 'decimal places not the same' }, { k: 'iv', w: 'units in the cells' }, { k: 'title', w: 'title below the table' }],
+    hint: 'For each box, think of the rule for that part of a table: its title, its first column, its units, its numbers.',
+    why: 'A perfect table: its title above it (“Table 1. Data showing the effect of the mass of salt on the freezing point of water”); what you change, the mass of salt, in the first column; each unit once, in its heading: Mass of salt (g); every value with the same number of decimal places: 0.0, −2.9, −5.9, −9.1, −12.4.' },
+  'p9-gaps-title': { part: 9, kind: 'gaps', title: 'Write the title', short: 'title',
+    text: 'A student dissolved different masses of salt in water and measured the boiling point of each solution. The title of their graph goes [[below|under]] the graph: “Figure 1. [[Line]] graph showing the [[effect]] of the [[mass]] of salt on the [[boiling]] point of water.”',
+    hint: 'What did the student change? It comes first in the title, after “the effect of”.',
+    why: 'The title goes below the graph: the figure number, the type of graph (a line graph, because the mass of salt is a number), then the effect of what you change (the independent variable) on what you measure (the dependent variable).' }
 };

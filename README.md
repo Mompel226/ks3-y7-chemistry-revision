@@ -5,8 +5,8 @@
 **Live:** <https://nlcsbiology.com/ks3-y7-chemistry-revision/>
 
 A revision page for Year 7 Chemistry: the revision booklet, made digital. Pupils read short notes for each idea, explore
-it in a picture on the left, and check themselves as they go. It takes about 60 minutes (a double lesson): eight parts of
-about 7 minutes. Pupils can use it instead of the paper booklet.
+it in a picture on the left, and check themselves as they go. It takes about 60 minutes (a double lesson): nine parts of
+about 6 or 7 minutes. Pupils can use it instead of the paper booklet.
 
 | Part | The picture to explore | The checks practise |
 |---|---|---|
@@ -18,12 +18,18 @@ about 7 minutes. Pupils can use it instead of the paper booklet.
 | 6 Solutions | a drink made stronger or weaker; a solubility curve; a chart to choose a nail-varnish remover | solute, solvent, solution, soluble, insoluble; concentrated and dilute; solubility and saturated solutions; independent, dependent and control variables; choosing from a chart |
 | 7 Sieve, filter, decant, magnet | filtration of chalky water and of salt water; a sieve; layers of liquids | residue and filtrate; what a sieve cannot do; choosing a method; immiscible liquids; density and floating |
 | 8 Evaporation, distillation, chromatography | simple distillation, evaporation, a chromatogram of food colourings, a cold tray over boiling salty water | the steps of distillation; keeping the solvent; the words of chromatography; reading a chromatogram; two written answers checked against a mark list |
+| 9 Graphs and tables | the perfect graph and the perfect table, every rule numbered, hidden until the pupil presses Show it | finding the faults in a student's line graph and bar chart (tap each part that is wrong); naming the faults of a table; the title of a graph |
 
 **Help, after the pupil has tried.** Key words are typed (spelling counts; capitals do not, except in chemical symbols). A
 pupil who is stuck presses **Show the first letter**: the gap they are working on shows its first letter, and they type
 the rest. Some checks have a **💡 Hint**: an idea to think about, never the answer. Every key word can be tapped for its
 meaning, with Korean and Chinese, and the word bank has every word of the page. The answers can be shown only after two
 tries.
+
+**Graphs and tables.** Part 9 checks that pupils remember the rules of a perfect graph and a perfect table (the title and
+what it says, the labels and their units, the tick marks, equal steps, crosses, bars of one width from 0). They tap each
+part of a student's graph that is wrong; a fault is ringed in red with its reason, and a part that is right says so (it
+counts on the board as a try). Then **Fix every fault** draws the same graph done perfectly.
 
 **Scientific words.** Each new word is explained first and then named. Each part's notes end with **Say it like a
 scientist**: the everyday words a pupil might write, and the scientific word that scores marks instead. Typed checks make
@@ -68,5 +74,9 @@ The `tools/` named here stay on Daniel's computer: they are not in this reposito
   tablet and a phone: no button over another, off the picture or over its words) and `node tools/phone-check.mjs` (a
   finger swipes the picture and drags a graph's ruler), `node tools/restart-check.mjs` (Start again, and the keyboard alone), `node tools/anyorder-check.mjs` (typed words that
   may come in any order, and the first letter that fixes its gap), `node tools/particles-check.mjs` (Part 1's substance
-  melts and boils at the marked points; every particle box moves in calm slow motion).
+  melts and boils at the marked points; every particle box moves in calm slow motion) and `node tools/claims-check.mjs`
+  (every picture does what it says: the size before heating stays still, counts match their keys, the graph ruler sits
+  on the curve, beads stop in the right layer, each hint names a real button, scrolling brings up the right picture) and
+  `node tools/faults-check.mjs` (Part 9: every fault has a part to tap, a right part tapped counts once, Show the faults
+  only after two, Fix every fault draws the perfect graph, the keyboard alone finds a fault, the hidden pictures open).
 </details>

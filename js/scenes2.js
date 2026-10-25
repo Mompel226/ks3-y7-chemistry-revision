@@ -16,8 +16,21 @@
      value: the pupil reads the scale on the axis, as with a ruler on paper. */
   function rulerGraph(k, o) {
     const g = k.g, sc = D.axes(g, o.x, o.y, o.w, o.h, o.xr, o.yr, o.ax);
-    D.line(g, sc, o.pts, o.color || '#2E7FD9', { smooth: o.smooth });
-    if (o.title) S('text', { class: 'ttl', x: o.x, y: o.y - 22 }, g, o.title);
+    const lineG = D.line(g, sc, o.pts, o.color || '#2E7FD9', { smooth: o.smooth });
+    /* the figure's title, below it, as every graph title on Daniel's sites: "Figure N. Line graph showing the effect of
+       <IV> on <DV>" (his KS3 graph criteria: the title at the bottom); one line or two */
+    (o.title || []).forEach((t, i, all) => S('text', { class: 'note', x: o.x + o.w / 2, y: 494 - 20 * (all.length - 1 - i), 'text-anchor': 'middle' }, g, t));
+    /* Where the ruler meets the line is read from the line AS DRAWN (25 Oct 2026: a smooth curve with the dot placed by
+       straight lines between the points put the dot off the curve between two points). The drawn path is sampled once:
+       x → y, by x. */
+    const path = lineG.querySelector('path'), along = [];
+    if (path && path.getTotalLength) { const L = path.getTotalLength(); for (let i = 0; i <= 600; i++) { const q = path.getPointAtLength(L * i / 600); along.push([q.x, q.y]); } }
+    function yOnLine(X) {
+      let lo = 0, hi = along.length - 1;
+      while (hi - lo > 1) { const m = (lo + hi) >> 1; if (along[m][0] < X) lo = m; else hi = m; }
+      const [x0, y0] = along[lo], [x1, y1] = along[hi];
+      return x1 === x0 ? y0 : y0 + (y1 - y0) * (X - x0) / (x1 - x0);
+    }
     const rl = S('g', { class: 'ruler' }, g);
     const vline = S('line', { stroke: '#D22F27', 'stroke-width': 3 }, rl);
     const hline = S('line', { stroke: '#D22F27', 'stroke-width': 2.2, 'stroke-dasharray': '7 5' }, rl);
@@ -27,7 +40,7 @@
     let xv = o.start == null ? (o.xr[0] + o.xr[1]) / 2 : o.start;
     function set(v) {
       xv = Math.max(o.xr[0], Math.min(o.xr[1], Math.round(v / (o.snap || 1)) * (o.snap || 1)));
-      const X = sc.X(xv), yv = D.interp(o.pts, xv), Yp = sc.Y(yv);
+      const X = sc.X(xv), Yp = along.length > 1 ? yOnLine(X) : sc.Y(D.interp(o.pts, xv));
       vline.setAttribute('x1', X); vline.setAttribute('x2', X); vline.setAttribute('y1', o.y - 4); vline.setAttribute('y2', o.y + o.h);
       hline.setAttribute('x1', o.x); hline.setAttribute('x2', X); hline.setAttribute('y1', Yp); hline.setAttribute('y2', Yp);
       dot.setAttribute('cx', X); dot.setAttribute('cy', Yp);
@@ -137,7 +150,7 @@
       rulerGraph(k, {
         x: 130, y: 64, w: 600, h: 300, xr: [0, 30, 5], yr: [-25, 0, 5], ax: { minorY: 1, minorX: 1, xTitle: 'Mass of salt dissolved in 100 g of water (g)', yTitle: 'Freezing point (°C)', yTitleGap: 64 },
         pts: D.SALT_FP, smooth: true, color: '#2E7FD9', snap: 1, start: 10,
-        title: 'Freezing point of salt water'
+        title: ['Figure 1. Line graph showing the effect of the mass of salt', 'on the freezing point of water']
       });
       k.say('<p>In winter, salt is spread on icy roads. Salt water freezes at a lower temperature than pure water.</p><p><mark class="do">Drag the red ruler along the graph, or press ◀ ▶. Read the value on the axis, not from the ruler.</mark></p>');
     }
@@ -190,7 +203,7 @@
     draw(k) {
       rulerGraph(k, {
         x: 130, y: 64, w: 600, h: 300, xr: [0, 80, 10], yr: [0, 180, 20], ax: { minorY: 10, minorX: 5, xTitle: 'Temperature of the water (°C)', yTitle: 'Solubility (g in 100 g of water)', yTitleGap: 70 },
-        pts: D.KNO3, smooth: true, color: '#7B3FA0', snap: 1, start: 20, title: 'Solubility of potassium nitrate'
+        pts: D.KNO3, smooth: true, color: '#7B3FA0', snap: 1, start: 20, title: ['Figure 2. Line graph showing the effect of temperature', 'on the solubility of potassium nitrate']
       });
       k.say('<p>A scientist chose each temperature, then measured the greatest mass of potassium nitrate that could dissolve in 100 g of water: its solubility.</p><p><mark class="do">Drag the red ruler, or press ◀ ▶. Read the value on the axis.</mark></p>');
     }
@@ -205,14 +218,17 @@
       D.SOLVENTS.forEach((s, i) => {
         const x = 130 + 75 * (2 * i + 1) - 45, y = sc.Y(s.bp);
         S('rect', { x, y, width: 90, height: 340 - y, rx: 4, fill: COL[i] }, g);
-        S('text', { class: 'lbl-sm', x: x + 45, y: 368, 'text-anchor': 'middle' }, g, s.n);
+        S('text', { class: 'lbl-sm', x: x + 45, y: 366, 'text-anchor': 'middle' }, g, s.n);
         const ok = s.dis === 'yes', some = s.dis === 'a little';
-        S('text', { x: x + 45, y: 404, 'text-anchor': 'middle', 'font-size': 22, 'font-weight': 900, fill: ok ? '#167A3E' : some ? '#9A5B05' : '#B42318' }, g, ok ? '✓' : some ? '~' : '✗');
-        S('text', { class: 'note', x: x + 45, y: 428, 'text-anchor': 'middle' }, g, s.dis);
+        S('text', { x: x + 45, y: 424, 'text-anchor': 'middle', 'font-size': 22, 'font-weight': 900, fill: ok ? '#167A3E' : some ? '#9A5B05' : '#B42318' }, g, ok ? '✓' : some ? '~' : '✗');
+        S('text', { class: 'note', x: x + 45, y: 446, 'text-anchor': 'middle' }, g, s.dis);
       });
-      S('text', { class: 'note', x: 40, y: 404 }, g, 'dissolves');
-      S('text', { class: 'note', x: 40, y: 424 }, g, 'nail varnish?');
+      S('text', { class: 'note', x: 40, y: 424 }, g, 'dissolves');
+      S('text', { class: 'note', x: 40, y: 444 }, g, 'nail varnish?');
+      /* the x-axis label: what is compared (Part 9's rule: every axis has a label; names need no unit) */
+      S('text', { class: 'axttl', x: 430, y: 394, 'text-anchor': 'middle' }, g, 'Liquid');
       S('text', { class: 'note', x: 130, y: 470 }, g, 'A lower boiling point means the liquid evaporates more quickly.');
+      S('text', { class: 'note', x: 430, y: 494, 'text-anchor': 'middle' }, g, 'Figure 3. Bar chart showing the boiling points of four liquids');
       k.say('<p>A nail-varnish remover must dissolve nail varnish <u>and</u> evaporate quickly from the nails. Use both: the bars and the row of ticks.</p>');
     }
   }]);
@@ -538,6 +554,64 @@
         for (let i = 0; i < 3; i++) { const f = ((tt * .35 + i / 3) % 1); const x = 100 + f * 300, y = 172 + f * 42 + 4; S('circle', { cx: x, cy: y, r: 3.6, fill: '#7EB8EA' }, drops); }
         const f2 = (tt * .9) % 1; S('circle', { cx: 402, cy: 212 + f2 * 70, r: 3.6, fill: '#7EB8EA' }, drops);
         parts.cup.liq.set(Math.min(.65, .3 + tt * .006));
+      });
+    }
+  }]);
+
+  /* ================= Part 9 · Graphs and tables (25 Oct 2026) =================
+     The perfect graph and the perfect table: the same work as the student's in the checks, done perfectly, each rule
+     named by a number on the picture (memory figures-must-earn-their-place: key every pin). Each starts hidden: Daniel's
+     checks ask whether pupils REMEMBER the rules, so the page asks them to find the faults first; Show it opens it. */
+  const SHOWN = {};
+  function hidden(k, id, what, show) {
+    if (SHOWN[id]) { show(); return; }
+    const g = k.g;
+    S('rect', { x: 60, y: 50, width: 680, height: 400, rx: 20, fill: 'var(--surface)', stroke: 'var(--rule2)', 'stroke-width': 2, 'stroke-dasharray': '10 8' }, g);
+    S('text', { class: 'ttl', x: 400, y: 182, 'text-anchor': 'middle' }, g, `The perfect ${what} is hidden here.`);
+    S('text', { class: 'note', x: 400, y: 220, 'text-anchor': 'middle' }, g, 'Find the faults in the checks first, without looking.');
+    S('text', { class: 'note', x: 400, y: 244, 'text-anchor': 'middle' }, g, 'Then press Show it, and compare.');
+    k.btn('👁 Show it', 400, 320, () => { SHOWN[id] = 1; while (g.firstChild) g.removeChild(g.firstChild); k.clearBtns(); show(); });
+    k.say(`<p>Can you remember every rule for a perfect ${what}? Try the checks first.</p>`);
+  }
+  function pin(g, x, y, n) {
+    S('circle', { cx: x, cy: y, r: 13, fill: '#0B7A78' }, g);
+    S('text', { x, y: y + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 900, fill: '#FFFFFF' }, g, String(n));
+  }
+  function rules(g, x, y, list) {
+    list.forEach((lines, i) => {
+      pin(g, x + 13, y - 5, i + 1);
+      lines.forEach((t, j) => S('text', { class: 'note', x: x + 34, y: y + 20 * j }, g, t));
+      y += 20 * lines.length + 14;
+    });
+  }
+  P.define(9, [{
+    id: 'pgraph', name: 'Perfect graph', title: 'The perfect graph',
+    alt: 'The sugar line graph done perfectly, with its six rules numbered',
+    draw(k) {
+      hidden(k, 'pgraph', 'graph', () => {
+        const g = k.g, gr = S('g', { transform: 'translate(0 58) scale(.9)' }, g);
+        D.sugarGraph(gr, { fixed: true });
+        /* the pins, in the graph's own units: the title, the x label, the y label, a scale, a cross, the line */
+        [[74, 355], [166, 331], [34, 66], [540, 300], [216, 94], [392, 178]].forEach(([x, y], i) => pin(gr, x, y, i + 1));
+        rules(g, 515, 80, [['Title below the graph: the', 'type of graph, then the', 'effect of what you change', 'on what you measure'],
+          ['x-axis: what you change,', 'with its unit in brackets'], ['y-axis: what you measure,', 'with its unit in brackets'],
+          ['Each scale in equal steps,', 'a tick mark at each number'], ['Each value: a small cross'], ['One smooth line, from the', 'first value to the last']]);
+        k.say('<p>A line graph, because what you change (the temperature) is a number. To compare names, such as four liquids, draw a bar chart: bars of one width, with gaps, and a y-axis from 0.</p>');
+      });
+    }
+  }, {
+    id: 'ptable', name: 'Perfect table', title: 'The perfect table',
+    alt: 'The salt table done perfectly, with its six rules numbered',
+    draw(k) {
+      hidden(k, 'ptable', 'table', () => {
+        const g = k.g, gr = S('g', { transform: 'translate(20 56)' }, g);
+        const t = D.saltTable(gr, { fixed: true, x0: 40 });
+        const L = t.X0 - 18, Rr = t.X0 + 2 * t.CW + 18, mid = t.T0 + t.HH + 2.5 * t.RH;
+        [[t.X0 + t.CW - 150, 15], [L, t.T0 + 28], [Rr, t.T0 + 28], [L, mid], [Rr, mid], [Rr, t.bottom - 12]].forEach(([x, y], i) => pin(gr, x, y, i + 1));
+        rules(g, 436, 92, [['Title above the table:', '“Table 1. Data showing the effect …”'],
+          ['First column: what you change', '(the independent variable)'], ['Second column: what you measure', '(the dependent variable)'],
+          ['Units in the headings,', 'never in the cells'], ['Every value: the same number', 'of decimal places'], ['No empty cells, and lines', 'around every cell']]);
+        k.say('<p>The title of a table goes <u>above</u> it; the title of a graph goes <u>below</u> it.</p>');
       });
     }
   }]);

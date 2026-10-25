@@ -43,7 +43,8 @@
 
   /* ---------------- the list of questions (data/questions.json, for the teacher's board) ---------------- */
   const PARTS = [[1, 'States of matter'], [2, 'Changes of state'], [3, 'Atoms and elements'], [4, 'Molecules and compounds'],
-                 [5, 'Mixtures'], [6, 'Solutions'], [7, 'Sieve, filter, decant, magnet'], [8, 'Evaporation, distillation, chromatography']];
+                 [5, 'Mixtures'], [6, 'Solutions'], [7, 'Sieve, filter, decant, magnet'], [8, 'Evaporation, distillation, chromatography'],
+                 [9, 'Graphs and tables']];
   const QREG = [];
   const reg = q => { if (!QREG.some(x => x.id === q.id)) QREG.push(q); };
   function manifest() {

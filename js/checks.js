@@ -85,7 +85,7 @@
   }
 
   /* ---------- the shell every check shares ---------- */
-  const KIND_LABEL = { mcq: 'Quick check', gaps: 'Fill the gaps', sort: 'Sort', order: 'Put in order', num: 'Read the graph', label: 'Label the diagram', write: 'Write your answer' };
+  const KIND_LABEL = { mcq: 'Quick check', gaps: 'Fill the gaps', sort: 'Sort', order: 'Put in order', num: 'Read the graph', label: 'Label the diagram', write: 'Write your answer', faults: 'Find the faults' };
   function shell(box, q) {
     box.innerHTML = '';
     box.appendChild(h('div', { class: 'q__k' }, `<span>${esc(q.label || KIND_LABEL[q.kind] || 'Quick check')}</span><span class="st" aria-live="polite"></span>`));
@@ -470,6 +470,124 @@
     });
   }
 
+  /* ---------- find the faults: a student's graph; tap each part that is wrong (25 Oct 2026) ----------
+     Daniel: check that pupils "remember the rules of how to make a perfect graph", as the Write-Up Lab's graph doctor
+     does. The figure (draw.js) draws the student's graph and returns its parts as boxes; a button lies over each box.
+     A fault the pupil taps is ringed in red pen with its number, and its reason shows. A part that is right says so, and
+     counts on the board as a try that was not right (once for each part), so "right first time" means every fault found
+     without tapping a part that is right. "Show the faults" only after two right parts were tapped. Once every fault is
+     found (or shown), "Fix every fault" draws the same graph done perfectly, and back. Kept: found (in the order found),
+     wrong, shown, fixed, ok. */
+  function drawFaults(box, id, q) {
+    const ui = shell(box, Object.assign({}, q, { fig: null })), A = ans.get(id) || {}, F = window.FIG[q.fig];
+    const FAULT = {}; q.faults.forEach(f => { FAULT[f.part] = f; });
+    const N = q.faults.length, NAME = q.names || {};
+    const name = k => NAME[k] || k;
+    box.appendChild(h('p', { class: 'q__stem' }, q.stem));
+    const count = h('p', { class: 'flt__n', 'aria-live': 'polite' }); box.appendChild(count);
+    const wrap = h('div', { class: 'flt' }); box.appendChild(wrap);
+    const msg = h('div', { class: 'flt__msg', 'aria-live': 'polite' }); box.appendChild(msg);
+    const list = h('ol', { class: 'flt__list' }); box.appendChild(list);
+    const row = h('div', { class: 'q__row' }, '<span class="say"></span>'); box.appendChild(row);
+    const say = $('.say', row);
+    const found = (A.found || []).filter(k => FAULT[k]), wrong = new Set(A.wrong || []);
+    let shown = !!A.shown, fixed = !!A.fixed, ok = !!A.ok, hintBtn = null;
+    const done = () => ok || shown;
+    /* the faults in the order the pupil found them, then (shown) the rest */
+    const marked = () => found.concat(shown ? q.faults.map(f => f.part).filter(k => !found.includes(k)) : []);
+    function put() { ans.put(id, { found: found.slice(), wrong: Array.from(wrong), shown: shown ? 1 : 0, fixed: fixed ? 1 : 0, ok: ok ? 1 : 0 }); }
+    let svg = null, parts = {}, pen = null;
+    function draw() {
+      wrap.innerHTML = '';
+      svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('viewBox', `0 0 ${F.vb[0]} ${F.vb[1]}`); svg.setAttribute('class', 'fig'); svg.setAttribute('role', 'img');
+      if (F.alt) svg.setAttribute('aria-label', F.alt + (fixed ? ', with every fault fixed' : ''));
+      parts = F.draw(svg, { fixed }) || {};
+      pen = window.DRAW.S('g', { class: 'pens' }, svg);
+      wrap.appendChild(svg);
+      /* a button over every part: the grid first, so the smaller parts lie on top of it */
+      Object.keys(parts).sort((x, y) => (y === 'plot') - (x === 'plot')).forEach(k => parts[k].forEach((b, j) => {
+        /* one button for each part (the keyboard reaches it); its other boxes are plain areas for a mouse or a finger */
+        const t = j ? h('div', { class: 'tap', 'data-p': k, 'aria-hidden': 'true' }) : h('button', { type: 'button', class: 'tap', 'data-p': k, 'aria-label': name(k) });
+        Object.assign(t.style, { left: (100 * b[0] / F.vb[0]) + '%', top: (100 * b[1] / F.vb[1]) + '%', width: (100 * b[2] / F.vb[0]) + '%', height: (100 * b[3] / F.vb[1]) + '%' });
+        t.addEventListener('click', () => tap(k));
+        wrap.appendChild(t);
+      }));
+      rings();
+    }
+    /* red pen round each fault marked, with its number; once fixed, a green number where each fault was. A number goes to
+       the first of five places round its part (top left, left, top right, right, below; a line of words: left first) that covers no words of the
+       graph and no other number; the words are measured on the screen, so a part hidden in another tab measures again
+       when it opens. */
+    function rings() {
+      const S = window.DRAW.S, R = svg.getBoundingClientRect(), kx = F.vb[0] / (R.width || 1), ky = F.vb[1] / (R.height || 1);
+      while (pen.firstChild) pen.removeChild(pen.firstChild);
+      const words = R.width ? [...svg.querySelectorAll('text')].map(t => { const r = t.getBoundingClientRect(); return [(r.left - R.left) * kx, (r.top - R.top) * ky, r.width * kx, r.height * ky]; }) : [];
+      const placed = [], clear = (x, y) => ![...words, ...placed].some(o => x - 12 < o[0] + o[2] && o[0] < x + 12 && y - 12 < o[1] + o[3] && o[1] < y + 12);
+      marked().forEach((k, i) => (parts[k] || []).forEach((b, j) => {
+        if (!fixed) S('rect', { x: b[0] - 4, y: b[1] - 4, width: b[2] + 8, height: b[3] + 8, rx: 9, fill: 'none', stroke: '#D22F27', 'stroke-width': 3 }, pen);
+        if (j) return;
+        const at = [[b[0] - 4, b[1] - 4], [b[0] - 16, b[1] + b[3] / 2], [b[0] + b[2] + 4, b[1] - 4], [b[0] + b[2] + 16, b[1] + b[3] / 2], [b[0] - 4, b[1] + b[3] + 4]]
+          .map(([x, y]) => [Math.max(12, Math.min(F.vb[0] - 12, x)), Math.max(12, Math.min(F.vb[1] - 12, y))]);
+        if (b[2] > 4 * b[3]) at.unshift(at.splice(1, 1)[0]);   /* a line of words (a title, a label): its number goes before it */
+        const [tx, ty] = at.find(([x, y]) => clear(x, y)) || at[0];
+        placed.push([tx - 12, ty - 12, 24, 24]);
+        S('circle', { cx: tx, cy: ty, r: 11, fill: fixed ? '#167A3E' : '#D22F27' }, pen);
+        S('text', { x: tx, y: ty + 5, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 900, fill: '#FFFFFF' }, pen, String(i + 1));
+      }));
+    }
+    document.addEventListener('part', e => { if (e.detail === q.part) requestAnimationFrame(rings); });
+    function paint() {
+      const m = marked();
+      count.innerHTML = shown && !ok ? `Faults shown: <b>${N}</b>` : `Faults found: <b>${found.length} of ${N}</b>`;
+      list.innerHTML = m.map(k => `<li><b>${esc(name(k))}</b>: ${FAULT[k].tag}${!found.includes(k) ? ' <span class="nt">(shown)</span>' : ''}</li>`).join('');
+      ui.status(ok ? RIGHT : shown ? 'Faults shown' : '', ok);
+      let fx = $('.fixall', row);
+      if (done()) {
+        if (hintBtn) { hintBtn.remove(); hintBtn = null; }
+        const sb = $('.show', row); if (sb) sb.remove();
+        if (!fx) { fx = h('button', { class: 'btn fixall', type: 'button' }); row.insertBefore(fx, say); fx.addEventListener('click', () => { fixed = !fixed; put(); draw(); paint(); msgFixed(); }); }
+        fx.textContent = fixed ? '↺ Show the student’s ' + (q.thing || 'graph') : '✓ Fix every fault';
+        ui.say(say, ok ? `You found all ${N} faults.` : '', ok ? 'ok' : '');
+        if (q.why) ui.why(q.why, shown && !ok);
+      } else if (wrong.size >= 2 && !$('.show', row)) {
+        const sb = h('button', { class: 'btn ghost show', type: 'button' }, 'Show the faults'); row.insertBefore(sb, say);
+        sb.addEventListener('click', () => { shown = true; put(); rings(); paint(); msg.className = 'flt__msg'; msg.innerHTML = ''; });
+      }
+    }
+    function msgFixed() {
+      msg.className = 'flt__msg good';
+      msg.innerHTML = fixed ? `<b>Every fault is fixed:</b> this is the perfect ${esc(q.thing || 'graph')}. Tap any part to see why it is right.` : `<b>The student’s ${esc(q.thing || 'graph')} again,</b> with each fault ringed.`;
+    }
+    function tap(k) {
+      const f = FAULT[k];
+      if (k === 'plot' && !f) {                      /* the empty grid: a tap that missed, never counted */
+        msg.className = 'flt__msg';
+        msg.innerHTML = (q.fine || {}).plot || 'This is the grid. Tap a label, a scale, the values or the title.';
+        return;
+      }
+      if (fixed) {                                  /* the perfect graph: every part is right */
+        msg.className = 'flt__msg good';
+        msg.innerHTML = `<b>✓ ${esc(name(k))}:</b> ` + (f ? f.fixed : (q.fine || {})[k] || 'this part is right.');
+        return;
+      }
+      if (f) {
+        if (!done() && !found.includes(k)) { found.push(k); }
+        const n = marked().indexOf(k) + 1;
+        msg.className = 'flt__msg pen';
+        msg.innerHTML = `<b>✓ ${n ? 'Fault ' + n : 'A fault'}: ${esc(name(k))}.</b> ${f.why}`;
+        if (!done() && found.length === N) { ok = true; L.check(id, true); }
+        put(); rings(); paint();
+        return;
+      }
+      msg.className = 'flt__msg no';
+      msg.innerHTML = `<b>Not a fault: ${esc(name(k))} is right.</b> ` + ((q.fine || {})[k] || '');
+      if (!done() && !wrong.has(k)) { wrong.add(k); L.check(id, false, [name(k) + ' (right)']); put(); paint(); }
+    }
+    hintBtn = addHint(box, row, id, q, done());
+    draw(); paint();
+  }
+
   /* ---------- put in order ---------- */
   function drawOrder(box, id, q) {
     const ui = shell(box, q), A = ans.get(id) || {};
@@ -558,7 +676,7 @@
     });
   }
 
-  const DRAW = { gaps: drawGaps, mcq: drawMcq, num: drawNum, sort: drawSort, order: drawOrder, label: drawLabel, write: drawWrite };
+  const DRAW = { gaps: drawGaps, mcq: drawMcq, num: drawNum, sort: drawSort, order: drawOrder, label: drawLabel, write: drawWrite, faults: drawFaults };
   /* the board's own words for each kind (Teacher.html reads mcq opts and gaps to say a wrong answer in words) */
   function regQ(id, q) {
     const r = { id, part: q.part, title: q.title, short: q.short, kind: q.kind };

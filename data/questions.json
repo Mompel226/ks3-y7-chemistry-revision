@@ -33,6 +33,10 @@
   {
    "n": 8,
    "title": "Evaporation, distillation, chromatography"
+  },
+  {
+   "n": 9,
+   "title": "Graphs and tables"
   }
  ],
  "groups": [],
@@ -644,6 +648,41 @@
    "title": "Explain: the banned dye",
    "short": "write 2",
    "kind": "write"
+  },
+  {
+   "id": "p9-faults-line",
+   "part": 9,
+   "title": "Faults in a line graph",
+   "short": "graph 1",
+   "kind": "faults"
+  },
+  {
+   "id": "p9-faults-bar",
+   "part": 9,
+   "title": "Faults in a bar chart",
+   "short": "graph 2",
+   "kind": "faults"
+  },
+  {
+   "id": "p9-label-table",
+   "part": 9,
+   "title": "Faults in a table",
+   "short": "table",
+   "kind": "label"
+  },
+  {
+   "id": "p9-gaps-title",
+   "part": 9,
+   "title": "Write the title",
+   "short": "title",
+   "kind": "gaps",
+   "gaps": [
+    "below",
+    "Line",
+    "effect",
+    "mass",
+    "boiling"
+   ]
   }
  ]
 }

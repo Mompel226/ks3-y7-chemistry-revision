@@ -14,7 +14,8 @@
 
   /* ---------------- a box of moving particles ----------------
      o: { g, x0, x1, y0, y1 (the box), n, r, kind ('X' a particle, 'H2O' a water molecule), state, T (0 cold … 1 hot),
-          cols (solid), hb (draw hydrogen bonds), seed } */
+          cols (solid), hb (draw hydrogen bonds), seed, grow (how much wider the gaps of a solid get from cold to hot:
+          0.16, or more where expansion is the lesson) } */
   function PSim(o) {
     const rnd = D.rng(o.seed || 3), ps = [], layer = S('g', null, o.g), bonds = o.hb ? S('g', null, layer) : null;
     const box = { x0: o.x0, x1: o.x1, y0: o.y0, y1: o.y1 };
@@ -26,7 +27,7 @@
       ps.push({ node, x: 0, y: 0, vx: 0, vy: 0, a: rnd() * 360, va: 0, sx: 0, sy: 0, p1: rnd() * 6.3, p2: rnd() * 6.3 });
     }
     function sites(temp) {
-      const s = 2 * r * (1 + .16 * (temp == null ? T : temp)), rows = Math.ceil(ps.length / cols), out = [];
+      const s = 2 * r * (1 + (o.grow || .16) * (temp == null ? T : temp)), rows = Math.ceil(ps.length / cols), out = [];
       const w = cols * s, left = (box.x0 + box.x1) / 2 - w / 2 + s / 2;
       for (let i = 0; i < ps.length; i++) { const c = i % cols, rw = Math.floor(i / cols); out.push([left + c * s + (o.kind === 'H2O' && rw % 2 ? s * .25 : 0), box.y1 - s / 2 - rw * s]); }
       return { out, w, h: rows * s, s };
@@ -158,7 +159,7 @@
       const layer = S('g', null, g);
       const outline = S('rect', { x: 0, y: 0, width: 0, height: 0, fill: 'none', stroke: '#C2410C', 'stroke-width': 3, 'stroke-dasharray': '8 6', rx: 4, opacity: 0 }, g);
       const outlineT = S('text', { class: 'lbl-sm', x: 0, y: 0, 'text-anchor': 'middle', fill: '#C2410C', opacity: 0 }, g, 'size before heating');
-      const sim = PSim({ g: layer, x0: X0 + 3, x1: X1 - 3, y0: TOP + 3, y1: YB - 3, n: 32, r: 16, cols: 8, state: 'solid', T: inner(), seed: 5 });
+      const sim = PSim({ g: layer, x0: X0 + 3, x1: X1 - 3, y0: TOP + 3, y1: YB - 3, n: 32, r: 16, cols: 8, state: 'solid', T: inner(), seed: 5, grow: .3 });   /* expansion exaggerated so that it shows (Daniel, 25 Oct 2026: the dashed line looked as if it grew with the solid) */
       S('path', { d: `M${X0},${TOP - 50} L${X0},${YB} L${X1},${YB} L${X1},${TOP - 50}`, fill: 'none', stroke: 'var(--glass)', 'stroke-width': 5, 'stroke-linejoin': 'round' }, g);
       const pis = S('g', null, g);
       S('rect', { x: X0 + 4, y: -14, width: X1 - X0 - 8, height: 14, rx: 3, fill: 'var(--metal-2)', stroke: 'var(--bench-edge)', 'stroke-width': 1.5 }, pis);
@@ -233,7 +234,9 @@
           const s0 = sim.sites(t0);
           outline.setAttribute('x', (X0 + X1) / 2 - s0.w / 2 - 3); outline.setAttribute('y', YB - 3 - s0.h - 3);
           outline.setAttribute('width', s0.w + 6); outline.setAttribute('height', s0.h + 3);
-          outlineT.setAttribute('x', (X0 + X1) / 2); outlineT.setAttribute('y', YB - 3 - sim.sites().h - 12);
+          /* the label belongs to the dashed line (the size BEFORE heating), so it stays where that size was, above the
+             hottest solid's top, never moving with the solid */
+          outlineT.setAttribute('x', (X0 + X1) / 2); outlineT.setAttribute('y', YB - 3 - sim.sites(1).h - 12);
           outlineT.setAttribute('fill', '#C2410C');
         }
         outline.setAttribute('opacity', warmer ? 1 : 0); outlineT.setAttribute('opacity', warmer ? 1 : 0);

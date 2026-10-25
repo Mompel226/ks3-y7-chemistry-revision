@@ -274,6 +274,22 @@ input.gap[readonly]{cursor:default}
 .slot .n{font:900 13px/1 var(--sans);color:var(--ink3)}
 .slot.target{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
 .slot .chip{padding:5px 9px;font-size:14.5px}
+.slot{max-width:24%}                               /* a long label wraps inside its box, never past the picture's edge */
+/* find the faults (25 Oct 2026): a student's graph, with a button over each of its parts */
+.flt{position:relative;margin:4px auto 6px;max-width:560px;line-height:0}
+.flt svg{display:block;width:100%;height:auto}
+.flt .tap{position:absolute;margin:0;padding:0;border:0;border-radius:8px;background:transparent;cursor:pointer}
+.flt .tap:hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.flt .tap:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.flt__n{margin:2px 0 6px;font-size:16px;color:var(--ink2)}
+.flt__msg{margin:8px 0 4px;padding:10px 12px;border-radius:10px;font-size:16.5px;line-height:1.5;background:var(--surface);border:1.5px solid var(--rule)}
+.flt__msg:empty{display:none}
+.flt__msg.pen{border-color:#D22F27;border-left-width:6px}
+.flt__msg.no{border-color:var(--amber);background:var(--amber-tint)}
+.flt__msg.good{border-color:color-mix(in srgb,var(--good) 55%,transparent);background:var(--good-tint)}
+.flt__list{margin:8px 0 4px;padding-left:24px;font-size:16px;line-height:1.5}
+.flt__list:empty{display:none}
+.flt__list .nt{color:var(--ink3)}
 /* a written answer, checked against a list */
 .write textarea{width:100%;min-height:118px;font:600 16.5px/1.5 var(--sans);color:var(--ink);background:var(--surface);border:1.5px solid var(--rule2);border-radius:10px;padding:10px 12px;resize:vertical}
 .write textarea:focus{outline:none;border-color:var(--focus);background:var(--sheet)}
