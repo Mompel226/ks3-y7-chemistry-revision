@@ -86,15 +86,17 @@ The `tools/` named here stay on Daniel's computer: they are not in this reposito
 ## Videos from other people
 
 Part 2's "Watch the real thing" clips (`img/clips/`, 26 Oct 2026) come from Wikimedia Commons, or are used with the
-permission Daniel was given, and keep their own licences (see NOTICE); each is credited under its video on the page. Each was cut to about 6 seconds, without sound.
+permission Daniel was given, and keep their own licences (see NOTICE); each is credited under its video on the page by where it was found (Daniel, 26 Oct 2026: no notes of changes
+there; the Creative Commons licences ask for them, so they are here). Each runs about 4 to 7 seconds, without sound.
 
 | Clip | From | Author | Licence | Changed |
 |---|---|---|---|---|
 | melting | [Ice cubes melting in a glass](https://commons.wikimedia.org/wiki/File:Ice_cubes_melting_in_a_glass.ogv) | Philip Serracino Inglott | CC BY-SA 3.0 (this clip too) | shortened, 3× faster |
 | freezing | [A freezing soap bubble in McGregor, Minnesota](https://commons.wikimedia.org/wiki/File:A_freezing_soap_bubble_in_McGregor,_Minnesota.webm) | Lorie Shaull | CC BY 2.0 | cropped, shortened, 2× faster |
-| boiling | [Boiling water - 2025 jan 9](https://commons.wikimedia.org/wiki/File:Boiling_water_-_2025_jan_9.webm) | Nesnad | CC BY 4.0 | cropped, shortened |
-| sublimation | [dry ice GIF](https://taylorsciencegeeks.weebly.com/blog/previous/50) | Taylor Science Geeks | Daniel has the permission (26 Oct 2026; the page credits the source only, his choice) | GIF made into a video |
-| deposition | [Physical Properties of Iodine](https://commons.wikimedia.org/wiki/File:Physical_Properties_of_Iodine.ogv) | NCSSM | CC BY 3.0 | shortened, faster |
+| boiling | [GIF on Medium](https://miro.medium.com/v2/resize:fit:744/1*LwE7qezaem-RaBUG92XaQg.gif) | Rhett Allain | Daniel has the permission | GIF made into a video |
+| condensing | [GIF on makeagif.com](https://i.makeagif.com/media/8-01-2016/YCZ9mv.gif) | not named | Daniel's choice (26 Oct 2026) | 2× faster |
+| sublimation | [dry ice GIF](https://taylorsciencegeeks.weebly.com/blog/previous/50) | Taylor Science Geeks | Daniel has the permission | GIF made into a video |
+| deposition | [GIF on makeagif.com](https://i.makeagif.com/media/7-25-2022/WdiPJ8.gif) | Science Garage (YouTube) | Daniel has the permission | the makeagif strip cut off, 1.6× faster |
 
-No clip for evaporating (the free one jumps in time and has German labels) or condensing (none free): the drawn
-pictures show those. A video found elsewhere (a GIF site, social media) is never used without its author's licence.
+No clip for evaporating (the free one jumps in time and has German labels): the vaporisation diagram and the drawn
+pictures show it. A video found elsewhere (a GIF site, social media) is never used without its author's licence.
