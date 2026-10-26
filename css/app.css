@@ -183,6 +183,15 @@ table.tb .ico{display:block;width:44px;height:44px;margin:0 0 4px}
 .sci > .k3{margin:0 0 4px;color:var(--good)}
 .sci > p{margin:0 0 6px;font-size:16px}
 table.tb.sci__t{margin:4px 0 10px;font-size:15.5px}
+/* the states-of-matter table (Daniel, 26 Oct 2026: "center better … particularly in the phone mode"): three equal columns,
+   each centred under its picture; every row centred from top to bottom */
+table.tb.states{table-layout:fixed;font-size:16px}
+table.tb.states thead th:first-child,table.tb.states tbody th{width:27%}
+table.tb.states thead th,table.tb.states td{text-align:center;vertical-align:middle}
+table.tb.states tbody th{vertical-align:middle}
+table.tb.states thead th{font-size:15px;letter-spacing:.04em;padding:10px 6px}
+table.tb.states .ico{width:50px;height:50px;margin:0 auto 6px}
+table.tb.states td,table.tb.states tbody th{padding:9px 8px}
 table.tb.sci__t td:first-child{color:var(--ink2);width:46%}
 table.tb.sci__t b{font-weight:900}
 /* a writing frame */
@@ -445,6 +454,10 @@ svg.pic text,svg.fig text{font-family:var(--sans)}
   .upbtns .lg{display:none}
   table.tb{font-size:14.5px}
   table.tb th,table.tb td{padding:6px}
+  table.tb.states{font-size:14.5px}
+  table.tb.states td,table.tb.states tbody th{padding:8px 5px}
+  table.tb.states thead th{font-size:13px;letter-spacing:.02em;padding:8px 4px}
+  table.tb.states .ico{width:42px;height:42px}
   .slot{min-width:64px}
   .slot .chip{font-size:13px;padding:4px 6px}
 }
