@@ -1,11 +1,16 @@
 /* ============================================================
    checks.js — the checks of Chemistry revision (25 Oct 2026): how each kind is drawn, marked and kept.
    Built on the checks of Separating mixtures (its js/checks.js), with Daniel's help for revision (25 Oct 2026):
-   - Key words are TYPED into gaps: spelling counts, capitals do not (chemical symbols: capitals count too). The pupil
+   - Key words are TYPED into gaps: spelling counts, capitals do not (chemical symbols: capitals count too). A gap
+     accepts every scientific word that makes its sentence right ("reversible" or "physical"), never an everyday word
+     ("shrinks" for contracts); the first word listed is the one the first letter, the word list and the answers show. The pupil
      types first; "Show the first letter" puts in the first letter of the gap they are working on, one gap at a time.
+     "Show the word list" (Daniel, 26 Oct 2026: "two options, first letter or all the words in random order") shows every
+     gap's word once, in a random order kept for that pupil, under the sentence; it does not say which gap takes which.
    - Some checks have a 💡 Hint: an idea to think about, never the answer.
-   - A first letter or a hint counts as a try on the teacher's board, so "right first time" stays honest: it is sent as
-     a check that was not right, with the help named ("first letter, gap 2", "hint") among the answers it struggled with.
+   - A first letter, the word list or a hint counts as a try on the teacher's board, so "right first time" stays honest:
+     it is sent as a check that was not right, with the help named ("first letter, gap 2", "word list", "hint") among the
+     answers it struggled with.
    - Multiple choice: a new random order each time it is drawn; a wrong choice says only "Not this one"; the reason
      comes with the right answer. The record keeps each option by its place in the list (o0 = the first written).
    - "Show the answers" only after two complete tries. A sorted, ordered or labelled answer is kept as the pupil left it
@@ -60,7 +65,10 @@
   }
   function markGaps(vals, gaps, groups, keepCase, letters) {
     letters = letters || {};
-    const ok = vals.map((v, i) => gaps[i].some(a => canon(a, keepCase) === canon(v, keepCase)));
+    /* a gap given its first letter takes only an accepted word with that letter (Daniel, 26 Oct 2026: "physical" is
+       also right for a reversible change, but not once the pupil has been shown the "r") */
+    const fits = (v, i) => !letters[i] || canon(v, keepCase).charAt(0) === canon(letters[i], keepCase).charAt(0);
+    const ok = vals.map((v, i) => gaps[i].some(a => canon(a, keepCase) === canon(v, keepCase)) && fits(v, i));
     (groups || []).forEach(gr => {
       const idx = gr.map(n => n - 1), held = pairGroup(idx, vals, gaps, keepCase, letters);
       idx.forEach(i => { ok[i] = false; });
@@ -127,17 +135,33 @@
     if (q.stem) box.appendChild(h('p', { class: 'q__stem' }, q.stem));
     const body = h('p', { class: 'q__stem gapline' }, html); box.appendChild(body);
     const ins = $$('input.gap', body);
-    const row = h('div', { class: 'q__row' }, '<button class="btn" type="button">Check</button><button class="btn help fl" type="button">Show the first letter</button><span class="say"></span>');
+    const row = h('div', { class: 'q__row' }, '<button class="btn" type="button">Check</button><button class="btn help fl" type="button">Show the first letter</button><button class="btn help wlb" type="button">Show the word list</button><span class="say"></span>');
     box.appendChild(row);
-    const btn = $('.btn:not(.help)', row), flb = $('.fl', row), say = $('.say', row);
+    const btn = $('.btn:not(.help)', row), flb = $('.fl', row), wlb = $('.wlb', row), say = $('.say', row);
     let tries = A.tries || 0, last = 0;
+    /* the word list: each gap's own word (the first one it accepts), in a random order that stays for this pupil */
+    function wordList(order) {
+      const words = order.map(i => gaps[i] ? gaps[i][0] : '').filter(Boolean);
+      const wl = h('div', { class: 'q__wl', role: 'note', 'aria-label': 'Word list' },
+        '<span class="q__wl-k">Word list</span>' + words.map(w => '<span class="q__wl-w">' + esc(w) + '</span>').join(''));
+      body.insertAdjacentElement('afterend', wl); wlb.remove();
+    }
+    function shuffled() {
+      const o = gaps.map((g, i) => i);
+      for (let t = 0; t < 20; t++) {
+        for (let i = o.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; }
+        if (o.length < 2 || o.some((x, i) => gaps[x][0] !== gaps[i][0])) break;   /* never the order of the gaps */
+      }
+      return o;
+    }
+    if (Array.isArray(A.wl) && A.wl.length === gaps.length) wordList(A.wl);
     /* the gaps given their first letter: gap → that letter (a save from before 25 Oct 2026 kept only the gap) */
     const hinted = new Map((A.hl || []).map(x => Array.isArray(x) ? x : [x, gaps[x] ? gaps[x][0].charAt(0) : '']));
     const groupOf = i => (q.anyOrder || []).map(g => g.map(n => n - 1)).find(g => g.indexOf(i) >= 0);
     (A.v || []).forEach((v, i) => { if (ins[i]) ins[i].value = v; });
     hinted.forEach((l, i) => { if (ins[i]) ins[i].classList.add('hinted'); });
     function lock(shown) {
-      ins.forEach(i => { i.readOnly = true; }); btn.remove(); flb.remove();
+      ins.forEach(i => { i.readOnly = true; }); btn.remove(); flb.remove(); wlb.remove();
       const sb = $('.show', row); if (sb) sb.remove();
       const hb = $('.btn.help', row); if (hb) hb.remove();
       ui.status(shown ? 'Answers shown' : RIGHT, !shown);
@@ -217,6 +241,13 @@
       ui.say(say, 'The first letter is in gap ' + (i + 1) + '. Type the rest of the word.', '');
       flState();
     });
+    wlb.addEventListener('click', () => {
+      const order = shuffled();
+      wordList(order);
+      L.check(id, false, ['word list']);
+      ans.put(id, { v: ins.map(x => x.value), wl: order });
+      ui.say(say, 'The words for the gaps are under the sentence, in a random order. Type each one into its gap.', '');
+    });
     btn.addEventListener('click', check);
     function check() {
       const vals = ins.map(i => i.value);
@@ -229,8 +260,9 @@
       ui.status('Try ' + (tries + 1));
       let msg = ok.some(Boolean) ? 'Not right yet: change the ones in amber. Spelling counts.' : 'Not right yet. Spelling counts: check the word bank.';
       if (keepCase && vals.some((v, i) => !ok[i] && gaps[i].some(a => canon(a) === canon(v)))) msg = 'Nearly: check the capital letters. A symbol starts with a capital letter; a second letter is small.';
-      /* a gap of a list given its first letter, holding a word that does not start with it */
-      const off = ins.findIndex((x, i) => !ok[i] && groupOf(i) && hinted.get(i) && canon(vals[i], keepCase).charAt(0) !== canon(hinted.get(i), keepCase).charAt(0));
+      /* a gap given its first letter, holding a word (of its list, or another right word) that does not start with it */
+      const off = ins.findIndex((x, i) => !ok[i] && hinted.get(i) && canon(vals[i], keepCase).charAt(0) !== canon(hinted.get(i), keepCase).charAt(0)
+        && (groupOf(i) || gaps[i].some(a => canon(a, keepCase) === canon(vals[i], keepCase))));
       if (off >= 0) msg = 'Gap ' + (off + 1) + ' was given its first letter, "' + hinted.get(off) + '": the word in that gap must start with it.';
       ui.say(say, msg, 'no');
       showBtn(); flState();

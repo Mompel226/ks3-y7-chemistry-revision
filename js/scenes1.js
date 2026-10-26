@@ -319,7 +319,7 @@
       const COND = ['<b>Condensing.</b> At the boiling point, gas particles lose energy and come close together again: a liquid. The temperature stays there until all of it has condensed.',
         '<b>Still condensing.</b> More particles join the liquid; the temperature still stays at the boiling point. Cool it again.',
         '<b>All condensed.</b> It is all a liquid again. Only now can cooling make it colder.'];
-      const EXPAND = '<b>Heated:</b> the particles vibrate more and move a little further apart, so the solid expands (a real solid expands much less). The dashed line shows its size before heating. <u>The particles do not get bigger.</u>';
+      const EXPAND = '<b>Heated:</b> the particles vibrate more and the gaps between them get a little bigger, so the solid expands (a real solid expands much less). The dashed line shows its size before heating. <u>The particles do not get bigger.</u>';
       const DO = '<p><mark class="do">Press 🔥 Heat again and again, then ❄ Cool.</mark></p>';
       let lead = null;                             /* what the last press did, in place of the state's description */
       const say = () => k.say(`<p>${lead || SAY[st] || ''}</p>` + DO);
@@ -724,6 +724,75 @@
       const KEYS = [['H', 'hydrogen'], ['O', 'oxygen'], ['C', 'carbon'], ['N', 'nitrogen'], ['He', 'helium'], ['Ar', 'argon'], ['Na', 'sodium ion (+)'], ['Cl', 'chloride ion (−)']];
       KEYS.forEach(([el, t], i) => { const x = 40 + (i % 4) * 190, y = i < 4 ? 452 : 484; D.atom(g, x, y, 9, el); S('text', { class: 'note', x: x + 16, y: y + 6 }, g, t); });
       k.say('<p>Every circle is one atom (or ion). Atoms touching are joined in a molecule.</p><p><mark class="do">Press each box: is it an element, a compound or a mixture?</mark></p>');
+    }
+  }, {
+    /* Count the particles (Daniel, 26 Oct 2026: "salt is not a molecule because you cannot know the number of atoms
+       exactly, while a molecule you can, same as for metals"). A bigger piece of water has MORE molecules, but each one
+       has exactly 3 atoms; a bigger salt crystal or piece of copper is ONE lattice with more particles, so no number
+       belongs to it: only salt's ratio (1 : 1) is fixed. Each lattice grows by a ring around the old one, centred, so
+       the old particles stay where they were (and keep their colours: the pattern's parity does not change). */
+    id: 'count', name: 'Count the particles', title: 'Molecules, and lattices with no fixed number',
+    alt: 'Water molecules of 3 atoms each; a salt lattice of sodium and chloride ions and a copper lattice, which grow',
+    draw(k) {
+      const g = k.g, d = 25, SIDES = [2, 4, 6, 8], MOLS = [1, 2, 4, 8];
+      const COL = [{ x: 135, t: 'Water, H₂O' }, { x: 400, t: 'Salt, NaCl' }, { x: 665, t: 'Copper, Cu' }];
+      COL.forEach(c => S('text', { class: 'ttl', x: c.x, y: 36, 'text-anchor': 'middle' }, g, c.t));
+      S('text', { class: 'note', x: 135, y: 60, 'text-anchor': 'middle' }, g, 'molecules');
+      S('text', { class: 'note', x: 400, y: 60, 'text-anchor': 'middle' }, g, 'a lattice of ions');
+      S('text', { class: 'note', x: 665, y: 60, 'text-anchor': 'middle' }, g, 'a lattice of atoms');
+      [267, 533].forEach(x => S('line', { x1: x, y1: 20, x2: x, y2: 400, stroke: 'var(--rule2)', 'stroke-width': 2, 'stroke-dasharray': '6 6' }, g));
+      /* water: each molecule in its own dashed ring, so it is one thing you can count */
+      const SLOT = [[95, 170], [175, 170], [95, 240], [175, 240], [95, 100], [175, 100], [95, 310], [175, 310]];   /* 2 × 4, rings never touch */
+      const wat = S('g', null, g), mols = SLOT.map(([x, y], i) => {
+        const m = S('g', { opacity: 0 }, wat);
+        S('circle', { cx: x, cy: y, r: 32, fill: 'none', stroke: 'var(--ink2)', 'stroke-width': 1.6, 'stroke-dasharray': '4 4' }, m);
+        D.mol(m, 'H2O', x, y - 4, 24, [0, 40, -30, 15, -50, 70, -10, 25][i]);
+        return m;
+      });
+      /* the two lattices: every place of the biggest one drawn now, each shown from the stage it joins */
+      function grid(cx, cy, el) {
+        const n = SIDES[SIDES.length - 1], out = [];
+        for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+          const ring = Math.max(Math.abs(i - (n - 1) / 2), Math.abs(j - (n - 1) / 2)) + .5;   /* 1 = the middle 2 × 2 */
+          const kind = el || ((i + j) % 2 ? 'Cl' : 'Na');
+          const a = D.atom(g, cx + (i - (n - 1) / 2) * d, cy + (j - (n - 1) / 2) * d, D.EL[kind].r * d * .55, kind,
+            el ? null : { sign: kind === 'Na' ? '+' : '−' });
+          a.setAttribute('opacity', 0); out.push({ a, stage: ring - 1 });
+        }
+        return out;
+      }
+      const salt = grid(400, 210), cu = grid(665, 210, 'Cu');
+      const cnt = COL.map(c => S('text', { class: 'lbl', x: c.x, y: 364, 'text-anchor': 'middle' }, g, ''));
+      const sub = COL.map(c => S('text', { class: 'note', x: c.x, y: 388, 'text-anchor': 'middle' }, g, ''));
+      /* the key: every circle named by what it draws */
+      [['H', 'hydrogen atom'], ['O', 'oxygen atom'], ['Na', 'sodium ion (+)'], ['Cl', 'chloride ion (−)'], ['Cu', 'copper atom']].forEach(([el, t], i) => {
+        const x = 30 + i * 154; D.atom(g, x, 428, el === 'Na' || el === 'Cl' ? 12 : 9, el, el === 'Na' ? { sign: '+' } : el === 'Cl' ? { sign: '−' } : null);
+        S('text', { class: 'note', x: x + 17, y: 434 }, g, t);
+      });
+      let st = 0;
+      const SAY = [
+        '<b>The smallest pieces.</b> One water molecule has exactly 3 atoms: 2 hydrogen and 1 oxygen. The salt and the copper are lattices: particles in a regular pattern.',
+        '<b>A bigger piece.</b> More water means more molecules, but each molecule still has exactly 3 atoms. The salt crystal does not get more "molecules": it is one lattice, and it just has more ions.',
+        '<b>Bigger again.</b> You can count the atoms in one water molecule: always 3. In salt there is no separate piece to count: the lattice continues, so the number of ions depends only on how big the crystal is. Copper is the same.',
+        '<b>NaCl does not count ions.</b> It gives the ratio: 1 sodium ion for each chloride ion. Count them: always the same number of each. A small grain of table salt has about <span style="white-space:nowrap">1 000 000 000 000 000 000</span> ions.'
+      ];
+      function paint(from) {
+        const fade = (el, show) => { if (show && el.getAttribute('opacity') === '0') { el.dataset.f = 1; } el.setAttribute('opacity', show ? (el.dataset.f ? 0 : 1) : 0); };
+        mols.forEach((m, i) => fade(m, i < MOLS[st]));
+        salt.concat(cu).forEach(p => fade(p.a, p.stage <= st));
+        const n = SIDES[st] * SIDES[st];
+        cnt[0].textContent = MOLS[st] === 1 ? '1 molecule' : MOLS[st] + ' molecules'; sub[0].textContent = 'each one: 3 atoms, always';
+        cnt[1].textContent = n + ' ions'; sub[1].textContent = n / 2 + ' sodium (+), ' + n / 2 + ' chloride (−)';
+        cnt[2].textContent = n + ' atoms'; sub[2].textContent = 'all copper';
+        const fresh = [...g.querySelectorAll('[data-f]')];
+        fresh.forEach(e => e.removeAttribute('data-f'));
+        k.anim(from === undefined ? 0 : 700, t => fresh.forEach(e => e.setAttribute('opacity', t.toFixed(2))));
+        k.say('<p>' + SAY[st] + '</p><p><mark class="do">' + (st < 3 ? 'Press ➕ Bigger piece.' : 'Press ↺ Smallest piece to start again.') + '</mark></p>');
+        big.disabled = st === 3; small.disabled = st === 0;
+      }
+      const big = k.btn('➕ Bigger piece', 300, 470, () => { if (st < 3) { st++; paint(st - 1); } });
+      const small = k.btn('↺ Smallest piece', 520, 470, () => { st = 0; paint(); }, { cls: 'ghost' });
+      paint();
     }
   }, {
     id: 'fes', name: 'Iron and sulfur', title: 'Iron and sulfur: a mixture, then a compound',

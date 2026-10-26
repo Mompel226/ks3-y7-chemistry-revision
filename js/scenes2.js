@@ -198,6 +198,96 @@
       draw(); say(); paint();
     }
   }, {
+    /* Why water dissolves sugar and salt (an extension; Daniel, 26 Oct 2026: "show how molecules dissolve in water: water
+       surrounds the molecule and it is because of the polarity of water"). A lens of liquid water (js/lens.js, the same
+       water as Separating mixtures); at its bottom a piece of solid. Each press, one particle leaves the solid and four
+       water molecules close round it and move with it: around a sodium ion the oxygen end (δ−) faces in, around a chloride
+       ion a hydrogen end (δ+); a sugar molecule (drawn simply: a ball with two slightly positive H parts and two slightly
+       negative O parts) is held by both kinds, each end facing the opposite charge. The sugar molecule stays whole. */
+    id: 'hug', name: 'Why it dissolves', title: 'Why water dissolves sugar and salt',
+    alt: 'A lens of water molecules; a piece of sugar or salt at the bottom; water molecules surround each particle that leaves it',
+    draw(k) {
+      const g = k.g, Lz = window.LENS, DEG = Math.PI / 180;
+      const lz = Lz.lens(g, 230, 240, 205, 'Inside the water', null);
+      const L = lz.inner, cx = lz.x, cy = lz.y, R = lz.r;
+      S('rect', { x: cx - R, y: cy - R, width: 2 * R, height: 2 * R, fill: '#EAF3FB' }, L);
+      /* a sugar molecule, drawn simply: the white dots are slightly positive (H), the red ones slightly negative (O), at
+         the four places where lens.js puts its water (45°, 135°, 225°, 315°: O inwards at even places, H at odd ones) */
+      const sugarDraw = (p, r) => {
+        S('circle', { cx: 0, cy: 0, r, fill: '#D9C48A', stroke: '#7A6420', 'stroke-width': 1.6 }, p);
+        [0, 1, 2, 3].forEach(i => { const th = (i * 90 + 45) * DEG, odd = i % 2;
+          S('circle', { cx: Math.cos(th) * r * .74, cy: Math.sin(th) * r * .74, r: r * (odd ? .3 : .23), fill: odd ? '#E0533F' : '#F4F6F8', stroke: odd ? '#8E2A1D' : '#7D8794', 'stroke-width': 1 }, p); });
+      };
+      const SC = 1.5;                                     /* bigger particles, fewer of them: each one readable */
+      const SUGAR = { kind: 'sugar', r: 20 * SC, hug: 'both', spin: true, draw: sugarDraw };
+      const NA = { kind: 'Na', r: 8.5 * SC, fill: '#8E5BD6', hug: '+', sign: '+' }, CL = { kind: 'Cl', r: 15 * SC, fill: '#43A047', hug: '-', sign: '−' };
+      const ionDraw = (p, x, y, e) => { const a = S('g', { transform: `translate(${x} ${y})` }, p); S('circle', { cx: 0, cy: 0, r: e.r, fill: e.fill, stroke: 'rgba(0,0,0,.35)', 'stroke-width': .9 }, a);
+        S('text', { x: 0, y: e.r * .42, 'text-anchor': 'middle', 'font-size': e.r * 1.25, 'font-weight': 900, fill: '#FFFFFF' }, a, e.sign); return a; };
+      /* the solid pieces: [x, y, particle], in the order they leave (the top row first, from its two ends) */
+      const BOT = cy + R;
+      function piece(kind) {
+        const out = [];
+        if (kind === 'sugar') { for (let r = 1; r >= 0; r--) [0, 2, 1].forEach(c => out.push([cx - 62 + c * 62, BOT - 60 - r * 62, SUGAR])); }
+        else { for (let r = 2; r >= 0; r--) [0, 3, 1, 2].forEach(c => out.push([cx - 60 + c * 40, BOT - 50 - r * 40, (r + c) % 2 ? NA : CL])); }
+        return out;
+      }
+      let kind = 'sugar', left = [], drawn = [], gone = 0, liq = null;
+      const over = S('g', null, L);
+      function solids() {
+        if (!left.length) return [];
+        const ys = left.map(p => p[1] - p[2].r), xs = left.map(p => p[0]);
+        return [{ rect: [Math.min(...xs) - 32, Math.min(...ys) - 3, Math.max(...xs) + 32, BOT] }];
+      }
+      function start(kd) {
+        kind = kd; gone = 0; left = piece(kd);
+        if (liq) liq.destroy();
+        over.innerHTML = '';
+        drawn = left.map(([x, y, e]) => { if (e.kind === 'sugar') { const a = S('g', { transform: `translate(${x} ${y}) rotate(${(x * 7) % 90})` }, over); sugarDraw(a, e.r); return a; } return ionDraw(over, x, y, e); });
+        liq = Lz.liquidLens(k, lz, { seed: 5, scale: SC, fill: .78, halo: true, solids: solids() });   /* .78: packed, touching */
+        L.appendChild(over);
+        bs.on(kd === 'sugar'); bn.on(kd === 'salt');
+        say();
+      }
+      function one() {
+        if (!left.length) return;
+        const [x, y, e] = left.shift(); drawn.shift().remove(); gone++;
+        liq.setSolids(solids());
+        liq.add(e, [x, y - 50]);
+        L.appendChild(over);
+        say();
+      }
+      const SAY = {
+        sugar0: '<b>Sugar in water.</b> A sugar molecule has slightly positive parts (white) and slightly negative parts (red). The water molecules are attracted to them.',
+        sugar: '<b>A sugar molecule leaves the solid.</b> Water molecules surround it: a slightly negative oxygen end faces each slightly positive part, and a slightly positive hydrogen end faces each slightly negative part. They move with it. The sugar molecule stays whole.',
+        salt0: '<b>Salt in water.</b> Salt is a lattice of sodium ions (+) and chloride ions (−). The water molecules are attracted to the ions at its edges.',
+        salt: '<b>An ion leaves the lattice.</b> Around a sodium ion (+), water molecules turn their slightly negative oxygen end inwards. Around a chloride ion (−), they turn a slightly positive hydrogen end inwards. Opposite charges attract.',
+        done: '<b>All of it has dissolved.</b> Each particle is surrounded by water molecules and spreads through the water. You cannot see it, but it is still there.'
+      };
+      function say() {
+        const t = !left.length ? SAY.done : SAY[kind + (gone ? '' : '0')];
+        k.say('<p>' + t + '</p><p><mark class="do">' + (left.length ? 'Press 💧 Dissolve one.' : 'Press Sugar or Salt to start again.') + '</mark></p>');
+        bd.disabled = !left.length;
+      }
+      /* the key: a big water molecule with its two ends, then each particle */
+      const kx = 560, ky = 110;
+      S('text', { class: 'ttl', x: 470, y: 40 }, g, 'Water is polar');
+      D.atom(g, kx - 26, ky + 22, 15, 'H'); D.atom(g, kx + 26, ky + 22, 15, 'H'); D.atom(g, kx, ky, 24, 'O');
+      S('text', { class: 'lbl', x: kx, y: ky - 32, 'text-anchor': 'middle' }, g, 'δ−');
+      S('text', { class: 'lbl', x: kx - 50, y: ky + 52, 'text-anchor': 'middle' }, g, 'δ+'); S('text', { class: 'lbl', x: kx + 50, y: ky + 52, 'text-anchor': 'middle' }, g, 'δ+');
+      S('text', { class: 'note', x: 625, y: 92 }, g, 'δ− slightly negative:'); S('text', { class: 'note', x: 625, y: 112 }, g, 'the oxygen end');
+      S('text', { class: 'note', x: 625, y: 142 }, g, 'δ+ slightly positive:'); S('text', { class: 'note', x: 625, y: 162 }, g, 'the hydrogen end');
+      const kg = S('g', { transform: 'translate(484 214)' }, g);
+      sugarDraw(S('g', null, kg), 13); S('text', { class: 'note', x: 22, y: 6 }, kg, 'sugar molecule (drawn simply)');
+      ionDraw(kg, 0, 36, Object.assign({}, NA, { r: 12 })); S('text', { class: 'note', x: 22, y: 42 }, kg, 'sodium ion (+)');
+      ionDraw(kg, 150, 36, Object.assign({}, CL, { r: 13 })); S('text', { class: 'note', x: 170, y: 42 }, kg, 'chloride ion (−)');
+      S('circle', { cx: 0, cy: 106, r: 13, fill: '#1D5FBF', 'fill-opacity': .07, stroke: '#1D5FBF', 'stroke-width': 2, 'stroke-dasharray': '6 5' }, kg); S('text', { class: 'note', x: 22, y: 104 }, kg, 'a dissolved particle and the'); S('text', { class: 'note', x: 22, y: 123 }, kg, 'water molecules around it');
+      S('line', { x1: -10, y1: 70, x2: 12, y2: 70, stroke: '#2F4A66', 'stroke-width': 1.8, 'stroke-dasharray': '3 2.5', 'stroke-linecap': 'round' }, kg); S('text', { class: 'note', x: 22, y: 76 }, kg, 'hydrogen bond');
+      const bs = k.btn('Sugar', 540, 365, () => start('sugar'));
+      const bn = k.btn('Salt', 660, 365, () => start('salt'));
+      const bd = k.btn('💧 Dissolve one', 600, 425, one, { cls: 'cold' });
+      start('sugar');
+    }
+  }, {
     id: 'solgraph', name: 'Graph: solubility', title: 'Solubility of potassium nitrate',
     alt: 'A curve: the solubility of potassium nitrate in 100 g of water rises from about 13 g at 0 °C to about 169 g at 80 °C',
     draw(k) {

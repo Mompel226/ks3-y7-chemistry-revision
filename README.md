@@ -13,16 +13,16 @@ about 6 or 7 minutes. Pupils can use it instead of the paper booklet.
 | 1 States of matter | one substance (not water) whose temperature decides its state, from the coldest: heat it until it melts, then boils, each change a third at a time at one temperature, starting at the surface; cool it back; compress it with the same push each time and read the volume under the lid (a hotter gas is compressed less) | particles and their movement, expansion and contraction (the particles do not grow), compressing a gas |
 | 2 Changes of state | the six changes on an energy arrow, each shown in a lens; ice heated and cooled | melting, freezing, evaporating, condensing, sublimation, deposition; melting point = freezing point; physical and chemical change; the water cycle |
 | 3 Atoms and elements | inside a helium and a carbon atom; the 13 elements to know on the periodic table | protons (+), neutrons (no charge), electrons (−); symbols; metals and non-metals; states at room temperature |
-| 4 Molecules and compounds | boxes of particles; iron and sulfur, a mixture and then a compound | element, compound or mixture from a particle picture; formulae; diatomic elements; new properties of a compound; reading statements carefully |
+| 4 Molecules and compounds | boxes of particles; count the particles (a water molecule always has 3 atoms, a salt crystal or a piece of copper is a lattice of any size); iron and sulfur, a mixture and then a compound | element, compound or mixture from a particle picture; formulae; diatomic elements; new properties of a compound; reading statements carefully |
 | 5 Mixtures | a solution, a suspension and a colloid: a torch, a day left to stand, a microscope; a graph (salt on icy roads) | pure substance or mixture; alloys; the three kinds of mixture; reading a graph |
-| 6 Solutions | a drink made stronger or weaker; a solubility curve; a chart to choose a nail-varnish remover | solute, solvent, solution, soluble, insoluble; concentrated and dilute; solubility and saturated solutions; independent, dependent and control variables; choosing from a chart |
+| 6 Solutions | a drink made stronger or weaker; why it dissolves (extension: polar water molecules surround each sugar molecule or salt ion); a solubility curve; a chart to choose a nail-varnish remover | solute, solvent, solution, soluble, insoluble; concentrated and dilute; solubility and saturated solutions; independent, dependent and control variables; choosing from a chart |
 | 7 Sieve, filter, decant, magnet | filtration of chalky water and of salt water; a sieve; layers of liquids | residue and filtrate; what a sieve cannot do; choosing a method; immiscible liquids; density and floating |
 | 8 Evaporation, distillation, chromatography | simple distillation, evaporation, a chromatogram of food colourings, a cold tray over boiling salty water | the steps of distillation; keeping the solvent; the words of chromatography; reading a chromatogram; two written answers checked against a mark list |
 | 9 Graphs and tables | the perfect graph and the perfect table, every rule numbered, hidden until the pupil presses Show it | finding the faults in a student's line graph and bar chart (tap each part that is wrong); naming the faults of a table; the title of a graph |
 
 **Help, after the pupil has tried.** Key words are typed (spelling counts; capitals do not, except in chemical symbols). A
 pupil who is stuck presses **Show the first letter**: the gap they are working on shows its first letter, and they type
-the rest. Some checks have a **💡 Hint**: an idea to think about, never the answer. Every key word can be tapped for its
+the rest. Or they press **Show the word list**: every gap's word, in a random order, under the sentence. Some checks have a **💡 Hint**: an idea to think about, never the answer. Every key word can be tapped for its
 meaning, with Korean and Chinese, and the word bank has every word of the page. The answers can be shown only after two
 tries.
 
@@ -37,8 +37,8 @@ pupils write those words (compress, contract, reversible, transparent, saturated
 
 **For the teacher.** A pupil who signs in with their school Google account has every check saved for their teacher, who
 sees it live on the teacher page's 🔬 Practicals board: right first time, the number of checks, and what they struggled
-with. A first letter or a hint counts as a try, so a question answered with help never shows as "right first time", and
-the board names the help ("first letter, gap 2", "hint"). Signed out, the page works the same and nothing leaves the
+with. A first letter, the word list or a hint counts as a try, so a question answered with help never shows as "right first time", and
+the board names the help ("first letter, gap 2", "word list", "hint"). Signed out, the page works the same and nothing leaves the
 computer. Answers survive a reload.
 
 **Made for Year 7.** Big text, what to press written beside its button and highlighted, plain sentences for pupils who
@@ -58,13 +58,13 @@ The `tools/` named here stay on Daniel's computer: they are not in this reposito
 - `index.html` holds the notes of each part and a box for each check; `js/questions.js` every check (its id is its square
   on the teacher's board: keep the id when rewording); `js/words.js` which words the word bank shows.
 - `js/checks.js` draws and marks the checks; `js/panel.js` the picture on the left, which changes when a pupil scrolls to a
-  check that names a picture (`data-scene`); `js/scenes1.js` and `js/scenes2.js` the pictures; `js/draw.js` the drawing kit
+  check that names a picture (`data-scene`); `js/scenes1.js` and `js/scenes2.js` the pictures; `js/lens.js` the lens of liquid water (a copy of Separating mixtures' `liquidLens`: change both); `js/draw.js` the drawing kit
   (particles, glassware, graphs) and the figures inside checks; `js/core.js` the tabs, the word bank and the progress bars.
 - `js/signin.js`, `js/lesson.js` and `js/glossary.js` are copies of the Biology Hub's shared files (`labs-shared/`), made by
   `node tools/practicals-sync.mjs` in the workspace: never edit them here. A new word goes into the shared KS3 glossary first.
 - After changing a check: `node tools/make-questions.mjs` (writes `data/questions.json`, which the teacher's board reads),
   then `node tools/stamp.mjs` (one version for `version.txt` and every `?v=`).
-- `node tools/check.mjs` runs a pupil through the checks in headless Chrome (first letters, hints, the record the board
+- `node tools/check.mjs` runs a pupil through the checks in headless Chrome (first letters, the word list, hints, the record the board
   reads, a reload); `node tools/shots.mjs <folder>` saves a screenshot of every picture after every press (`--dark`,
   `--part n`). `?still=1` makes every picture jump to its end state.
 - Before a push, also: `node tools/sweep.mjs` (every check: a wrong answer is marked wrong, the right one right),
@@ -75,7 +75,8 @@ The `tools/` named here stay on Daniel's computer: they are not in this reposito
   finger swipes the picture and drags a graph's ruler), `node tools/restart-check.mjs` (Start again, and the keyboard alone), `node tools/anyorder-check.mjs` (typed words that
   may come in any order, and the first letter that fixes its gap), `node tools/particles-check.mjs` (Part 1's substance
   melts and boils at the marked points; every particle box moves in calm slow motion) and `node tools/claims-check.mjs`
-  (every picture does what it says: the size before heating stays still, counts match their keys, the graph ruler sits
+  (every picture does what it says: the size before heating stays still, counts match their keys, each water molecule
+  has 3 atoms while a lattice grows, the water turns its opposite-charged end to each dissolved particle, the graph ruler sits
   on the curve, beads stop in the right layer, each hint names a real button, scrolling brings up the right picture) and
   `node tools/faults-check.mjs` (Part 9: every fault has a part to tap, each press area sits on its own part and a press
   on a part selects it, a right part tapped counts once, Show the faults only after two, Fix every fault draws the
