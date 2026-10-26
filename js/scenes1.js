@@ -54,7 +54,11 @@
     /* how deep each site lies below the surface of the pattern (0: nothing above it, or at a side), and the sites from the
        surface inwards: the top row first, then the sides */
     const depth = ps.map((_, i) => { const c = i % cols; return Math.min(Math.floor((n - 1 - i) / cols), c, cols - 1 - c); });
-    const SURFACE = ps.map((_, i) => i).sort((i, j) => depth[i] - depth[j] || Math.floor(j / cols) - Math.floor(i / cols) || Math.abs(j % cols - (cols - 1) / 2) - Math.abs(i % cols - (cols - 1) / 2));
+    /* o.floating (the ice-and-water zoom, 26 Oct 2026): the ice is a full-width sheet at the TOP of the water, as floating
+       ice and a freezing pond are: it melts from its BOTTOM row up (the meltwater lies under it) and freezes from its TOP
+       row down (SURFACE is then bottom row first; freezing takes it in reverse) */
+    const SURFACE = o.floating ? ps.map((_, i) => i).sort((i, j) => Math.floor(i / cols) - Math.floor(j / cols) || i - j)
+      : ps.map((_, i) => i).sort((i, j) => depth[i] - depth[j] || Math.floor(j / cols) - Math.floor(i / cols) || Math.abs(j % cols - (cols - 1) / 2) - Math.abs(i % cols - (cols - 1) / 2));
     const W = box.x1 - box.x0, sc = W / 360, stats = { evaps: 0, refills: 0 };   /* read by tools/particles-check.mjs */
     /* Slow motion (Daniel, 25 Oct 2026: gas particles "moving so fast" were unnerving). Real gas particles move at hundreds
        of metres every second, which no picture can show, so every picture is slowed down, by the same amount for every
@@ -151,6 +155,7 @@
     function level() {
       const area = ps.filter(q => q.ph === 'l' && !q.mv).length * LIQ_A, solid = ps.filter(held), solidLeft = solid.length > 0, S0 = sites().out;
       let band = box.y1 - area / W, bl = 0, br = 0, bt = 0, over = true;
+      if (o.floating) return { band, bl, br, bt, over: false, solidLeft: false, area };   /* the liquid lies UNDER the ice sheet */
       if (solidLeft) {
         bl = Math.min(...solid.map(q => q.mv ? S0[q.site][0] : q.x)) - r; br = Math.max(...solid.map(q => q.mv ? S0[q.site][0] : q.x)) + r;
         bt = Math.min(...solid.map(q => S0[q.site][1])) - r;
@@ -573,10 +578,15 @@
       /* the particles' box reaches just past the window's sides and bottom (a section of the water: molecules slide in
          and out of view, the lowest row runs on below); evaporation at any temperature while there is liquid below its
          boiling point, faster when hotter, each escaped molecule replaced by one drifting in from the water around */
-      const lens = PSim({ g: inner, x0: X0 - 15, x1: X1 + 15, y0: Y0, y1: Y1 + 9, n: 15, r: 15, cols: 4, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8, liqKick: 1.6,
-        smooth: true, exitTop: true, section: true,
+      /* the ice in the zoom is a sheet across the whole window, three rows deep, on top of the water (floating): a third of
+         it (one row) melts or freezes at each press, as the beaker's ice does (Daniel, 26 Oct 2026: the zoom and the
+         picture must match). Ice is LESS dense than liquid water: its molecules sit a little further apart (gap0), so the
+         meltwater under it has room to slide and looks like a liquid; 7 molecules a row exactly fill the window's width,
+         so the sheet joins up across its edges */
+      const lens = PSim({ g: inner, x0: X0 - 15, x1: X1 + 15, y0: Y0, y1: Y1 + 9, n: 21, r: 15, cols: 7, grow: 0, gap0: 240 / 7 / 30 - 1, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8, liqKick: 1.6,
+        smooth: true, exitTop: true, section: true, floating: true,
         evap: () => phase === 'boiling' ? 3 + 3 * frac                                   /* boiling: several a second */
-          : (phase === 'water' || phase === 'melting' || phase === 'freezing') ? .15 + .85 * Math.pow(Math.max(0, temp) / 100, 2) : 0,
+          : phase === 'water' ? .15 + .85 * Math.pow(Math.max(0, temp) / 100, 2) : 0,    /* none while ice covers the water */
         refill: () => true });
       k.svg.lens = lens;                                /* read by tools/particles-check.mjs */
       const lt = S('text', { class: 'ttl', x: LX, y: Y1 + 34, 'text-anchor': 'middle' }, g, 'Ice');
