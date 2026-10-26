@@ -103,6 +103,17 @@
     const tb = $(`#tab-${n}`), strip = $('.tabs');
     if (tb && strip) { const l = tb.offsetLeft - strip.offsetLeft, r = l + tb.offsetWidth; if (l < strip.scrollLeft) strip.scrollLeft = l - 8; else if (r > strip.scrollLeft + strip.clientWidth) strip.scrollLeft = r - strip.clientWidth + 8; }
   }
+  /* the real videos (26 Oct 2026): each loops, silent, only while it is on screen; with less motion (FAST) it waits
+     with its controls for the pupil to press play */
+  function initClips() {
+    const vs = $$('video[data-clip]');
+    if (FAST || !('IntersectionObserver' in window)) { vs.forEach(v => { v.controls = true; }); return; }
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { const p = e.target.play(); if (p && p.catch) p.catch(() => { e.target.controls = true; }); }
+      else e.target.pause();
+    }), { threshold: .4 });
+    vs.forEach(v => io.observe(v));
+  }
   function initTabs() {
     $$('.tabs button').forEach((b, i) => b.addEventListener('click', () => openPart(i + 1, true)));
     $$('.partnav .next').forEach(b => b.addEventListener('click', () => openPart(cur + 1, true)));
@@ -224,6 +235,7 @@
     initTheme(); initRestart(); initWordBank(); initTerms();
     document.dispatchEvent(new Event('chemrev:build'));   /* checks.js and panel.js draw themselves here */
     initTabs();
+    initClips();
     progress();
     if (params.has('manifest')) {
       const pre = h('pre', { id: 'manifest' }); pre.textContent = JSON.stringify(manifest());

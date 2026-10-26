@@ -228,6 +228,18 @@ input.gap.hinted.right{border-style:solid;border-color:var(--good)}
 input.gap[readonly]{cursor:default}
 .q__wl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;padding:10px 12px;border:1px dashed var(--hint);border-radius:10px;background:var(--hint-tint)}
 .q__wl-k{font:800 14px/1 var(--sans);color:var(--hint);margin-right:4px}
+.q__wl[hidden]{display:none}
+/* real videos of the changes of state (26 Oct 2026): one row each, the clip beside what it shows and its credit */
+.clips{display:flex;flex-direction:column;gap:12px;margin:14px 0 6px}
+.clips .k3{margin:0}
+.clip{display:flex;gap:14px;align-items:center;margin:0}
+.clip video{flex:none;width:220px;max-width:45%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;background:#111}
+.clip figcaption{font-size:16px;line-height:1.45}
+.clip .credit{display:block;margin-top:4px;font-size:13px;color:var(--ink3)}
+.clip .credit a{color:inherit}
+@media (max-width:600px){.clip{flex-direction:column;align-items:stretch}.clip video{width:100%;max-width:none}}
+.q__wl-x{margin-left:auto;font:800 14px/1 var(--sans);color:var(--hint);background:transparent;border:1px solid color-mix(in srgb,var(--hint) 40%,transparent);border-radius:100px;padding:6px 10px;cursor:pointer}
+.q__wl-x:hover,.q__wl-x:focus-visible{background:var(--surface)}
 .q__wl-w{font:700 16px/1.2 var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--rule2);border-radius:8px;padding:4px 10px}
 .q__row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
 .btn{font:800 16px/1 var(--sans);color:var(--on-accent);background:var(--accent);border:0;border-radius:100px;padding:10px 16px;cursor:pointer}

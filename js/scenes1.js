@@ -17,7 +17,8 @@
           cols (solid), hb (draw hydrogen bonds), seed,
           grow (how much wider the gaps of a solid get from cold to hot: 0.16), gap0 (the gap between neighbours in the
           coldest solid, as a part of a particle's width: 0), solidT (the temperature as the solid's own scale: the same),
-          liqGap (the smallest gap between two particles of the liquid: 0, touching) }
+          liqGap (the smallest gap between two particles of the liquid: 0, touching), liqKick (how hard the liquid's
+          particles jiggle: 1; the ice-and-water zoom uses more, so its melt is seen sliding, 26 Oct 2026) }
      Each particle has its own state (ph: s fixed in the regular pattern, l liquid, g gas), so a change of state happens a
      part at a time, the way it does (Daniel, 25 Oct 2026: a solid that melted all at once, in a burst, "makes absolute no
      sense"). Melting, sublimation and evaporation take the particles at the SURFACE first; freezing and deposition fill
@@ -175,7 +176,7 @@
       /* a liquid fills the bottom of its container with a level top (the band its particles would fill, with a little
          room to spare: their area ÷ how tightly a liquid packs ÷ the width), while no part of it is still solid */
       const { band, bl, br, bt, over, solidLeft } = level();
-      const kick = (900 + 1300 * T) * sc * .7, N = 3, h = dt / N;
+      const kick = (900 + 1300 * T) * sc * .7 * (o.liqKick || 1), N = 3, h = dt / N;
       for (let k = 0; k < N; k++) {
         free.forEach(q => {
           if (q.ph === 'l') {
@@ -489,17 +490,26 @@
       [[140, 312, 60], [170, 352, 70], [200, 392, 48]].forEach(([x, y, w]) => S('line', { x1: x, y1: y, x2: x + w, y2: y - 14, stroke: '#FFFFFF', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: .9 }, blk));
       const cubes = [[150, 316], [196, 324], [238, 314], [168, 352], [222, 356], [195, 388], [150, 392], [240, 390]];
       cubes.forEach(([x, y], i) => S('rect', { x: x - 20, y: y - 18, width: 40, height: 36, rx: 7, fill: '#E6F4FB', stroke: '#8DB8D3', 'stroke-width': 2, transform: `rotate(${(i * 23) % 30 - 15} ${x} ${y})` }, ice));
+      /* where the zoom looks: a square on the beaker's floor, joined to the zoom by dashed lines (drawn first: they pass
+         behind the thermometer) */
+      const LX = 640, LY = 205, X0 = LX - 112, X1 = LX + 112, Y0 = LY - 84, Y1 = LY + 74;   /* wider than the ice: room beside it for the melt */
+      S('rect', { x: 236, y: 382, width: 32, height: 34, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.4, 'stroke-dasharray': '5 4' }, g);
+      S('path', { d: `M268,382 L${X0 - 4},${Y0 - 26} M268,416 L${X0 - 4},${Y1 + 4}`, stroke: 'var(--accent)', 'stroke-width': 1.6, 'stroke-dasharray': '5 4', fill: 'none' }, g);
       const th = D.thermometer(g, 380, 60, 440, { min: -20, max: 110, ticks: [-20, 0, 20, 40, 60, 80, 100] });
-      /* the lens: water molecules */
-      const LX = 640, LY = 205, LR = 118;
-      const cid = D.id('lens'), defs = S('defs', null, g), cp = S('clipPath', { id: cid }, defs);
-      S('circle', { cx: LX, cy: LY, r: LR - 3 }, cp);
-      S('circle', { class: 'lens-ring', cx: LX, cy: LY, r: LR }, g);
+      /* the zoom: the bottom of the beaker, magnified, with its glass walls and floor (Daniel, 26 Oct 2026: in a round lens
+         the melted water lay against walls nobody could see and did not take the container's shape; "either you change
+         the circle and you make it so it looks like a beaker, or …"). The particles' box IS this piece of beaker, so the
+         melted water slides down beside the ice that is left, lies level across the floor, and fills it wall to wall. */
+      const cid = D.id('zoom'), defs = S('defs', null, g), cp = S('clipPath', { id: cid }, defs);
+      S('rect', { x: X0, y: Y0 - 26, width: X1 - X0, height: Y1 - Y0 + 26, rx: 6 }, cp);
+      S('rect', { x: X0 - 4, y: Y0 - 26, width: X1 - X0 + 8, height: Y1 - Y0 + 30, rx: 10, fill: 'var(--sheet)' }, g);
       const inner = S('g', { 'clip-path': `url(#${cid})` }, g);
-      const lens = PSim({ g: inner, x0: LX - 86, x1: LX + 86, y0: LY - 84, y1: LY + 74, n: 15, r: 15, cols: 5, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8 });
+      S('path', { class: 'glass', d: `M${X0 - 4},${Y0 - 26} L${X0 - 4},${Y1 - 6} Q${X0 - 4},${Y1 + 4} ${X0 + 6},${Y1 + 4} L${X1 - 6},${Y1 + 4} Q${X1 + 4},${Y1 + 4} ${X1 + 4},${Y1 - 6} L${X1 + 4},${Y0 - 26}` }, g);
+      const lens = PSim({ g: inner, x0: X0, x1: X1, y0: Y0, y1: Y1, n: 15, r: 15, cols: 4, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8, liqKick: 2.6 });
       k.svg.lens = lens;                                /* read by tools/particles-check.mjs */
-      const lt = S('text', { class: 'ttl', x: LX, y: LY + LR + 28, 'text-anchor': 'middle' }, g, 'Ice');
-      S('text', { class: 'note', x: LX, y: LY + LR + 50, 'text-anchor': 'middle' }, g, 'water molecules · - - - hydrogen bonds');
+      const lt = S('text', { class: 'ttl', x: LX, y: Y1 + 34, 'text-anchor': 'middle' }, g, 'Ice');
+      S('text', { class: 'note', x: LX, y: Y1 + 56, 'text-anchor': 'middle' }, g, 'the bottom of the beaker, zoomed in');
+      S('text', { class: 'note', x: LX, y: Y1 + 76, 'text-anchor': 'middle' }, g, 'water molecules · - - - hydrogen bonds');
       const rec = S('g', null, g);
       let temp = -20, phase = 'ice', frac = 0;
       const seen = {};
@@ -519,7 +529,7 @@
       let heatOn = false;
       const SAY = {
         ice: () => temp < 0 ? `<b>Ice at ${temp === 0 ? 0 : '−' + (-temp)} °C.</b> The water molecules are held in a regular pattern by forces of attraction between them (the dashed lines: hydrogen bonds). They vibrate in place.` : '<b>Ice at 0 °C.</b> Heat it once more and it starts to melt.',
-        melting: () => '<b>Melting at 0 °C.</b> The molecules gain energy and leave their fixed places in the pattern. While the ice melts, the thermometer stays at 0 °C.',
+        melting: () => '<b>Melting at 0 °C.</b> The molecules at the surface of the ice gain energy and leave their fixed places in the pattern. They slide past each other and flow down beside the ice that is left, taking the shape of the bottom of the beaker. While the ice melts, the thermometer stays at 0 °C.',
         water: () => `<b>Liquid water at ${temp} °C.</b> The molecules touch and slide past each other; hydrogen bonds break and form again all the time.`,
         freezing: () => '<b>Freezing at 0 °C.</b> The molecules lose energy and become fixed in a regular pattern again: the same temperature as melting.',
         boiling: () => '<b>Boiling at 100 °C.</b> Molecules escape from the liquid as a gas (steam). Bubbles of steam form all through the water.'

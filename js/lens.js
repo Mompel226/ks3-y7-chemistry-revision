@@ -63,7 +63,7 @@
       const q = { g: S('g', null, layer), x, y, vx: 0, vy: 0, a: rnd() * 360, va: 0, r: e.r + 3 * s, water: false, kind: e.kind, full: e.hug ? hugR(e) : e.r + 3 * s, form: 1, shell: [] };
       q.spin = !!e.spin;
       if (e.draw) e.draw(q.g, e.r); else atom(q.g, 0, 0, e.r, e.fill);
-      if (e.sign) S('text', { x: 0, y: e.r * .42, 'text-anchor': 'middle', 'font-size': e.r * 1.25, 'font-weight': 900, fill: '#FFFFFF' }, q.g, e.sign);
+      if (e.sign) S('text', { x: 0, y: e.r * .42, 'text-anchor': 'middle', 'font-size': Math.max(13, e.r * 1.25), 'font-weight': 900, fill: '#FFFFFF' }, q.g, e.sign);   /* a small ion's sign stays readable */
       if (e.hug) { q.r = q.full; slots(e, 4).forEach(sl => q.shell.push({ w: water(0, 0, 0), sl, from: null })); }
       if (e.hug && o.halo) q.halo = S('circle', { r: q.full + 2 * s, fill: '#1D5FBF', 'fill-opacity': .07, stroke: '#1D5FBF', 'stroke-width': 2, 'stroke-dasharray': '6 5' }, halos);
       return q;

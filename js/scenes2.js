@@ -199,17 +199,42 @@
     }
   }, {
     /* Why water dissolves sugar and salt (an extension; Daniel, 26 Oct 2026: "show how molecules dissolve in water: water
-       surrounds the molecule and it is because of the polarity of water"). A lens of liquid water (js/lens.js, the same
-       water as Separating mixtures); at its bottom a piece of solid. Each press, one particle leaves the solid and four
-       water molecules close round it and move with it: around a sodium ion the oxygen end (δ−) faces in, around a chloride
-       ion a hydrogen end (δ+); a sugar molecule (drawn simply: a ball with two slightly positive H parts and two slightly
-       negative O parts) is held by both kinds, each end facing the opposite charge. The sugar molecule stays whole. */
+       surrounds the molecule and it is because of the polarity of water"). Rebuilt the same day on his second message: a
+       piece already lying in the water that is not dissolving "is gonna be a bit confusing", and the lens ran out of water.
+       So: a beaker of water and, beside it, a lens on its bottom (js/lens.js, the same water as Separating mixtures).
+       🥄 Add a spoon: grains fall to the bottom of the beaker, and the lens shows a tiny piece of one grain (two sugar
+       molecules held together, or one sodium ion and one chloride ion). Stir: the grains disappear from the beaker; in the
+       lens each particle leaves the piece, and four water molecules close round it and move with it: around a sodium ion
+       the oxygen end (δ−) faces in, around a chloride ion a hydrogen end (δ+); a sugar molecule (drawn simply: two slightly
+       positive H parts, two slightly negative O parts) is held by both kinds, each end facing the opposite charge. Two
+       spoons at most, and a small sugar molecule: the lens keeps plenty of free water (claims-check counts it), and the
+       caption says how much more a real beaker dissolves. */
     id: 'hug', name: 'Why it dissolves', title: 'Why water dissolves sugar and salt',
-    alt: 'A lens of water molecules; a piece of sugar or salt at the bottom; water molecules surround each particle that leaves it',
+    alt: 'A beaker of water and a lens on its bottom: a spoon of sugar or salt is added and stirred, and water molecules surround each particle',
     draw(k) {
-      const g = k.g, Lz = window.LENS, DEG = Math.PI / 180;
-      const lz = Lz.lens(g, 230, 240, 205, 'Inside the water', null);
-      const L = lz.inner, cx = lz.x, cy = lz.y, R = lz.r;
+      const g = k.g, Lz = window.LENS, DEG = Math.PI / 180, SC = 1.1, MAX = 2;
+      /* water is polar: one big water molecule with its two ends */
+      S('text', { class: 'ttl', x: 30, y: 36 }, g, 'Water is polar');
+      const mx = 80, my = 92;
+      D.atom(g, mx - 22, my + 18, 12, 'H'); D.atom(g, mx + 22, my + 18, 12, 'H'); D.atom(g, mx, my, 20, 'O');
+      S('text', { class: 'lbl', x: mx, y: my - 27, 'text-anchor': 'middle' }, g, 'δ−');
+      S('text', { class: 'lbl', x: mx - 44, y: my + 44, 'text-anchor': 'middle' }, g, 'δ+'); S('text', { class: 'lbl', x: mx + 44, y: my + 44, 'text-anchor': 'middle' }, g, 'δ+');
+      S('text', { class: 'note', x: 140, y: 78 }, g, 'δ− slightly negative:'); S('text', { class: 'note', x: 140, y: 97 }, g, 'the oxygen end');
+      S('text', { class: 'note', x: 140, y: 124 }, g, 'δ+ slightly positive:'); S('text', { class: 'note', x: 140, y: 143 }, g, 'the hydrogen end');
+      /* the beaker, and the place on its bottom that the lens shows */
+      const bx = 160, by = 420, bw = 170, bh = 180;
+      const bk = D.beaker(g, bx, by, bw, bh, { level: .78, opacity: .55 });
+      const heap = S('g', null, g), rod = S('g', { opacity: 0 }, g), spoon = S('g', { opacity: 0 }, g);
+      S('line', { x1: 0, y1: 0, x2: 14, y2: 205, stroke: '#BFD6E6', 'stroke-width': 7, 'stroke-linecap': 'round', opacity: .9 }, rod);
+      S('line', { x1: 0, y1: 0, x2: 14, y2: 205, stroke: 'var(--glass)', 'stroke-width': 1.4, 'stroke-linecap': 'round' }, rod);
+      S('path', { d: 'M0,0 L80,-10', stroke: 'var(--metal)', 'stroke-width': 4, 'stroke-linecap': 'round' }, spoon);
+      S('ellipse', { cx: -8, cy: 1, rx: 14, ry: 7, fill: 'var(--metal)' }, spoon); S('ellipse', { cx: -8, cy: -2, rx: 10, ry: 4.5, fill: '#FFFFFF' }, spoon);
+      const zx = bx + 30, zy = by - 22;
+      S('circle', { cx: zx, cy: zy, r: 14, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.4 }, g);
+      const lz = Lz.lens(g, 585, 210, 175, 'Inside the beaker: the bottom', 'particles, not to scale');
+      S('line', { x1: zx + 10, y1: zy - 10, x2: 585 - 175 * Math.cos(40 * DEG), y2: 210 - 175 * Math.sin(40 * DEG), stroke: 'var(--accent)', 'stroke-width': 1.6, 'stroke-dasharray': '5 4' }, g);
+      S('line', { x1: zx + 13, y1: zy + 5, x2: 585 - 175 * Math.cos(-30 * DEG), y2: 210 - 175 * Math.sin(-30 * DEG), stroke: 'var(--accent)', 'stroke-width': 1.6, 'stroke-dasharray': '5 4' }, g);
+      const L = lz.inner, cx = lz.x, cy = lz.y, R = lz.r, BOT = cy + R;
       S('rect', { x: cx - R, y: cy - R, width: 2 * R, height: 2 * R, fill: '#EAF3FB' }, L);
       /* a sugar molecule, drawn simply: the white dots are slightly positive (H), the red ones slightly negative (O), at
          the four places where lens.js puts its water (45°, 135°, 225°, 315°: O inwards at even places, H at odd ones) */
@@ -218,73 +243,77 @@
         [0, 1, 2, 3].forEach(i => { const th = (i * 90 + 45) * DEG, odd = i % 2;
           S('circle', { cx: Math.cos(th) * r * .74, cy: Math.sin(th) * r * .74, r: r * (odd ? .3 : .23), fill: odd ? '#E0533F' : '#F4F6F8', stroke: odd ? '#8E2A1D' : '#7D8794', 'stroke-width': 1 }, p); });
       };
-      const SC = 1.5;                                     /* bigger particles, fewer of them: each one readable */
-      const SUGAR = { kind: 'sugar', r: 20 * SC, hug: 'both', spin: true, draw: sugarDraw };
+      const SUGAR = { kind: 'sugar', r: 15 * SC, hug: 'both', spin: true, draw: sugarDraw };
       const NA = { kind: 'Na', r: 8.5 * SC, fill: '#8E5BD6', hug: '+', sign: '+' }, CL = { kind: 'Cl', r: 15 * SC, fill: '#43A047', hug: '-', sign: '−' };
       const ionDraw = (p, x, y, e) => { const a = S('g', { transform: `translate(${x} ${y})` }, p); S('circle', { cx: 0, cy: 0, r: e.r, fill: e.fill, stroke: 'rgba(0,0,0,.35)', 'stroke-width': .9 }, a);
-        S('text', { x: 0, y: e.r * .42, 'text-anchor': 'middle', 'font-size': e.r * 1.25, 'font-weight': 900, fill: '#FFFFFF' }, a, e.sign); return a; };
-      /* the solid pieces: [x, y, particle], in the order they leave (the top row first, from its two ends) */
-      const BOT = cy + R;
-      function piece(kind) {
-        const out = [];
-        if (kind === 'sugar') { for (let r = 1; r >= 0; r--) [0, 2, 1].forEach(c => out.push([cx - 62 + c * 62, BOT - 60 - r * 62, SUGAR])); }
-        else { for (let r = 2; r >= 0; r--) [0, 3, 1, 2].forEach(c => out.push([cx - 60 + c * 40, BOT - 50 - r * 40, (r + c) % 2 ? NA : CL])); }
-        return out;
-      }
-      let kind = 'sugar', left = [], drawn = [], gone = 0, liq = null;
+        S('text', { x: 0, y: e.r * .42, 'text-anchor': 'middle', 'font-size': Math.max(13, e.r * 1.25), 'font-weight': 900, fill: '#FFFFFF' }, a, e.sign); return a; };
+      /* the key */
+      const key = S('g', { transform: 'translate(360 456)' }, g);
+      sugarDraw(S('g', { transform: 'translate(0 0)' }, key), 11); S('text', { class: 'note', x: 17, y: 6 }, key, 'sugar molecule (drawn simply)');
+      ionDraw(key, 262, 0, Object.assign({}, NA, { r: 11 })); S('text', { class: 'note', x: 278, y: 6 }, key, 'sodium ion (+)');
+      ionDraw(key, 0, 30, Object.assign({}, CL, { r: 12 })); S('text', { class: 'note', x: 17, y: 36 }, key, 'chloride ion (−)');
+      S('circle', { cx: 160, cy: 30, r: 11, fill: '#1D5FBF', 'fill-opacity': .07, stroke: '#1D5FBF', 'stroke-width': 2, 'stroke-dasharray': '6 5' }, key); S('text', { class: 'note', x: 177, y: 36 }, key, 'dissolved, with its water');
+      /* the tiny piece of a grain that one spoon puts on the lens's floor */
+      const PIECE = { sugar: [[cx - 17, BOT - 42, SUGAR], [cx + 17, BOT - 42, SUGAR]], salt: [[cx - 13, BOT - 40, NA], [cx + 13, BOT - 40, CL]] };
       const over = S('g', null, L);
-      function solids() {
-        if (!left.length) return [];
-        const ys = left.map(p => p[1] - p[2].r), xs = left.map(p => p[0]);
-        return [{ rect: [Math.min(...xs) - 32, Math.min(...ys) - 3, Math.max(...xs) + 32, BOT] }];
-      }
+      let kind = 'sugar', liq = null, spoons = 0, busy = false, stage = 'water', left = [], drawn = [];
+      const solids = () => left.length ? [{ rect: [Math.min(...left.map(p => p[0])) - 24, Math.min(...left.map(p => p[1])) - 22, Math.max(...left.map(p => p[0])) + 24, BOT] }] : [];
       function start(kd) {
-        kind = kd; gone = 0; left = piece(kd);
+        kind = kd; spoons = 0; stage = 'water'; left = []; drawn = []; busy = false;
         if (liq) liq.destroy();
-        over.innerHTML = '';
-        drawn = left.map(([x, y, e]) => { if (e.kind === 'sugar') { const a = S('g', { transform: `translate(${x} ${y}) rotate(${(x * 7) % 90})` }, over); sugarDraw(a, e.r); return a; } return ionDraw(over, x, y, e); });
-        liq = Lz.liquidLens(k, lz, { seed: 5, scale: SC, fill: .78, halo: true, solids: solids() });   /* .78: packed, touching */
+        over.innerHTML = ''; heap.innerHTML = '';
+        liq = Lz.liquidLens(k, lz, { seed: 5, scale: SC, fill: .78, halo: true });
         L.appendChild(over);
         bs.on(kd === 'sugar'); bn.on(kd === 'salt');
         say();
       }
-      function one() {
-        if (!left.length) return;
-        const [x, y, e] = left.shift(); drawn.shift().remove(); gone++;
-        liq.setSolids(solids());
-        liq.add(e, [x, y - 50]);
-        L.appendChild(over);
-        say();
+      async function addSpoon() {
+        if (busy || stage === 'solid' || spoons >= MAX) return;
+        busy = true; paint();
+        spoon.setAttribute('opacity', 1);
+        await k.anim(700, t => spoon.setAttribute('transform', `translate(${330 - (330 - zx) * t} ${200 - 10 * t}) rotate(${-25 * t})`));
+        const fall = [];
+        for (let i = 0; i < 14; i++) fall.push(S('rect', { x: zx - 17 + (i * 37 % 30), y: 190, width: 4, height: 4, fill: '#FFFFFF', stroke: 'rgba(0,0,0,.3)', 'stroke-width': .5 }, heap));
+        spoon.setAttribute('opacity', 0);
+        await k.anim(800, t => fall.forEach((f, i) => f.setAttribute('y', 190 + t * (by - 8 - (i % 4) * 3 - 190))));   /* to the bottom of the beaker */
+        left = PIECE[kind].map(p => p.slice());
+        drawn = left.map(([x, y, e]) => e.kind === 'sugar' ? (a => { sugarDraw(a, e.r); return a; })(S('g', { transform: `translate(${x} ${y})` }, over)) : ionDraw(over, x, y, e));
+        liq.setSolids(solids()); L.appendChild(over);
+        stage = 'solid'; busy = false; say();
+      }
+      async function stir() {
+        if (busy || stage !== 'solid') return;
+        busy = true; paint();
+        rod.setAttribute('opacity', 1);
+        const grains = [...heap.children];
+        await k.anim(1600, t => { rod.setAttribute('transform', `translate(${bx - 10} ${by - bh - 25}) rotate(${Math.sin(t * 12) * 9})`); grains.forEach(f => f.setAttribute('opacity', (1 - t).toFixed(2))); });
+        rod.setAttribute('opacity', 0); heap.innerHTML = '';
+        while (left.length) {
+          const [x, y, e] = left.shift(); drawn.shift().remove();
+          liq.setSolids(solids());
+          liq.add(e, [x, y - 40]); L.appendChild(over);
+          await k.wait(900);
+        }
+        spoons++; stage = 'water'; busy = false; say();
       }
       const SAY = {
-        sugar0: '<b>Sugar in water.</b> A sugar molecule has slightly positive parts (white) and slightly negative parts (red). The water molecules are attracted to them.',
-        sugar: '<b>A sugar molecule leaves the solid.</b> Water molecules surround it: a slightly negative oxygen end faces each slightly positive part, and a slightly positive hydrogen end faces each slightly negative part. They move with it. The sugar molecule stays whole.',
-        salt0: '<b>Salt in water.</b> Salt is a lattice of sodium ions (+) and chloride ions (−). The water molecules are attracted to the ions at its edges.',
-        salt: '<b>An ion leaves the lattice.</b> Around a sodium ion (+), water molecules turn their slightly negative oxygen end inwards. Around a chloride ion (−), they turn a slightly positive hydrogen end inwards. Opposite charges attract.',
-        done: '<b>All of it has dissolved.</b> Each particle is surrounded by water molecules and spreads through the water. You cannot see it, but it is still there.'
+        water: { sugar: '<b>A beaker of water.</b> In the lens: water molecules, touching and sliding past each other.', salt: '<b>A beaker of water.</b> In the lens: water molecules, touching and sliding past each other.' },
+        solid: { sugar: '<b>The sugar is at the bottom.</b> In the lens: a tiny piece of one sugar grain, two sugar molecules held together. Nothing has dissolved yet.', salt: '<b>The salt is at the bottom.</b> In the lens: a tiny piece of one salt grain, a sodium ion and a chloride ion. Nothing has dissolved yet.' },
+        done: { sugar: '<b>The sugar dissolved.</b> In the lens, water molecules pulled each sugar molecule away and surround it: oxygen ends (δ−) face its white parts (δ+), hydrogen ends (δ+) face its red parts (δ−). The molecule stays whole.',
+                salt: '<b>The salt dissolved.</b> In the lens, the ions separated and water molecules surround each one: oxygen ends (δ−) face the sodium ion (+), a hydrogen end (δ+) faces the chloride ion (−).' }
       };
+      const REAL = { sugar: 'A real beaker dissolves much more: about 200 g of sugar in 100 g of water at 20 °C.', salt: 'A real beaker dissolves much more: about 36 g of salt in 100 g of water at 20 °C.' };
       function say() {
-        const t = !left.length ? SAY.done : SAY[kind + (gone ? '' : '0')];
-        k.say('<p>' + t + '</p><p><mark class="do">' + (left.length ? 'Press 💧 Dissolve one.' : 'Press Sugar or Salt to start again.') + '</mark></p>');
-        bd.disabled = !left.length;
+        const t = stage === 'solid' ? SAY.solid[kind] : spoons ? SAY.done[kind] + (spoons >= MAX ? ' ' + REAL[kind] : '') : SAY.water[kind];
+        const d = stage === 'solid' ? 'Press Stir.' : spoons >= MAX ? (kind === 'sugar' ? 'Press Salt to try salt.' : 'Press Sugar, or Salt to start again.') : spoons ? 'Press 🥄 Add a spoon again.' : 'Press 🥄 Add a spoon.';
+        k.say('<p>' + t + '</p><p><mark class="do">' + d + '</mark></p>');
+        paint();
       }
-      /* the key: a big water molecule with its two ends, then each particle */
-      const kx = 560, ky = 110;
-      S('text', { class: 'ttl', x: 470, y: 40 }, g, 'Water is polar');
-      D.atom(g, kx - 26, ky + 22, 15, 'H'); D.atom(g, kx + 26, ky + 22, 15, 'H'); D.atom(g, kx, ky, 24, 'O');
-      S('text', { class: 'lbl', x: kx, y: ky - 32, 'text-anchor': 'middle' }, g, 'δ−');
-      S('text', { class: 'lbl', x: kx - 50, y: ky + 52, 'text-anchor': 'middle' }, g, 'δ+'); S('text', { class: 'lbl', x: kx + 50, y: ky + 52, 'text-anchor': 'middle' }, g, 'δ+');
-      S('text', { class: 'note', x: 625, y: 92 }, g, 'δ− slightly negative:'); S('text', { class: 'note', x: 625, y: 112 }, g, 'the oxygen end');
-      S('text', { class: 'note', x: 625, y: 142 }, g, 'δ+ slightly positive:'); S('text', { class: 'note', x: 625, y: 162 }, g, 'the hydrogen end');
-      const kg = S('g', { transform: 'translate(484 214)' }, g);
-      sugarDraw(S('g', null, kg), 13); S('text', { class: 'note', x: 22, y: 6 }, kg, 'sugar molecule (drawn simply)');
-      ionDraw(kg, 0, 36, Object.assign({}, NA, { r: 12 })); S('text', { class: 'note', x: 22, y: 42 }, kg, 'sodium ion (+)');
-      ionDraw(kg, 150, 36, Object.assign({}, CL, { r: 13 })); S('text', { class: 'note', x: 170, y: 42 }, kg, 'chloride ion (−)');
-      S('circle', { cx: 0, cy: 106, r: 13, fill: '#1D5FBF', 'fill-opacity': .07, stroke: '#1D5FBF', 'stroke-width': 2, 'stroke-dasharray': '6 5' }, kg); S('text', { class: 'note', x: 22, y: 104 }, kg, 'a dissolved particle and the'); S('text', { class: 'note', x: 22, y: 123 }, kg, 'water molecules around it');
-      S('line', { x1: -10, y1: 70, x2: 12, y2: 70, stroke: '#2F4A66', 'stroke-width': 1.8, 'stroke-dasharray': '3 2.5', 'stroke-linecap': 'round' }, kg); S('text', { class: 'note', x: 22, y: 76 }, kg, 'hydrogen bond');
-      const bs = k.btn('Sugar', 540, 365, () => start('sugar'));
-      const bn = k.btn('Salt', 660, 365, () => start('salt'));
-      const bd = k.btn('💧 Dissolve one', 600, 425, one, { cls: 'cold' });
+      function paint() { ba.disabled = busy || stage === 'solid' || spoons >= MAX; bt.disabled = busy || stage !== 'solid'; }
+      const bs = k.btn('Sugar', 300, 172, () => start('sugar'));
+      const bn = k.btn('Salt', 300, 240, () => start('salt'));
+      const ba = k.btn('🥄 Add a spoon', 100, 466, addSpoon);
+      const bt = k.btn('Stir', 228, 466, stir, { cls: 'cold' });
       start('sugar');
     }
   }, {
@@ -488,24 +517,72 @@
       const fl = D.rbFlask(g, 170, 290, 66, 170, { color: '#6FB3C9', level: .55 });
       /* the thermometer at the top of the flask, beside the side arm */
       const th = D.thermometer(g, 170, 92, 200, { min: 0, max: 110 });
-      /* the condenser: an inner tube inside a cooling jacket, sloping down to the right */
+      /* the condenser: an inner tube inside a cooling jacket, sloping down to the right. Cold water comes in through the
+         pipe UNDER the jacket's lower end and leaves through the pipe ON TOP of its upper end (Daniel, 26 Oct 2026: the
+         labels pointed at the wrong places, and the flow must be seen). The jacket starts empty: 💧 Turn on the cold water
+         fills it from its lowest end, its level rising level (horizontal) up the slope, until the water reaches the top pipe
+         and flows out; only then does the Bunsen burner light. ❓ In at the top? shows why not: water put in at the top runs
+         down the bottom of the jacket and straight out of the lower pipe, so the jacket never fills. */
       const ax = 183, ay = 190, bx = 560, byy = 330;
-      const ang = Math.atan2(byy - ay, bx - ax) * 180 / Math.PI, Lc = Math.hypot(bx - ax, byy - ay);
+      const ang = Math.atan2(byy - ay, bx - ax) * 180 / Math.PI, Lc = Math.hypot(bx - ax, byy - ay), co = Math.cos(ang * Math.PI / 180), sn = Math.sin(ang * Math.PI / 180);
+      const W = (lx, ly) => [ax + lx * co - ly * sn, ay + lx * sn + ly * co];          /* condenser frame → picture */
       const cond = S('g', { transform: `translate(${ax} ${ay}) rotate(${ang})` }, g);
-      S('rect', { x: 80, y: -26, width: Lc - 140, height: 52, rx: 14, fill: 'rgba(126,184,234,.35)', stroke: 'var(--glass)', 'stroke-width': 2.4 }, cond);
+      const J0 = 80, J1 = Lc - 60, PIN = Lc - 120, POUT = 100;                       /* the jacket's ends; the two pipes */
+      S('rect', { x: J0, y: -26, width: J1 - J0, height: 52, rx: 14, fill: 'var(--glass-fill)', stroke: 'var(--glass)', 'stroke-width': 2.4 }, cond);
+      const jid = D.id('jacket'), jdefs = S('defs', null, cond), jcp = S('clipPath', { id: jid }, jdefs);
+      S('rect', { x: J0 + 1, y: -25, width: J1 - J0 - 2, height: 50, rx: 13 }, jcp);
+      const jw = S('g', { 'clip-path': `url(#${jid})` }, cond);
+      const level = S('rect', { x: -60, y: 0, width: 560, height: 400, fill: '#7EB8EA', opacity: .6, transform: `rotate(${-ang})` }, jw);   /* level in the picture's frame */
+      const lowY = J1 * sn + 26 * co, highY = J0 * sn - 26 * co;                       /* the jacket's lowest and highest points, below (ax, ay) */
+      const setLevel = f => level.setAttribute('y', (lowY - f * (lowY - highY + 4)).toFixed(1));
+      setLevel(0);
+      const trickle = S('path', { d: `M${POUT},20 L${PIN},20`, stroke: '#7EB8EA', 'stroke-width': 8, 'stroke-dasharray': '12 8', 'stroke-linecap': 'round', fill: 'none', opacity: 0 }, jw);
+      const inFlow = S('path', { d: `M${PIN},-12 L${POUT},-12`, stroke: '#1D5FBF', 'stroke-width': 2.4, 'stroke-dasharray': '7 9', fill: 'none', opacity: 0 }, jw);
       S('rect', { x: 0, y: -7, width: Lc, height: 14, rx: 6, fill: 'var(--glass-fill)', stroke: 'var(--glass)', 'stroke-width': 2 }, cond);
       const vap = S('rect', { x: 0, y: -5, width: 0, height: 10, fill: '#FFFFFF', opacity: .0 }, cond);
-      S('path', { d: `M${Lc - 120},26 l0,26 M100,-26 l0,-26`, stroke: 'var(--glass)', 'stroke-width': 2.4 }, cond);
+      S('path', { d: `M${PIN},26 l0,26 M${POUT},-26 l0,-26`, stroke: 'var(--glass)', 'stroke-width': 2.4 }, cond);
+      /* the two hoses: from the tap to the lower pipe; from the upper pipe to the sink */
+      const [ix, iy] = W(PIN, 52), [ox, oy] = W(POUT, -52);
+      const hoseIn = `M300,432 L${ix.toFixed(1)},432 L${ix.toFixed(1)},${iy.toFixed(1)}`, hoseOut = `M${ox.toFixed(1)},${oy.toFixed(1)} L${ox.toFixed(1)},128 L392,128`;
+      [hoseIn, hoseOut].forEach(d => S('path', { d, stroke: '#9FB4C4', 'stroke-width': 11, fill: 'none', 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, g));
+      const flowIn = S('path', { d: hoseIn, stroke: '#1D5FBF', 'stroke-width': 3, 'stroke-dasharray': '8 10', fill: 'none', opacity: 0 }, g);
+      const flowOut = S('path', { d: hoseOut, stroke: '#1D5FBF', 'stroke-width': 3, 'stroke-dasharray': '8 10', fill: 'none', opacity: 0 }, g);
+      const wl = S('g', null, g);
+      const inLbl = D.label(wl, 318, 418, 'cold water in', { cls: 'lbl-sm' }), outLbl = D.label(wl, 420, 133, 'cold water out', { cls: 'lbl-sm' });
+      /* which way the water flows, at the open end of each hose: from the tap into the lower pipe, out to the sink */
+      const aBot = S('g', null, g), aTop = S('g', { opacity: 0 }, g);
+      D.arrowHead(aBot, 302, 432, 0, 16, '#1D5FBF'); D.arrowHead(aBot, 410, 128, 0, 16, '#1D5FBF');
+      D.arrowHead(aTop, 384, 128, Math.PI, 16, '#1D5FBF'); D.arrowHead(aTop, 288, 432, Math.PI, 16, '#1D5FBF');
       const beaker = D.beaker(g, 600, 470, 110, 110, { color: '#7EB8EA', level: 0, opacity: .7 });
       const drip = S('circle', { cx: 586, cy: 360, r: 4, fill: '#7EB8EA', opacity: 0 }, g);
       const bub = S('g', null, g), wisp = S('g', null, g);
       const lbl = S('g', { opacity: 0 }, g);
       D.label(lbl, 300, 70, 'thermometer', { to: [182, 110] });
-      D.label(lbl, 430, 190, 'condenser', { to: [400, 250] });
-      D.label(lbl, 470, 140, 'cold water out', { cls: 'lbl-sm', to: [287, 205] });
-      D.label(lbl, 620, 300, 'cold water in', { cls: 'lbl-sm', to: [520, 334] });
+      D.label(lbl, 452, 196, 'condenser', { to: [420, 262] });
       D.label(lbl, 690, 410, 'distillate', { to: [640, 430] });
       D.label(lbl, 300, 330, 'salt water', { to: [214, 316] });
+      /* the water moving: dashes along each hose and through the jacket, from the tap to the sink */
+      let flowing = 0, off = 0;                                                       /* 1: in at the bottom; -1: in at the top */
+      k.loop(dt => { if (!flowing) return true; off -= 40 * dt; [flowIn, flowOut, inFlow].forEach(e => e.setAttribute('stroke-dashoffset', (off * flowing).toFixed(1))); trickle.setAttribute('stroke-dashoffset', (off * 1.5).toFixed(1)); return true; });
+      let water = false;
+      async function waterOn() {
+        if (water || running) return; water = true; tap.disabled = true; top.disabled = true;
+        flowing = 1; flowIn.setAttribute('opacity', 1);
+        k.say('<p><b>Cold water flows in at the bottom.</b> It fills the jacket from its lowest end, and the level rises up the slope.</p>');
+        await k.anim(2600, t => setLevel(t));
+        flowOut.setAttribute('opacity', 1); inFlow.setAttribute('opacity', .8);
+        k.say('<p><b>Cold water in at the bottom, out at the top.</b> The water reaches the top pipe only when the jacket is full, so every part of the tube is cold.</p><p><mark class="do">Press 🔥 Light the Bunsen burner. Or press ❓ In at the top? to see why the water does not go in at the top.</mark></p>');
+        start.disabled = false; top.disabled = false;
+      }
+      async function topWay() {
+        if (running) return; tap.disabled = true; start.disabled = true; top.disabled = true;
+        flowing = -1; inFlow.setAttribute('opacity', 0); aBot.setAttribute('opacity', 0); aTop.setAttribute('opacity', 1);
+        inLbl.querySelector('text').textContent = 'cold water out'; outLbl.querySelector('text').textContent = 'cold water in';
+        flowOut.setAttribute('opacity', 1); flowIn.setAttribute('opacity', 1);
+        await k.anim(1400, t => setLevel(water ? 1 - t : 0));
+        trickle.setAttribute('opacity', .9);
+        k.say('<p><b>If the cold water went in at the top</b>, it would run straight down the bottom of the jacket and out of the lower pipe. The jacket never fills, so most of the tube stays warm and much of the vapour would not condense. That is why the cold water goes in at the bottom and out at the top.</p><p><mark class="do">Press ↺ Start again.</mark></p>');
+      }
       const temp = S('text', { class: 'lbl-sm', x: 30, y: 60 }, g, '');
       let running = false;
       const STEPS = [
@@ -517,7 +594,7 @@
       ];
       const sayTo = n => k.say('<p>' + STEPS.slice(0, n).join(' ') + '</p>');   /* at the end, ↺ Start again on the picture repeats it */
       async function go() {
-        if (running) return; running = true; P.current()._busy = true; start.disabled = true;
+        if (running || !water || flowing !== 1) return; running = true; top.disabled = true; P.current()._busy = true; start.disabled = true;
         bun.on(true); sayTo(1);
         const boil = setInterval(() => {
           if (!k.alive()) { clearInterval(boil); return; }
@@ -541,9 +618,13 @@
         lbl.setAttribute('opacity', 1); sayTo(5);
         running = false; P.current()._busy = false;
       }
-      const start = k.btn('🔥 Light the Bunsen burner', 400, 470, go, { cls: 'warm' });
+      const tap = k.btn('💧 Turn on the cold water', 470, 470, waterOn, { cls: 'cold' });
+      const start = k.btn('🔥 Light the Bunsen burner', 470, 470, go, { cls: 'warm' });
+      const top = k.btn('❓ In at the top?', 650, 90, topWay, { cls: 'ghost small' });
+      start.hidden = true; start.disabled = true; top.disabled = true;
+      tap.addEventListener('click', () => { tap.hidden = true; start.hidden = false; });
       k.btn('↺ Start again', 650, 40, () => P.open(8, 'distil'), { cls: 'ghost small' });
-      k.say('<p>The flask holds salt water. The condenser is a tube with cold water flowing around it.</p><p><mark class="do">Press Light the Bunsen burner and watch each step.</mark></p>');
+      k.say('<p>The flask holds salt water. The condenser is a tube inside a jacket for cold water. Turn on the cold water first, then heat.</p><p><mark class="do">Press 💧 Turn on the cold water.</mark></p>');
     }
   }, {
     id: 'evap', name: 'Evaporation', title: 'Evaporation of salt water',

@@ -139,12 +139,22 @@
     box.appendChild(row);
     const btn = $('.btn:not(.help)', row), flb = $('.fl', row), wlb = $('.wlb', row), say = $('.say', row);
     let tries = A.tries || 0, last = 0;
-    /* the word list: each gap's own word (the first one it accepts), in a random order that stays for this pupil */
-    function wordList(order) {
+    /* the word list: each gap's own word (the first one it accepts), in a random order that stays for this pupil.
+       ✕ closes it (Daniel, 26 Oct 2026: a pupil may press it by accident and not want to see it); the button then comes
+       back and opens the same list again. Only the first opening is sent to the board: the help was already seen. */
+    let wl = null, wlOrder = Array.isArray(A.wl) && A.wl.length === gaps.length ? A.wl : null;
+    function wordList(order, shut) {
       const words = order.map(i => gaps[i] ? gaps[i][0] : '').filter(Boolean);
-      const wl = h('div', { class: 'q__wl', role: 'note', 'aria-label': 'Word list' },
-        '<span class="q__wl-k">Word list</span>' + words.map(w => '<span class="q__wl-w">' + esc(w) + '</span>').join(''));
-      body.insertAdjacentElement('afterend', wl); wlb.remove();
+      wl = h('div', { class: 'q__wl', role: 'note', 'aria-label': 'Word list' },
+        '<span class="q__wl-k">Word list</span>' + words.map(w => '<span class="q__wl-w">' + esc(w) + '</span>').join('') +
+        '<button type="button" class="q__wl-x" aria-label="Close the word list">✕ Close</button>');
+      body.insertAdjacentElement('afterend', wl);
+      $('.q__wl-x', wl).addEventListener('click', () => { showList(false); ans.put(id, { wlShut: 1 }); });
+      showList(!shut);
+    }
+    function showList(on) {
+      if (wl) wl.hidden = !on;
+      wlb.hidden = on || !!(A.ok || A.shown) || !wlb.isConnected;
     }
     function shuffled() {
       const o = gaps.map((g, i) => i);
@@ -154,7 +164,7 @@
       }
       return o;
     }
-    if (Array.isArray(A.wl) && A.wl.length === gaps.length) wordList(A.wl);
+    if (wlOrder) wordList(wlOrder, !!A.wlShut);
     /* the gaps given their first letter: gap → that letter (a save from before 25 Oct 2026 kept only the gap) */
     const hinted = new Map((A.hl || []).map(x => Array.isArray(x) ? x : [x, gaps[x] ? gaps[x][0].charAt(0) : '']));
     const groupOf = i => (q.anyOrder || []).map(g => g.map(n => n - 1)).find(g => g.indexOf(i) >= 0);
@@ -242,10 +252,11 @@
       flState();
     });
     wlb.addEventListener('click', () => {
-      const order = shuffled();
-      wordList(order);
+      if (wlOrder) { showList(true); ans.put(id, { wlShut: 0 }); return; }        /* open again: the same list, no new record */
+      wlOrder = shuffled();
+      wordList(wlOrder);
       L.check(id, false, ['word list']);
-      ans.put(id, { v: ins.map(x => x.value), wl: order });
+      ans.put(id, { v: ins.map(x => x.value), wl: wlOrder, wlShut: 0 });
       ui.say(say, 'The words for the gaps are under the sentence, in a random order. Type each one into its gap.', '');
     });
     btn.addEventListener('click', check);

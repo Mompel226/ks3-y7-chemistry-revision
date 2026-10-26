@@ -11,18 +11,18 @@ about 6 or 7 minutes. Pupils can use it instead of the paper booklet.
 | Part | The picture to explore | The checks practise |
 |---|---|---|
 | 1 States of matter | one substance (not water) whose temperature decides its state, from the coldest: heat it until it melts, then boils, each change a third at a time at one temperature, starting at the surface; cool it back; compress it with the same push each time and read the volume under the lid (a hotter gas is compressed less) | particles and their movement, expansion and contraction (the particles do not grow), compressing a gas |
-| 2 Changes of state | the six changes on an energy arrow, each shown in a lens; ice heated and cooled | melting, freezing, evaporating, condensing, sublimation, deposition; melting point = freezing point; physical and chemical change; the water cycle |
+| 2 Changes of state | the six changes on an energy arrow, each shown in a lens; ice heated and cooled, with the bottom of the beaker zoomed in (the melt slides down beside the ice that is left and lies level, wall to wall) | melting, freezing, evaporating, condensing, sublimation, deposition; melting point = freezing point; physical and chemical change; the water cycle |
 | 3 Atoms and elements | inside a helium and a carbon atom; the 13 elements to know on the periodic table | protons (+), neutrons (no charge), electrons (−); symbols; metals and non-metals; states at room temperature |
 | 4 Molecules and compounds | boxes of particles; count the particles (a water molecule always has 3 atoms, a salt crystal or a piece of copper is a lattice of any size); iron and sulfur, a mixture and then a compound | element, compound or mixture from a particle picture; formulae; diatomic elements; new properties of a compound; reading statements carefully |
 | 5 Mixtures | a solution, a suspension and a colloid: a torch, a day left to stand, a microscope; a graph (salt on icy roads) | pure substance or mixture; alloys; the three kinds of mixture; reading a graph |
-| 6 Solutions | a drink made stronger or weaker; why it dissolves (extension: polar water molecules surround each sugar molecule or salt ion); a solubility curve; a chart to choose a nail-varnish remover | solute, solvent, solution, soluble, insoluble; concentrated and dilute; solubility and saturated solutions; independent, dependent and control variables; choosing from a chart |
+| 6 Solutions | a drink made stronger or weaker; why it dissolves (extension: add a spoon of sugar or salt to a beaker of water and stir; a lens on its bottom shows polar water molecules surround each sugar molecule or ion); a solubility curve; a chart to choose a nail-varnish remover | solute, solvent, solution, soluble, insoluble; concentrated and dilute; solubility and saturated solutions; independent, dependent and control variables; choosing from a chart |
 | 7 Sieve, filter, decant, magnet | filtration of chalky water and of salt water; a sieve; layers of liquids | residue and filtrate; what a sieve cannot do; choosing a method; immiscible liquids; density and floating |
-| 8 Evaporation, distillation, chromatography | simple distillation, evaporation, a chromatogram of food colourings, a cold tray over boiling salty water | the steps of distillation; keeping the solvent; the words of chromatography; reading a chromatogram; two written answers checked against a mark list |
+| 8 Evaporation, distillation, chromatography | simple distillation (turn on the cold water first: it fills the condenser's jacket from the bottom; ❓ In at the top? shows why not), evaporation, a chromatogram of food colourings, a cold tray over boiling salty water | the steps of distillation; keeping the solvent; the words of chromatography; reading a chromatogram; two written answers checked against a mark list |
 | 9 Graphs and tables | the perfect graph and the perfect table, every rule numbered, hidden until the pupil presses Show it | finding the faults in a student's line graph and bar chart (tap each part that is wrong); naming the faults of a table; the title of a graph |
 
 **Help, after the pupil has tried.** Key words are typed (spelling counts; capitals do not, except in chemical symbols). A
 pupil who is stuck presses **Show the first letter**: the gap they are working on shows its first letter, and they type
-the rest. Or they press **Show the word list**: every gap's word, in a random order, under the sentence. Some checks have a **💡 Hint**: an idea to think about, never the answer. Every key word can be tapped for its
+the rest. Or they press **Show the word list**: every gap's word, in a random order, under the sentence; ✕ Close hides it again. Some checks have a **💡 Hint**: an idea to think about, never the answer. Every key word can be tapped for its
 meaning, with Korean and Chinese, and the word bank has every word of the page. The answers can be shown only after two
 tries.
 
@@ -82,3 +82,18 @@ The `tools/` named here stay on Daniel's computer: they are not in this reposito
   on a part selects it, a right part tapped counts once, Show the faults only after two, Fix every fault draws the
   perfect graph, the keyboard alone finds a fault, the hidden pictures open).
 </details>
+
+## Videos from other people
+
+Part 2's "Watch the real thing" clips (`img/clips/`, 26 Oct 2026) come from Wikimedia Commons and keep their own
+licences (see NOTICE); each is credited under its video on the page. Each was cut to about 6 seconds, without sound.
+
+| Clip | From | Author | Licence | Changed |
+|---|---|---|---|---|
+| melting | [Ice cubes melting in a glass](https://commons.wikimedia.org/wiki/File:Ice_cubes_melting_in_a_glass.ogv) | Philip Serracino Inglott | CC BY-SA 3.0 (this clip too) | shortened, 3× faster |
+| freezing | [A freezing soap bubble in McGregor, Minnesota](https://commons.wikimedia.org/wiki/File:A_freezing_soap_bubble_in_McGregor,_Minnesota.webm) | Lorie Shaull | CC BY 2.0 | cropped, shortened, 2× faster |
+| boiling | [Boiling water - 2025 jan 9](https://commons.wikimedia.org/wiki/File:Boiling_water_-_2025_jan_9.webm) | Nesnad | CC BY 4.0 | cropped, shortened |
+| sublimation, deposition | [Physical Properties of Iodine](https://commons.wikimedia.org/wiki/File:Physical_Properties_of_Iodine.ogv) | NCSSM | CC BY 3.0 | parts joined, shortened, faster |
+
+No clip for evaporating (the free one jumps in time and has German labels) or condensing (none free): the drawn
+pictures show those. A video found elsewhere (a GIF site, social media) is never used without its author's licence.
