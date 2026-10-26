@@ -18,7 +18,10 @@
           grow (how much wider the gaps of a solid get from cold to hot: 0.16), gap0 (the gap between neighbours in the
           coldest solid, as a part of a particle's width: 0), solidT (the temperature as the solid's own scale: the same),
           liqGap (the smallest gap between two particles of the liquid: 0, touching), liqKick (how hard the liquid's
-          particles jiggle: 1; the ice-and-water zoom uses more, so its melt is seen sliding, 26 Oct 2026) }
+          particles jiggle: 1; the ice-and-water zoom uses more, so its melt is seen sliding, 26 Oct 2026), smooth (the
+          liquid drifts in slow, smooth currents instead of jittering: "more flowing", Daniel, 26 Oct 2026), exitTop
+          (the box is a window on the water's surface: a gas particle rises out of its top and is gone for good, as steam
+          leaves a beaker) }
      Each particle has its own state (ph: s fixed in the regular pattern, l liquid, g gas), so a change of state happens a
      part at a time, the way it does (Daniel, 25 Oct 2026: a solid that melted all at once, in a burst, "makes absolute no
      sense"). Melting, sublimation and evaporation take the particles at the SURFACE first; freezing and deposition fill
@@ -58,7 +61,7 @@
     function place(st) {
       events = [];
       const ph = st.charAt(0);
-      ps.forEach((q, i) => { q.ph = ph; q.mv = null; q.site = i; });
+      ps.forEach((q, i) => { q.ph = ph; q.mv = null; q.site = i; q.gone = false; q.node.style.display = ''; });
       if (st === 'solid') { Ts = T; const s = sites().out; ps.forEach((q, i) => { q.x = s[i][0]; q.y = s[i][1]; q.vx = q.vy = 0; q.a = o.kind === 'H2O' ? (i % 2 ? 30 : -30) : q.a; }); return; }
       const pos = D.spots(n, box.x1 - box.x0, box.y1 - box.y0, 2 * r * (1 + (st === 'liquid' ? LGAP : 0)), st === 'liquid' ? 'liquid' : 'gas', (o.seed || 3) + 7);
       ps.forEach((q, i) => { const p = pos[i] || [rnd() * (box.x1 - box.x0), rnd() * (box.y1 - box.y0)]; q.x = box.x0 + p[0]; q.y = box.y0 + p[1]; });
@@ -95,7 +98,7 @@
         const used = new Set(ps.filter(held).map(q => q.site).concat([...taken]));
         SURFACE.slice().reverse().filter(i => !used.has(i)).slice(0, k - target).forEach(site => add.push({ site, from: b, to: 's' }));
       } else {                                          /* gas → liquid: the lowest first */
-        ps.filter(q => q.ph === b && !busy.has(q)).sort((p, q) => q.y - p.y).slice(0, k - target).forEach(q => add.push({ q, from: b, to: a }));
+        ps.filter(q => q.ph === b && !q.gone && !busy.has(q)).sort((p, q) => q.y - p.y).slice(0, k - target).forEach(q => add.push({ q, from: b, to: a }));
       }
       const start = Math.max(t, ...events.filter(e => (e.from === a && e.to === b) || (e.from === b && e.to === a)).map(e => e.at)), gap = (ms == null ? 700 : ms) / 1000 / Math.max(1, add.length);
       add.forEach((e, i) => { e.at = start + gap * (i + .5); events.push(e); });
@@ -109,14 +112,16 @@
     function walls(q) {
       const top = box.y0 + r, bot = box.y1 - r, lft = box.x0 + r, rgt = box.x1 - r;
       if (q.x < lft) { q.x = lft; q.vx = Math.abs(q.vx); } if (q.x > rgt) { q.x = rgt; q.vx = -Math.abs(q.vx); }
-      if (q.y < top) { q.y = top; q.vy = Math.abs(q.vy); } if (q.y > bot) { q.y = bot; q.vy = -Math.abs(q.vy) * (q.ph === 'g' ? 1 : .3); }
+      if (o.exitTop && q.ph === 'g' && !q.mv) { if (q.y < box.y0 - r) { q.gone = true; q.node.style.display = 'none'; q.vx = q.vy = 0; } }
+      else if (q.y < top) { q.y = top; q.vy = Math.abs(q.vy); }
+      if (q.y > bot) { q.y = bot; q.vy = -Math.abs(q.vy) * (q.ph === 'g' ? 1 : .3); }
     }
     /* particles never overlap: two particles of the liquid keep at least their small gap; a particle held in the pattern
        does not move when another meets it */
     function collide() {
       for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
         const A = ps[i], B = ps[j], fa = held(A), fb = held(B);
-        if (fa && fb) continue;
+        if ((fa && fb) || A.gone || B.gone) continue;
         const dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || .01, m = 2 * r * (A.ph === 'l' && B.ph === 'l' ? 1 + LGAP : 1);
         if (d >= m) continue;
         const nx = dx / d, ny = dy / d, over = m - d, el = A.ph === 'g' || B.ph === 'g' ? 1 : .55;
@@ -171,7 +176,7 @@
       /* the pattern: each particle vibrates about its own site, more when hotter */
       const amp = (.8 + 1.6 * LT(T)) * r / 16, w = 5 + 6 * LT(T);
       ps.forEach(q => { if (q.ph !== 's' || q.mv) return; const [sx, sy] = S0[q.site]; q.x = sx + amp * Math.sin(w * t + q.p1); q.y = sy + amp * Math.cos(w * 1.13 * t + q.p2); });
-      const free = ps.filter(q => !held(q));
+      const free = ps.filter(q => !held(q) && !q.gone);
       if (!free.length) return;
       /* a liquid fills the bottom of its container with a level top (the band its particles would fill, with a little
          room to spare: their area ÷ how tightly a liquid packs ÷ the width), while no part of it is still solid */
@@ -180,12 +185,17 @@
       for (let k = 0; k < N; k++) {
         free.forEach(q => {
           if (q.ph === 'l') {
-            q.vx += (rnd() - .5) * kick * h * 4; q.vy += (rnd() - .5) * kick * h * 4 + 160 * sc * h;
+            if (o.smooth) {                                /* slow currents: each particle's own gentle, turning push */
+              const fx = Math.cos(t * .8 + q.p1) * .7 + Math.cos(t * .27 + 2 * q.p2) * .5, fy = Math.sin(t * 1.05 + q.p2) * .55;
+              q.vx += (fx * 1.0 + (rnd() - .5) * .9) * kick * h; q.vy += (fy * .35 + (rnd() - .5) * .5) * kick * h + 160 * sc * h;
+              if (q.vy < -45 * sc) q.vy = -45 * sc;       /* a liquid is never thrown up: only a gas rises */
+            } else { q.vx += (rnd() - .5) * kick * h * 4; q.vy += (rnd() - .5) * kick * h * 4 + 160 * sc * h; }
             if (q.y < Math.min(band, solidLeft ? bt : band) - 2 * r) q.vy += 500 * sc * h;   /* far above the liquid: falls */
             const onTop = solidLeft && q.y < bt && q.x > bl && q.x < br;
             if (onTop && !over) q.vx += (q.x < (bl + br) / 2 ? -1 : 1) * 260 * sc * h;
             else if (q.y < band + r) q.vy += (band + r - q.y) * 60 * h;
-            q.vx *= 1 - 2.2 * h; q.vy *= 1 - 2.2 * h; q.va += (rnd() - .5) * 1400 * h; q.va *= 1 - 2.5 * h;
+            const damp = o.smooth ? 1.2 : 2.2;
+            q.vx *= 1 - damp * h; q.vy *= 1 - damp * h; q.va += (rnd() - .5) * (o.smooth ? 700 : 1400) * h; q.va *= 1 - 2.5 * h;
           } else {
             const v = speed(), sp = Math.hypot(q.vx, q.vy) || 1, f = 1 + (v / sp - 1) * Math.min(1, 2 * h);
             q.vx *= f; q.vy *= f; q.va = q.va || 60;
@@ -480,38 +490,44 @@
     alt: 'A beaker of ice on a hot plate, a thermometer, and a lens showing water molecules',
     draw(k) {
       const g = k.g;
-      /* the hot plate, the beaker and the thermometer */
-      S('rect', { class: 'metal', x: 70, y: 430, width: 250, height: 26, rx: 6 }, g);
-      const ring = S('rect', { x: 118, y: 421, width: 154, height: 10, rx: 4, fill: '#8C939C' }, g);
-      const bk = D.beaker(g, 195, 420, 170, 220, { color: '#9CC8EE', level: .5, opacity: .7 });
-      const ice = S('g', null, g), blk = S('g', { opacity: 0 }, g), bubbles = S('g', null, g), steam = S('g', null, g);
+      /* the hot plate and the beaker, moved right as one group (BX), and the thermometer on the left (Daniel, 26 Oct
+         2026: so the dashed lines from the beaker to the zoom are not interrupted) */
+      const BX = 65, bg = S('g', { transform: `translate(${BX} 0)` }, g);
+      S('rect', { class: 'metal', x: 70, y: 430, width: 250, height: 26, rx: 6 }, bg);
+      const ring = S('rect', { x: 118, y: 421, width: 154, height: 10, rx: 4, fill: '#8C939C' }, bg);
+      const bk = D.beaker(bg, 195, 420, 170, 220, { color: '#9CC8EE', level: .5, opacity: .7 });
+      const ice = S('g', null, bg), blk = S('g', { opacity: 0 }, bg), bubbles = S('g', null, bg), steam = S('g', null, bg);
       let block = false;            /* ice cubes at first; water that freezes in the beaker becomes one block of ice */
       S('rect', { x: 113, y: 290, width: 164, height: 127, rx: 5, fill: '#E6F4FB', stroke: '#8DB8D3', 'stroke-width': 2 }, blk);
       [[140, 312, 60], [170, 352, 70], [200, 392, 48]].forEach(([x, y, w]) => S('line', { x1: x, y1: y, x2: x + w, y2: y - 14, stroke: '#FFFFFF', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: .9 }, blk));
       const cubes = [[150, 316], [196, 324], [238, 314], [168, 352], [222, 356], [195, 388], [150, 392], [240, 390]];
       cubes.forEach(([x, y], i) => S('rect', { x: x - 20, y: y - 18, width: 40, height: 36, rx: 7, fill: '#E6F4FB', stroke: '#8DB8D3', 'stroke-width': 2, transform: `rotate(${(i * 23) % 30 - 15} ${x} ${y})` }, ice));
-      /* where the zoom looks: a square on the beaker's floor, joined to the zoom by dashed lines (drawn first: they pass
-         behind the thermometer) */
-      const LX = 640, LY = 205, X0 = LX - 112, X1 = LX + 112, Y0 = LY - 84, Y1 = LY + 74;   /* wider than the ice: room beside it for the melt */
-      S('rect', { x: 236, y: 382, width: 32, height: 34, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.4, 'stroke-dasharray': '5 4' }, g);
-      S('path', { d: `M268,382 L${X0 - 4},${Y0 - 26} M268,416 L${X0 - 4},${Y1 + 4}`, stroke: 'var(--accent)', 'stroke-width': 1.6, 'stroke-dasharray': '5 4', fill: 'none' }, g);
-      const th = D.thermometer(g, 380, 60, 440, { min: -20, max: 110, ticks: [-20, 0, 20, 40, 60, 80, 100] });
-      /* the zoom: the bottom of the beaker, magnified, with its glass walls and floor (Daniel, 26 Oct 2026: in a round lens
-         the melted water lay against walls nobody could see and did not take the container's shape; "either you change
-         the circle and you make it so it looks like a beaker, or …"). The particles' box IS this piece of beaker, so the
-         melted water slides down beside the ice that is left, lies level across the floor, and fills it wall to wall. */
+      /* where the zoom looks: a small square on the beaker at the SURFACE of the water (Daniel, 26 Oct 2026: a zoom
+         drawn as an open beaker while it pointed at the floor "makes no sense"; near the surface, steam can be seen to
+         leave). The zoom is the same square, magnified: a closed window, with the air at its top. Its dashed lines are
+         drawn first, so they pass behind the thermometer. */
+      const LX = 640, LY = 205, X0 = LX - 105, X1 = LX + 105, Y0 = LY - 105, Y1 = LY + 105;   /* wider than the ice: room beside it for the melt */
+      /* the square follows the surface (the top of the ice, then the water's level as it rises, or falls as steam
+         leaves), sitting so the surface crosses it two thirds of the way down, as in the zoom */
+      const mk = S('rect', { x: 220 + BX, y: 276, width: 36, height: 36, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.4, 'stroke-dasharray': '5 4' }, g);
+      const mkl = S('path', { stroke: 'var(--accent)', 'stroke-width': 1.6, 'stroke-dasharray': '5 4', fill: 'none' }, g);
+      const marker = sy => { const y = Math.round(sy - 24); mk.setAttribute('y', y); mkl.setAttribute('d', `M${256 + BX},${y} L${X0 - 4},${Y0 - 4} M${256 + BX},${y + 36} L${X0 - 4},${Y1 + 4}`); };
+      const th = D.thermometer(g, 46, 60, 440, { min: -20, max: 110, ticks: [-20, 0, 20, 40, 60, 80, 100] });
+      /* the zoom: the square at the surface, magnified, in a closed window (no glass walls: it is a piece of the water,
+         not a beaker). The melt slides down beside the ice that is left and lies level; a molecule that becomes a gas
+         rises out of the top of the window and is gone, as steam leaves the beaker (exitTop). */
       const cid = D.id('zoom'), defs = S('defs', null, g), cp = S('clipPath', { id: cid }, defs);
-      S('rect', { x: X0, y: Y0 - 26, width: X1 - X0, height: Y1 - Y0 + 26, rx: 6 }, cp);
-      S('rect', { x: X0 - 4, y: Y0 - 26, width: X1 - X0 + 8, height: Y1 - Y0 + 30, rx: 10, fill: 'var(--sheet)' }, g);
+      S('rect', { x: X0, y: Y0, width: X1 - X0, height: Y1 - Y0, rx: 8 }, cp);
+      S('rect', { class: 'lens-ring', x: X0 - 3, y: Y0 - 3, width: X1 - X0 + 6, height: Y1 - Y0 + 6, rx: 11 }, g);
       const inner = S('g', { 'clip-path': `url(#${cid})` }, g);
-      S('path', { class: 'glass', d: `M${X0 - 4},${Y0 - 26} L${X0 - 4},${Y1 - 6} Q${X0 - 4},${Y1 + 4} ${X0 + 6},${Y1 + 4} L${X1 - 6},${Y1 + 4} Q${X1 + 4},${Y1 + 4} ${X1 + 4},${Y1 - 6} L${X1 + 4},${Y0 - 26}` }, g);
-      const lens = PSim({ g: inner, x0: X0, x1: X1, y0: Y0, y1: Y1, n: 15, r: 15, cols: 4, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8, liqKick: 2.6 });
+      S('text', { class: 'note', x: X0 + 12, y: Y0 + 24 }, inner, 'air');
+      const lens = PSim({ g: inner, x0: X0, x1: X1, y0: Y0, y1: Y1, n: 15, r: 15, cols: 4, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8, liqKick: 1.6, smooth: true, exitTop: true });
       k.svg.lens = lens;                                /* read by tools/particles-check.mjs */
       const lt = S('text', { class: 'ttl', x: LX, y: Y1 + 34, 'text-anchor': 'middle' }, g, 'Ice');
-      S('text', { class: 'note', x: LX, y: Y1 + 56, 'text-anchor': 'middle' }, g, 'the bottom of the beaker, zoomed in');
+      S('text', { class: 'note', x: LX, y: Y1 + 56, 'text-anchor': 'middle' }, g, 'zoomed in: the surface, in the beaker');
       S('text', { class: 'note', x: LX, y: Y1 + 76, 'text-anchor': 'middle' }, g, 'water molecules · - - - hydrogen bonds');
       const rec = S('g', null, g);
-      let temp = -20, phase = 'ice', frac = 0;
+      let temp = -20, phase = 'ice', frac = 0, lost = 0;
       const seen = {};
       function scene() {
         th.set(temp);
@@ -519,12 +535,14 @@
         const solidPart = phase === 'ice' ? 1 : phase === 'melting' ? 1 - frac : phase === 'freezing' ? frac : 0;
         ice.setAttribute('opacity', block ? 0 : solidPart);
         blk.setAttribute('opacity', block ? solidPart : 0);
-        bk.liq.set(phase === 'boiling' ? .58 - .14 * frac : .58 * (1 - solidPart));
+        if (phase === 'boiling') lost = Math.max(lost, frac);          /* steam that left the beaker does not come back */
+        bk.liq.set((.58 - .14 * lost) * (phase === 'boiling' ? 1 : 1 - solidPart));
+        marker(Math.min(solidPart > .01 ? 298 : Infinity, bk.liq.level() > .01 ? bk.liq.y() : Infinity));
         lt.textContent = { ice: 'Ice (solid)', melting: 'Ice melting', water: 'Water (liquid)', freezing: 'Water freezing', boiling: 'Water boiling' }[phase];
         const r = [];
         if (seen.melt) r.push('melting point 0 °C'); if (seen.freeze) r.push('freezing point 0 °C'); if (seen.boil) r.push('boiling point 100 °C');
         while (rec.firstChild) rec.removeChild(rec.firstChild);
-        if (r.length) { S('text', { class: 'lbl-sm', x: 40, y: 40 }, rec, 'You saw:'); r.forEach((t, i) => S('text', { class: 'lbl-sm', x: 40, y: 66 + i * 24 }, rec, '✓ ' + t)); }
+        if (r.length) { S('text', { class: 'lbl-sm', x: 150, y: 40 }, rec, 'You saw:'); r.forEach((t, i) => S('text', { class: 'lbl-sm', x: 150, y: 66 + i * 24 }, rec, '✓ ' + t)); }
       }
       let heatOn = false;
       const SAY = {
@@ -532,7 +550,7 @@
         melting: () => '<b>Melting at 0 °C.</b> The molecules at the surface of the ice gain energy and leave their fixed places in the pattern. They slide past each other and flow down beside the ice that is left, taking the shape of the bottom of the beaker. While the ice melts, the thermometer stays at 0 °C.',
         water: () => `<b>Liquid water at ${temp} °C.</b> The molecules touch and slide past each other; hydrogen bonds break and form again all the time.`,
         freezing: () => '<b>Freezing at 0 °C.</b> The molecules lose energy and become fixed in a regular pattern again: the same temperature as melting.',
-        boiling: () => '<b>Boiling at 100 °C.</b> Molecules escape from the liquid as a gas (steam). Bubbles of steam form all through the water.'
+        boiling: () => '<b>Boiling at 100 °C.</b> Bubbles of steam form all through the water. Molecules escape from the liquid as a gas (steam) and leave the beaker, so the water level falls.'
       };
       const say = () => k.say('<p>' + SAY[phase]() + '</p><p><mark class="do">Press 🔥 Heat or ❄ Cool, one step at a time.</mark></p>');
       function heatStep() {
