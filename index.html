@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
-<link rel="stylesheet" href="css/app.css?v=202610261754">
+<link rel="stylesheet" href="css/app.css?v=202610261759">
 <!-- Bright or dark: the reader's choice for the whole site (biology.theme), else the computer's setting. -->
 <script>(function () { try { var t = localStorage.getItem('biology.theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {} })();</script>
 </head>
@@ -109,12 +109,14 @@
         <li>A liquid changes to a gas: <dfn data-w="evaporate">evaporating</dfn>, or <dfn data-w="boil">boiling</dfn> when bubbles of gas form all through the liquid. A gas changes to a liquid: <dfn data-w="condense">condensing</dfn>.</li>
         <li>A solid changes directly to a gas, with no liquid in between: <dfn data-w="sublimation">sublimation</dfn>. A gas changes directly to a solid, with no liquid in between: <dfn data-w="deposition">deposition</dfn>.</li>
       </ul>
+      <figure class="notefig"><svg data-fig="vapour"></svg>
+        <figcaption>Evaporating and boiling are both <dfn data-w="vaporisation">vaporisation</dfn>: a liquid changing to a gas. Evaporating happens only at the surface of the liquid, at any temperature. Boiling happens at the surface and all through the liquid, as bubbles of gas, and only at the boiling point.</figcaption></figure>
       <div class="clips">
         <p class="k3">Watch the real thing</p>
         <figure class="clip"><video data-clip src="img/clips/melting.mp4" poster="img/clips/melting.jpg" muted loop playsinline preload="none" aria-label="Melting: a real video"></video><figcaption><b>Melting.</b> Ice cubes in a glass become liquid water. (3 times faster than real life.)<span class="credit">Video: Philip Serracino Inglott, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Ice_cubes_melting_in_a_glass.ogv" target="_blank" rel="noopener">Wikimedia Commons</a>; shortened and made faster; this clip is CC BY-SA 3.0 too.</span></figcaption></figure>
         <figure class="clip"><video data-clip src="img/clips/freezing.mp4" poster="img/clips/freezing.jpg" muted loop playsinline preload="none" aria-label="Freezing: a real video"></video><figcaption><b>Freezing.</b> A soap bubble outside on a freezing day: ice crystals grow across its thin layer of water. (2 times faster than real life.)<span class="credit">Video: Lorie Shaull, <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener">CC BY 2.0</a>, <a href="https://commons.wikimedia.org/wiki/File:A_freezing_soap_bubble_in_McGregor,_Minnesota.webm" target="_blank" rel="noopener">Wikimedia Commons</a>; cropped, shortened and made faster.</span></figcaption></figure>
         <figure class="clip"><video data-clip src="img/clips/boiling.mp4" poster="img/clips/boiling.jpg" muted loop playsinline preload="none" aria-label="Boiling: a real video"></video><figcaption><b>Boiling.</b> Water boiling in a pan: bubbles of gas form all through the liquid. (Real speed.)<span class="credit">Video: Nesnad, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Boiling_water_-_2025_jan_9.webm" target="_blank" rel="noopener">Wikimedia Commons</a>; cropped and shortened.</span></figcaption></figure>
-        <figure class="clip"><video data-clip src="img/clips/sublimation.mp4" poster="img/clips/sublimation.jpg" muted loop playsinline preload="none" aria-label="Sublimation: a real video"></video><figcaption><b>Sublimation.</b> Dry ice is solid carbon dioxide. In a warm room it changes directly into a gas, with no liquid in between: it never makes a puddle. Carbon dioxide gas cannot be seen. The white fog is tiny drops of water from the air, condensed by the very cold gas.<span class="credit">GIF: <a href="https://taylorsciencegeeks.weebly.com/blog/previous/50" target="_blank" rel="noopener">Taylor Science Geeks</a>, used with permission; shown as a video.</span></figcaption></figure>
+        <figure class="clip"><video data-clip src="img/clips/sublimation.mp4" poster="img/clips/sublimation.jpg" muted loop playsinline preload="none" aria-label="Sublimation: a real video"></video><figcaption><b>Sublimation.</b> Dry ice is solid carbon dioxide. In a warm room it changes directly into a gas, with no liquid in between: it never makes a puddle. Carbon dioxide gas cannot be seen. The white fog is tiny drops of water from the air, condensed by the very cold gas.<span class="credit">GIF: <a href="https://taylorsciencegeeks.weebly.com/blog/previous/50" target="_blank" rel="noopener">Taylor Science Geeks</a>.</span></figcaption></figure>
         <figure class="clip"><video data-clip src="img/clips/deposition.mp4" poster="img/clips/deposition.jpg" muted loop playsinline preload="none" aria-label="Deposition: a real video"></video><figcaption><b>Deposition.</b> Iodine was heated in a beaker until it became a purple gas. A dish of ice sat on top of the beaker: on its cold underside, the gas changed directly into these dark crystals of solid iodine. (A little faster than real life.)<span class="credit">Video: NCSSM, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a>, <a href="https://commons.wikimedia.org/wiki/File:Physical_Properties_of_Iodine.ogv" target="_blank" rel="noopener">Wikimedia Commons</a>; shortened and made faster.</span></figcaption></figure>
       </div>
       <p><u>Melting, evaporating, boiling and sublimation need energy</u>: you heat the substance, and its particles gain energy and vibrate or move faster. In melting, they leave their fixed places and start to slide past each other. In evaporating, boiling and sublimation, they escape from the other particles and move far apart. <u>Freezing, condensing and deposition happen when it cools</u>: the particles lose energy and move more slowly. In condensing, they come close together again; in freezing and deposition, they become fixed in a regular pattern.</p>
@@ -432,18 +434,18 @@
 </footer>
 
 <script src="https://accounts.google.com/gsi/client?hl=en-GB" async defer></script>
-<script src="js/config.js?v=202610261754"></script>
-<script src="js/signin.js?v=202610261754"></script>
-<script src="js/lesson.js?v=202610261754"></script>
-<script src="js/glossary.js?v=202610261754"></script>
-<script src="js/words.js?v=202610261754"></script>
-<script src="js/core.js?v=202610261754"></script>
-<script src="js/draw.js?v=202610261754"></script>
-<script src="js/checks.js?v=202610261754"></script>
-<script src="js/questions.js?v=202610261754"></script>
-<script src="js/panel.js?v=202610261754"></script>
-<script src="js/scenes1.js?v=202610261754"></script>
-<script src="js/lens.js?v=202610261754"></script>
-<script src="js/scenes2.js?v=202610261754"></script>
+<script src="js/config.js?v=202610261759"></script>
+<script src="js/signin.js?v=202610261759"></script>
+<script src="js/lesson.js?v=202610261759"></script>
+<script src="js/glossary.js?v=202610261759"></script>
+<script src="js/words.js?v=202610261759"></script>
+<script src="js/core.js?v=202610261759"></script>
+<script src="js/draw.js?v=202610261759"></script>
+<script src="js/checks.js?v=202610261759"></script>
+<script src="js/questions.js?v=202610261759"></script>
+<script src="js/panel.js?v=202610261759"></script>
+<script src="js/scenes1.js?v=202610261759"></script>
+<script src="js/lens.js?v=202610261759"></script>
+<script src="js/scenes2.js?v=202610261759"></script>
 </body>
 </html>

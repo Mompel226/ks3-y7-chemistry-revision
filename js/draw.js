@@ -338,6 +338,41 @@
     return out;
   }
   FIG.cycle = { vb: [700, 450], alt: 'Solid, liquid and gas joined by six arrows, each with an empty numbered box', draw: s => triangle(s, { key: true }) };
+  /* vaporisation (Daniel, 26 Oct 2026: "on the term vaporization, you encounter evaporation and boiling. Evaporation is
+     only on the surface of the liquid, while boiling is on the surface and throughout the liquid … evaporation happens at
+     any temperature, while boiling happens at the boiling temperature"): one heading over two beakers of water. Left,
+     evaporating: particles leave from the surface only, at 20 °C. Right, boiling: a flame, bubbles of gas forming all
+     through the water and rising, particles leaving at the surface and from the bubbles, at 100 °C. */
+  FIG.vapour = { vb: [760, 480], alt: 'Vaporisation: evaporating, where particles leave only from the surface at any temperature, and boiling, where bubbles of gas form all through the liquid at the boiling point', draw: s => {
+    S('text', { class: 'ttl', x: 380, y: 30, 'text-anchor': 'middle', style: 'font-size:30px' }, s, 'Vaporisation: a liquid changes to a gas');
+    S('path', { d: 'M190,70 L190,48 L570,48 L570,70', fill: 'none', stroke: 'var(--ink3)', 'stroke-width': 2.4 }, s);
+    S('line', { x1: 380, y1: 40, x2: 380, y2: 48, stroke: 'var(--ink3)', 'stroke-width': 2.4 }, s);
+    const gasDot = (x, y) => S('circle', { cx: x, cy: y, r: 6, fill: '#2E7FD9', stroke: '#164A96', 'stroke-width': 1.2 }, s);
+    const up = (x, y1, y2) => { S('line', { x1: x, y1, x2: x, y2: y2 + 8, stroke: '#2E7FD9', 'stroke-width': 2.2 }, s); arrowHead(s, x, y2, -Math.PI / 2, 9, '#2E7FD9'); };
+    [[190, 'Evaporating'], [570, 'Boiling']].forEach(([x, t]) => S('text', { class: 'ttl', x, y: 96, 'text-anchor': 'middle', style: 'font-size:28px' }, s, t));
+    /* what each one is, under its heading */
+    [[190, 'only at the surface', 'at any temperature'], [570, 'at the surface AND all through', 'only at the boiling point']].forEach(([x, a, b]) => {
+      S('text', { class: 'lbl-sm', x, y: 128, 'text-anchor': 'middle', style: 'font-size:23px' }, s, a); S('text', { class: 'lbl-sm', x, y: 158, 'text-anchor': 'middle', style: 'font-size:23px' }, s, b); });
+    /* evaporating */
+    const b1 = beaker(s, 175, 390, 170, 170, { level: .62, opacity: .6 });
+    const s1 = b1.liq.y();
+    [[128, -14], [160, -40], [196, -22], [226, -48]].forEach(([x, dy], i) => { gasDot(x, s1 + dy - 10); if (i % 2 === 0) up(x, s1 - 4, s1 + dy - 22); });
+    const t1 = thermometer(s, 300, 200, 382, { min: 0, max: 110, ticks: [0, 20, 100] }); t1.set(20);
+    S('text', { class: 'note', x: 175, y: 426, 'text-anchor': 'middle', style: 'font-size:20px' }, s, 'e.g. a puddle drying at 20 °C');
+    /* boiling */
+    const b2 = beaker(s, 555, 390, 170, 170, { level: .62, opacity: .6 });
+    const s2 = b2.liq.y();
+    const fl = bunsen(s, 555, 478, { h: 58, flame: 28 }); if (fl.on) fl.on(true);
+    [[505, 375, 7], [540, 356, 9], [585, 370, 6], [520, 326, 11], [570, 318, 8], [600, 340, 10], [535, 292, 12], [590, 284, 9]].forEach(([x, y, r]) =>
+      S('circle', { cx: x, cy: y, r, fill: 'rgba(255,255,255,.55)', stroke: '#FFFFFF', 'stroke-width': 2 }, s));
+    [[520, 326], [570, 318], [600, 340]].forEach(([x, y]) => { S('line', { x1: x, y1: y - 16, x2: x, y2: y - 28, stroke: '#FFFFFF', 'stroke-width': 2.2 }, s); arrowHead(s, x, y - 34, -Math.PI / 2, 8, '#FFFFFF'); });
+    [[506, -16], [540, -44], [572, -24], [604, -50]].forEach(([x, dy], i) => { gasDot(x, s2 + dy - 10); if (i % 2 === 0) up(x, s2 - 4, s2 + dy - 22); });
+    const t2 = thermometer(s, 680, 200, 382, { min: 0, max: 110, ticks: [0, 20, 100] }); t2.set(100);
+    S('text', { class: 'note', x: 690, y: 426, 'text-anchor': 'middle', style: 'font-size:20px' }, s, 'water: 100 °C');
+    /* the key */
+    gasDot(30, 458); S('text', { class: 'note', x: 44, y: 465, style: 'font-size:20px' }, s, 'a particle leaving as a gas');
+    S('circle', { cx: 340, cy: 458, r: 9, fill: 'rgba(126,184,234,.6)', stroke: '#7EB8EA', 'stroke-width': 2 }, s); S('text', { class: 'note', x: 356, y: 465, style: 'font-size:20px' }, s, 'a bubble of gas');
+  } };
   /* the places of the six boxes on FIG.cycle (label question p2-label-cycle), in the order of q.slots */
   FIG.cycle.slots = { melt: [350, 300], freeze: [350, 426], evap: [588, 172], cond: [452, 242], subl: [112, 172], depo: [248, 242] };
 

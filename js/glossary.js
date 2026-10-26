@@ -156,6 +156,7 @@
     { g: 'Doing words', w: [
       { k: 'boil',            en: 'boil',            ko: '끓다',              zh: '沸腾',        d: 'To change to a gas all through the liquid, with bubbles, at the boiling point.' },
       { k: 'evaporate',       en: 'evaporate',       ko: '증발하다',          zh: '蒸发',        d: 'To change from a liquid into a gas. It happens at the surface; heating makes it faster.' },
+      { k: 'vaporisation',    en: 'vaporisation',    ko: '기화',              zh: '汽化',        also: ['vaporization', 'vaporise', 'vaporize'], d: 'A liquid changing to a gas. It happens in two ways: evaporating, only at the surface and at any temperature, and boiling, all through the liquid and only at the boiling point.' },
       { k: 'condense',        en: 'condense',        ko: '액화하다 (응결하다)', zh: '冷凝（液化）', also: ['condensation'], d: 'To change from a gas into a liquid when cooled.' },
       { k: 'heat',            en: 'heat',            ko: '가열하다',          zh: '加热',        d: 'To make something hotter.' },
       { k: 'cool',            en: 'cool',            ko: '식히다 (냉각하다)', zh: '冷却',        d: 'To make something colder, or to become colder.' },
