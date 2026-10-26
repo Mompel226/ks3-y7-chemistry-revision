@@ -71,7 +71,10 @@
     /* one particle changes its state: leaving the pattern gently as a liquid (never a burst), flying off as a gas, or
        slowing down into the liquid */
     function go(q, ph) {
-      if (ph === 'l' && q.ph === 's') { q.vx = (rnd() - .5) * 50 * sc; q.vy = (rnd() - .5) * 20 * sc; q.va = (rnd() - .5) * 200; }
+      if (ph === 'l' && q.ph === 's') {
+        if (o.smooth) { q.vx = (rnd() - .5) * 8 * sc; q.vy = 0; q.va = (rnd() - .5) * 60; }   /* eases out of the pattern from rest */
+        else { q.vx = (rnd() - .5) * 50 * sc; q.vy = (rnd() - .5) * 20 * sc; q.va = (rnd() - .5) * 200; }
+      }
       else if (ph === 'g') { const a = -Math.PI / 2 + (rnd() - .5) * 2.4, v = speed(); q.vx = Math.cos(a) * v; q.vy = Math.sin(a) * v; q.va = (rnd() - .5) * 120; }
       else if (ph === 'l') { q.vx *= .4; q.vy = Math.max(q.vy * .4, 40 * sc); }
       q.ph = ph;
@@ -192,10 +195,11 @@
             } else { q.vx += (rnd() - .5) * kick * h * 4; q.vy += (rnd() - .5) * kick * h * 4 + 160 * sc * h; }
             if (q.y < Math.min(band, solidLeft ? bt : band) - 2 * r) q.vy += 500 * sc * h;   /* far above the liquid: falls */
             const onTop = solidLeft && q.y < bt && q.x > bl && q.x < br;
-            if (onTop && !over) q.vx += (q.x < (bl + br) / 2 ? -1 : 1) * 260 * sc * h;
+            if (onTop && !over) q.vx += (q.x < (bl + br) / 2 ? -1 : 1) * (o.smooth ? 90 : 260) * sc * h;   /* runs off the ice */
             else if (q.y < band + r) q.vy += (band + r - q.y) * 60 * h;
             const damp = o.smooth ? 1.2 : 2.2;
-            q.vx *= 1 - damp * h; q.vy *= 1 - damp * h; q.va += (rnd() - .5) * (o.smooth ? 700 : 1400) * h; q.va *= 1 - 2.5 * h;
+            q.vx *= 1 - damp * h; q.vy *= 1 - damp * h;
+            if (o.smooth) { const sp = Math.hypot(q.vx, q.vy), top = 95 * sc; if (sp > top) { q.vx *= top / sp; q.vy *= top / sp; } }   /* a liquid flows calmly */ q.va += (rnd() - .5) * (o.smooth ? 700 : 1400) * h; q.va *= 1 - 2.5 * h;
           } else {
             const v = speed(), sp = Math.hypot(q.vx, q.vy) || 1, f = 1 + (v / sp - 1) * Math.min(1, 2 * h);
             q.vx *= f; q.vy *= f; q.va = q.va || 60;
