@@ -528,10 +528,29 @@
       const bk = D.beaker(bg, 195, 420, 170, 220, { color: '#9CC8EE', level: .5, opacity: .7 });
       const ice = S('g', null, bg), blk = S('g', { opacity: 0 }, bg), bubbles = S('g', null, bg), steam = S('g', null, bg);
       let block = false;            /* ice cubes at first; water that freezes in the beaker becomes one block of ice */
-      S('rect', { x: 113, y: 290, width: 164, height: 127, rx: 5, fill: '#E6F4FB', stroke: '#8DB8D3', 'stroke-width': 2 }, blk);
-      [[140, 312, 60], [170, 352, 70], [200, 392, 48]].forEach(([x, y, w]) => S('line', { x1: x, y1: y, x2: x + w, y2: y - 14, stroke: '#FFFFFF', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: .9 }, blk));
+      /* water freezes from its SURFACE down (as a pond does: ice is less dense, so it forms and stays on top); the block
+         grows downwards from the surface, with the liquid still under it (Daniel, 26 Oct 2026: "biological accuracy") */
+      const blkR = S('rect', { x: 113, y: 290, width: 164, height: 0, rx: 5, fill: '#E6F4FB', stroke: '#8DB8D3', 'stroke-width': 2 }, blk);
+      const blkShine = S('g', null, blk);
+      [[140, 0, 60], [180, 1, 50]].forEach(([x, k2, w]) => S('line', { x1: x, y1: 0, x2: x + w, y2: -10, stroke: '#FFFFFF', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: .9, 'data-row': k2 }, blkShine));
+      /* ice cubes: in a heap on the floor while there is no water; then they FLOAT at the surface (about nine tenths under
+         it: ice is less dense than water) and, as they melt, shrink and round off (Daniel, 26 Oct 2026: whole square cubes
+         beside a zoom that showed water looked "intact", not melting) */
       const cubes = [[150, 316], [196, 324], [238, 314], [168, 352], [222, 356], [195, 388], [150, 392], [240, 390]];
-      cubes.forEach(([x, y], i) => S('rect', { x: x - 20, y: y - 18, width: 40, height: 36, rx: 7, fill: '#E6F4FB', stroke: '#8DB8D3', 'stroke-width': 2, transform: `rotate(${(i * 23) % 30 - 15} ${x} ${y})` }, ice));
+      const cubeEls = cubes.map(([x, y], i) => S('rect', { x: x - 20, y: y - 18, width: 40, height: 36, rx: 7, fill: '#E6F4FB', stroke: '#8DB8D3', 'stroke-width': 2, transform: `rotate(${(i * 23) % 30 - 15} ${x} ${y})` }, ice));
+      function drawIce(solidPart, wy, wet) {
+        const sz = 40 * (.3 + .7 * solidPart), hh = sz * .9, rx = 7 + 10 * (1 - solidPart);
+        let top = Infinity;
+        cubeEls.forEach((el, i) => {
+          let [cx, cy] = cubes[i];
+          if (wet) { const row = Math.floor(i / 4), col = i % 4; cx = 134 + col * 41 + row * 20; cy = wy + hh * (row ? .28 : .4); }   /* afloat: every cube breaks the surface */
+          el.setAttribute('x', (cx - sz / 2).toFixed(1)); el.setAttribute('y', (cy - hh / 2).toFixed(1));
+          el.setAttribute('width', sz.toFixed(1)); el.setAttribute('height', hh.toFixed(1)); el.setAttribute('rx', rx.toFixed(1));
+          el.setAttribute('transform', `rotate(${(i * 23) % 30 - 15} ${cx.toFixed(1)} ${cy.toFixed(1)})`);
+          top = Math.min(top, cy - hh / 2);
+        });
+        return top;
+      }
       /* where the zoom looks: a small square on the beaker at the SURFACE of the water (Daniel, 26 Oct 2026: a zoom
          drawn as an open beaker while it pointed at the floor "makes no sense"; near the surface, steam can be seen to
          leave). The zoom is the same square, magnified: a closed window, with the air at its top. Its dashed lines are
@@ -556,8 +575,9 @@
          boiling point, faster when hotter, each escaped molecule replaced by one drifting in from the water around */
       const lens = PSim({ g: inner, x0: X0 - 15, x1: X1 + 15, y0: Y0, y1: Y1 + 9, n: 15, r: 15, cols: 4, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8, liqKick: 1.6,
         smooth: true, exitTop: true, section: true,
-        evap: () => (phase === 'water' || phase === 'melting' || phase === 'freezing') ? .1 + .3 * Math.max(0, temp) / 100 : 0,
-        refill: () => phase !== 'boiling' });
+        evap: () => phase === 'boiling' ? 3 + 3 * frac                                   /* boiling: several a second */
+          : (phase === 'water' || phase === 'melting' || phase === 'freezing') ? .15 + .85 * Math.pow(Math.max(0, temp) / 100, 2) : 0,
+        refill: () => true });
       k.svg.lens = lens;                                /* read by tools/particles-check.mjs */
       const lt = S('text', { class: 'ttl', x: LX, y: Y1 + 34, 'text-anchor': 'middle' }, g, 'Ice');
       S('text', { class: 'note', x: LX, y: Y1 + 56, 'text-anchor': 'middle' }, g, 'zoomed in: the surface, in the beaker');
@@ -569,11 +589,20 @@
         th.set(temp);
         ring.setAttribute('fill', heatOn ? '#E2572B' : '#8C939C');
         const solidPart = phase === 'ice' ? 1 : phase === 'melting' ? 1 - frac : phase === 'freezing' ? frac : 0;
-        ice.setAttribute('opacity', block ? 0 : solidPart);
-        blk.setAttribute('opacity', block ? solidPart : 0);
         if (phase === 'boiling') lost = Math.max(lost, frac);          /* steam that left the beaker does not come back */
-        bk.liq.set((.58 - .14 * lost) * (phase === 'boiling' ? 1 : 1 - solidPart));
-        marker(Math.min(solidPart > .01 ? 298 : Infinity, bk.liq.level() > .01 ? bk.liq.y() : Infinity));
+        const base = .58 - .14 * lost;
+        bk.liq.set(block || phase === 'boiling' ? base : base * (1 - solidPart));   /* a block keeps its water under it */
+        const wy = bk.liq.y(), wet = bk.liq.level() > .02;
+        ice.setAttribute('opacity', !block && solidPart > .01 ? 1 : 0);
+        blk.setAttribute('opacity', block && solidPart > .01 ? 1 : 0);
+        let sy = wet ? wy : Infinity;
+        if (!block && solidPart > .01) sy = Math.min(sy, drawIce(solidPart, wy, wet));
+        if (block) {                                                    /* frozen from the surface down */
+          const hgt = (418 - wy) * solidPart;
+          blkR.setAttribute('y', wy.toFixed(1)); blkR.setAttribute('height', hgt.toFixed(1));
+          [...blkShine.children].forEach((l, k2) => { const y = wy + 14 + k2 * 22; l.setAttribute('y1', y); l.setAttribute('y2', y - 10); l.setAttribute('opacity', hgt > 26 + k2 * 22 ? .9 : 0); });
+        }
+        marker(sy);
         lt.textContent = { ice: 'Ice (solid)', melting: 'Ice melting', water: 'Water (liquid)', freezing: 'Water freezing', boiling: 'Water boiling' }[phase];
         const r = [];
         if (seen.melt) r.push('melting point 0 °C'); if (seen.freeze) r.push('freezing point 0 °C'); if (seen.boil) r.push('boiling point 100 °C');
@@ -586,7 +615,7 @@
         melting: () => '<b>Melting at 0 °C.</b> The molecules at the surface of the ice gain energy and leave their fixed places in the pattern. They slide past each other and flow down beside the ice that is left, taking the shape of the bottom of the beaker. While the ice melts, the thermometer stays at 0 °C.',
         water: () => `<b>Liquid water at ${temp} °C.</b> The molecules touch and slide past each other; hydrogen bonds break and form again all the time. ${temp > 0 ? 'Hotter water moves faster. ' : ''}Even below 100 °C, now and then a molecule at the surface escapes as a gas: evaporation, faster when the water is hotter.`,
         freezing: () => '<b>Freezing at 0 °C.</b> The molecules lose energy and become fixed in a regular pattern again: the same temperature as melting.',
-        boiling: () => '<b>Boiling at 100 °C.</b> Bubbles of steam form all through the water. Molecules escape from the liquid as a gas (steam) and leave the beaker, so the water level falls.'
+        boiling: () => '<b>Boiling at 100 °C.</b> Bubbles of steam form all through the water and burst at the surface. Many molecules break loose every second and leave as a gas (steam), so the water level in the beaker falls. Press Heat again: it boils faster.'
       };
       const say = () => k.say('<p>' + SAY[phase]() + '</p><p><mark class="do">Press 🔥 Heat or ❄ Cool, one step at a time.</mark></p>');
       function heatStep() {
@@ -614,17 +643,29 @@
          the beaker was still two thirds ice, and no molecule ever left as steam): the part of the ice melted or frozen, a
          third at each press, and while the water boils, a few molecules escaping as a gas (about as much as the level falls) */
       function lensSync() {
-        const L = phase === 'ice' ? 0 : phase === 'melting' ? frac : phase === 'freezing' ? 1 - frac : 1, G = phase === 'boiling' ? .25 * frac : 0;
+        const L = phase === 'ice' ? 0 : phase === 'melting' ? frac : phase === 'freezing' ? 1 - frac : 1;
         if (L < 1 || lens.count('s')) lens.mix('s', 'l', L, 900);
-        if (L >= 1) lens.mix('l', 'g', G, 900);
+        /* boiling is a steady stream of molecules breaking loose (the evap rate below), never a few that leave once; the
+           window follows the falling surface, so the water around it keeps it full */
       }
       const hb = k.btn('🔥 Heat', 560, 462, heatStep, { cls: 'warm' });
       const cb = k.btn('❄ Cool', 700, 462, coolStep, { cls: 'cold' });
       function btnState() { hb.disabled = phase === 'boiling' && frac >= 1; cb.disabled = phase === 'ice' && temp <= -20; }
       scene(); say(); btnState();
       let acc = 0;
+      /* bubbles of steam in the zoom while it boils: they form low in the water, grow as they rise and burst at the
+         surface (drawn over the molecules: each is a pocket of gas, not one particle) */
+      const zb = S('g', null, inner), zbs = []; let zbT = 0;
       k.loop(dt => {
         lens.step(dt); lens.draw();
+        zbT += dt;
+        if (phase === 'boiling' && zbT > .35 / (1 + frac)) { zbT = 0; zbs.push({ x: X0 + 15 + Math.random() * (X1 - X0 - 30), y: Y1 + 8, r: 4, c: S('circle', { r: 4, fill: 'rgba(255,255,255,.55)', stroke: '#7EB8EA', 'stroke-width': 2 }, zb) }); }
+        const surf = lens.surface ? lens.surface() : Y0;
+        for (let i = zbs.length - 1; i >= 0; i--) {
+          const b2 = zbs[i]; b2.y -= 38 * dt; b2.r = Math.min(13, b2.r + 4 * dt);
+          if (b2.y - b2.r < surf || phase !== 'boiling') { b2.c.remove(); zbs.splice(i, 1); continue; }
+          b2.c.setAttribute('cx', b2.x.toFixed(1)); b2.c.setAttribute('cy', b2.y.toFixed(1)); b2.c.setAttribute('r', b2.r.toFixed(1));
+        }
         /* bubbles and steam while boiling */
         acc += dt;
         if (acc > .12) {
