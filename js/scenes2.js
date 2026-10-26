@@ -521,7 +521,7 @@
          pipe UNDER the jacket's lower end and leaves through the pipe ON TOP of its upper end (Daniel, 26 Oct 2026: the
          labels pointed at the wrong places, and the flow must be seen). The jacket starts empty: 💧 Turn on the cold water
          fills it from its lowest end, its level rising level (horizontal) up the slope, until the water reaches the top pipe
-         and flows out; only then does the Bunsen burner light. ❓ In at the top? shows why not: water put in at the top runs
+         and flows out; only then does the Bunsen burner light. ❓ Why in at the bottom? (at any time, the water on or not) shows why: water put in at the top runs
          down the bottom of the jacket and straight out of the lower pipe, so the jacket never fills. */
       const ax = 183, ay = 190, bx = 560, byy = 330;
       const ang = Math.atan2(byy - ay, bx - ax) * 180 / Math.PI, Lc = Math.hypot(bx - ax, byy - ay), co = Math.cos(ang * Math.PI / 180), sn = Math.sin(ang * Math.PI / 180);
@@ -571,11 +571,11 @@
         k.say('<p><b>Cold water flows in at the bottom.</b> It fills the jacket from its lowest end, and the level rises up the slope.</p>');
         await k.anim(2600, t => setLevel(t));
         flowOut.setAttribute('opacity', 1); inFlow.setAttribute('opacity', .8);
-        k.say('<p><b>Cold water in at the bottom, out at the top.</b> The water reaches the top pipe only when the jacket is full, so every part of the tube is cold.</p><p><mark class="do">Press 🔥 Light the Bunsen burner. Or press ❓ In at the top? to see why the water does not go in at the top.</mark></p>');
+        k.say('<p><b>Cold water in at the bottom, out at the top.</b> The water reaches the top pipe only when the jacket is full, so every part of the tube is cold.</p><p><mark class="do">Press 🔥 Light the Bunsen burner. Or press ❓ Why in at the bottom? to see what happens if the water goes in at the top.</mark></p>');
         start.disabled = false; top.disabled = false;
       }
       async function topWay() {
-        if (running) return; tap.disabled = true; start.disabled = true; top.disabled = true;
+        if (running) return; tap.disabled = true; tap.hidden = true; start.hidden = false; start.disabled = true; top.disabled = true;
         flowing = -1; inFlow.setAttribute('opacity', 0); aBot.setAttribute('opacity', 0); aTop.setAttribute('opacity', 1);
         inLbl.querySelector('text').textContent = 'cold water out'; outLbl.querySelector('text').textContent = 'cold water in';
         flowOut.setAttribute('opacity', 1); flowIn.setAttribute('opacity', 1);
@@ -620,8 +620,8 @@
       }
       const tap = k.btn('💧 Turn on the cold water', 470, 470, waterOn, { cls: 'cold' });
       const start = k.btn('🔥 Light the Bunsen burner', 470, 470, go, { cls: 'warm' });
-      const top = k.btn('❓ In at the top?', 650, 90, topWay, { cls: 'ghost small' });
-      start.hidden = true; start.disabled = true; top.disabled = true;
+      const top = k.btn('❓ Why in at the bottom?', 640, 90, topWay, { cls: 'ghost small' });
+      start.hidden = true; start.disabled = true;      /* ❓ works at any time, before the water is on too (Daniel, 26 Oct 2026: it seemed to do nothing) */
       tap.addEventListener('click', () => { tap.hidden = true; start.hidden = false; });
       k.btn('↺ Start again', 650, 40, () => P.open(8, 'distil'), { cls: 'ghost small' });
       k.say('<p>The flask holds salt water. The condenser is a tube inside a jacket for cold water. Turn on the cold water first, then heat.</p><p><mark class="do">Press 💧 Turn on the cold water.</mark></p>');

@@ -21,7 +21,11 @@
           particles jiggle: 1; the ice-and-water zoom uses more, so its melt is seen sliding, 26 Oct 2026), smooth (the
           liquid drifts in slow, smooth currents instead of jittering: "more flowing", Daniel, 26 Oct 2026), exitTop
           (the box is a window on the water's surface: a gas particle rises out of its top and is gone for good, as steam
-          leaves a beaker) }
+          leaves a beaker), section (the box is a piece of a bigger body of water: a liquid or gas particle that leaves
+          one side comes back in at the other, out of sight first, so particles slide in and out of view and are held
+          by neighbours, never by walls; Daniel, 26 Oct 2026), evap () → particles per second that evaporate from the
+          surface at that moment (any temperature: Daniel, same message), refill () → true while an evaporated particle
+          is replaced by one drifting in from the water around the window }
      Each particle has its own state (ph: s fixed in the regular pattern, l liquid, g gas), so a change of state happens a
      part at a time, the way it does (Daniel, 25 Oct 2026: a solid that melted all at once, in a burst, "makes absolute no
      sense"). Melting, sublimation and evaporation take the particles at the SURFACE first; freezing and deposition fill
@@ -51,7 +55,7 @@
        surface inwards: the top row first, then the sides */
     const depth = ps.map((_, i) => { const c = i % cols; return Math.min(Math.floor((n - 1 - i) / cols), c, cols - 1 - c); });
     const SURFACE = ps.map((_, i) => i).sort((i, j) => depth[i] - depth[j] || Math.floor(j / cols) - Math.floor(i / cols) || Math.abs(j % cols - (cols - 1) / 2) - Math.abs(i % cols - (cols - 1) / 2));
-    const W = box.x1 - box.x0, sc = W / 360;
+    const W = box.x1 - box.x0, sc = W / 360, stats = { evaps: 0, refills: 0 };   /* read by tools/particles-check.mjs */
     /* Slow motion (Daniel, 25 Oct 2026: gas particles "moving so fast" were unnerving). Real gas particles move at hundreds
        of metres every second, which no picture can show, so every picture is slowed down, by the same amount for every
        box: speeds scale with its width, so a small lens is as calm as the big box (a gas particle crosses its box in about
@@ -80,7 +84,7 @@
       q.ph = ph;
     }
     const LV = { s: 0, l: 1, g: 2 };
-    const now = q => q.mv ? 's' : q.ph;
+    const now = q => q.mv ? 's' : q.evap ? 'l' : q.ph;      /* an evaporating particle still counts as the liquid it will be replaced by */
     function mix(a, b, f, ms) {
       const target = Math.round(Math.max(0, Math.min(1, f)) * n);
       const count = () => ps.filter(q => now(q) === b).length + events.filter(e => e.to === b).length - events.filter(e => e.from === b).length;
@@ -101,7 +105,7 @@
         const used = new Set(ps.filter(held).map(q => q.site).concat([...taken]));
         SURFACE.slice().reverse().filter(i => !used.has(i)).slice(0, k - target).forEach(site => add.push({ site, from: b, to: 's' }));
       } else {                                          /* gas → liquid: the lowest first */
-        ps.filter(q => q.ph === b && !q.gone && !busy.has(q)).sort((p, q) => q.y - p.y).slice(0, k - target).forEach(q => add.push({ q, from: b, to: a }));
+        ps.filter(q => q.ph === b && !q.gone && !q.evap && !busy.has(q)).sort((p, q) => q.y - p.y).slice(0, k - target).forEach(q => add.push({ q, from: b, to: a }));
       }
       const start = Math.max(t, ...events.filter(e => (e.from === a && e.to === b) || (e.from === b && e.to === a)).map(e => e.at)), gap = (ms == null ? 700 : ms) / 1000 / Math.max(1, add.length);
       add.forEach((e, i) => { e.at = start + gap * (i + .5); events.push(e); });
@@ -114,8 +118,9 @@
     }
     function walls(q) {
       const top = box.y0 + r, bot = box.y1 - r, lft = box.x0 + r, rgt = box.x1 - r;
-      if (q.x < lft) { q.x = lft; q.vx = Math.abs(q.vx); } if (q.x > rgt) { q.x = rgt; q.vx = -Math.abs(q.vx); }
-      if (o.exitTop && q.ph === 'g' && !q.mv) { if (q.y < box.y0 - r) { q.gone = true; q.node.style.display = 'none'; q.vx = q.vy = 0; } }
+      if (o.section) { if (q.x < box.x0) q.x += W; else if (q.x > box.x1) q.x -= W; }
+      else { if (q.x < lft) { q.x = lft; q.vx = Math.abs(q.vx); } if (q.x > rgt) { q.x = rgt; q.vx = -Math.abs(q.vx); } }
+      if (o.exitTop && q.ph === 'g' && !q.mv) { if (q.y < box.y0 - r) { q.gone = true; q.node.style.display = 'none'; q.vx = q.vy = 0; if (q.evap && o.refill && o.refill()) q.back = t + .5 + rnd() * .6; } }
       else if (q.y < top) { q.y = top; q.vy = Math.abs(q.vy); }
       if (q.y > bot) { q.y = bot; q.vy = -Math.abs(q.vy) * (q.ph === 'g' ? 1 : .3); }
     }
@@ -125,7 +130,8 @@
       for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
         const A = ps[i], B = ps[j], fa = held(A), fb = held(B);
         if ((fa && fb) || A.gone || B.gone) continue;
-        const dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || .01, m = 2 * r * (A.ph === 'l' && B.ph === 'l' ? 1 + LGAP : 1);
+        let dx = B.x - A.x; if (o.section) dx -= W * Math.round(dx / W);
+        const dy = B.y - A.y, d = Math.hypot(dx, dy) || .01, m = 2 * r * (A.ph === 'l' && B.ph === 'l' ? 1 + LGAP : 1);
         if (d >= m) continue;
         const nx = dx / d, ny = dy / d, over = m - d, el = A.ph === 'g' || B.ph === 'g' ? 1 : .55;
         if (fa) { B.x += nx * over; B.y += ny * over; } else if (fb) { A.x -= nx * over; A.y -= ny * over; }
@@ -189,7 +195,8 @@
         free.forEach(q => {
           if (q.ph === 'l') {
             if (o.smooth) {                                /* slow currents: each particle's own gentle, turning push */
-              const fx = Math.cos(t * .8 + q.p1) * .7 + Math.cos(t * .27 + 2 * q.p2) * .5, fy = Math.sin(t * 1.05 + q.p2) * .55;
+              const ag = 1 + 4.5 * Math.max(0, T - .35);                       /* hotter: livelier currents (Daniel, 26 Oct 2026) */
+              const fx = (Math.cos(t * .8 + q.p1) * .7 + Math.cos(t * .27 + 2 * q.p2) * .5) * ag, fy = Math.sin(t * 1.05 + q.p2) * .55 * ag;
               q.vx += (fx * 1.0 + (rnd() - .5) * .9) * kick * h; q.vy += (fy * .35 + (rnd() - .5) * .5) * kick * h + 160 * sc * h;
               if (q.vy < -45 * sc) q.vy = -45 * sc;       /* a liquid is never thrown up: only a gas rises */
             } else { q.vx += (rnd() - .5) * kick * h * 4; q.vy += (rnd() - .5) * kick * h * 4 + 160 * sc * h; }
@@ -199,7 +206,7 @@
             else if (q.y < band + r) q.vy += (band + r - q.y) * 60 * h;
             const damp = o.smooth ? 1.2 : 2.2;
             q.vx *= 1 - damp * h; q.vy *= 1 - damp * h;
-            if (o.smooth) { const sp = Math.hypot(q.vx, q.vy), top = 95 * sc; if (sp > top) { q.vx *= top / sp; q.vy *= top / sp; } }   /* a liquid flows calmly */ q.va += (rnd() - .5) * (o.smooth ? 700 : 1400) * h; q.va *= 1 - 2.5 * h;
+            if (o.smooth) { const sp = Math.hypot(q.vx, q.vy), top = (95 + 400 * Math.max(0, T - .35)) * sc; if (sp > top) { q.vx *= top / sp; q.vy *= top / sp; } }   /* a liquid flows calmly */ q.va += (rnd() - .5) * (o.smooth ? 700 : 1400) * h; q.va *= 1 - 2.5 * h;
           } else {
             const v = speed(), sp = Math.hypot(q.vx, q.vy) || 1, f = 1 + (v / sp - 1) * Math.min(1, 2 * h);
             q.vx *= f; q.vy *= f; q.va = q.va || 60;
@@ -208,7 +215,26 @@
         });
         collide(); collide(); collide();
         free.forEach(walls);
+        /* in a section (no side walls), the liquid as a whole stays where it is: its shared sideways drift is taken out,
+           so molecules slide past each other but the layer never flows along like a conveyor belt */
+        if (o.section) { const L = free.filter(q => q.ph === 'l' && !q.evap); if (L.length > 1) { const m = L.reduce((t2, q) => t2 + q.vx, 0) / L.length; L.forEach(q => { q.vx -= m; }); } }
       }
+      /* evaporation at any temperature: now and then the highest liquid particle escapes as a gas (o.evap per second);
+         one that has left is replaced, after a moment, by a particle drifting in at a side, low down, from the water
+         around the window (o.refill) */
+      if (o.evap) {
+        const rate = o.evap();
+        if (rate > 0 && rnd() < rate * dt) {
+          const c = ps.filter(q => q.ph === 'l' && !q.mv && !q.gone).sort((a, b) => a.y - b.y)[0];
+          if (c) { c.evap = true; go(c, 'g'); stats.evaps++; }
+        }
+      }
+      ps.forEach(q => {
+        if (!q.gone || !q.back || t < q.back) return;
+        const left = rnd() < .5;
+        q.gone = false; q.back = null; q.evap = false; q.ph = 'l'; q.node.style.display = ''; stats.refills++;
+        q.x = left ? box.x0 : box.x1; q.y = box.y1 - r * (1.2 + rnd() * 1.5); q.vx = (left ? 1 : -1) * 30 * sc; q.vy = 0;
+      });
     }
     function draw() {
       ps.forEach(q => q.node.setAttribute('transform', `translate(${q.x.toFixed(1)} ${q.y.toFixed(1)}) rotate(${(q.a % 360).toFixed(0)})`));
@@ -228,7 +254,7 @@
     }
     place(o.state || 'solid');
     return {
-      ps, layer, box, step, draw, toState, mix, sites,
+      ps, layer, box, step, draw, toState, mix, sites, stats,
       set(st) { place(st); },
       state: () => { if (events.length || ps.some(q => q.mv)) return 'mixed'; const p = ps[0].ph; return ps.every(q => q.ph === p) ? { s: 'solid', l: 'liquid', g: 'gas' }[p] : 'mixed'; },
       busy: () => events.length > 0 || ps.some(q => q.mv),
@@ -510,12 +536,12 @@
          drawn as an open beaker while it pointed at the floor "makes no sense"; near the surface, steam can be seen to
          leave). The zoom is the same square, magnified: a closed window, with the air at its top. Its dashed lines are
          drawn first, so they pass behind the thermometer. */
-      const LX = 640, LY = 205, X0 = LX - 105, X1 = LX + 105, Y0 = LY - 105, Y1 = LY + 105;   /* wider than the ice: room beside it for the melt */
+      const LX = 640, LY = 205, X0 = LX - 105, X1 = LX + 105, Y0 = LY - 45, Y1 = LY + 105;   /* wider than the ice; the water fills about half */
       /* the square follows the surface (the top of the ice, then the water's level as it rises, or falls as steam
-         leaves), sitting so the surface crosses it two thirds of the way down, as in the zoom */
-      const mk = S('rect', { x: 220 + BX, y: 276, width: 36, height: 36, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.4, 'stroke-dasharray': '5 4' }, g);
+         leaves), sitting so the surface crosses it about half way down, as in the zoom */
+      const mk = S('rect', { x: 220 + BX, y: 276, width: 36, height: 26, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.4, 'stroke-dasharray': '5 4' }, g);
       const mkl = S('path', { stroke: 'var(--accent)', 'stroke-width': 1.6, 'stroke-dasharray': '5 4', fill: 'none' }, g);
-      const marker = sy => { const y = Math.round(sy - 24); mk.setAttribute('y', y); mkl.setAttribute('d', `M${256 + BX},${y} L${X0 - 4},${Y0 - 4} M${256 + BX},${y + 36} L${X0 - 4},${Y1 + 4}`); };
+      const marker = sy => { const y = Math.round(sy - 14); mk.setAttribute('y', y); mkl.setAttribute('d', `M${256 + BX},${y} L${X0 - 4},${Y0 - 4} M${256 + BX},${y + 26} L${X0 - 4},${Y1 + 4}`); };
       const th = D.thermometer(g, 46, 60, 440, { min: -20, max: 110, ticks: [-20, 0, 20, 40, 60, 80, 100] });
       /* the zoom: the square at the surface, magnified, in a closed window (no glass walls: it is a piece of the water,
          not a beaker). The melt slides down beside the ice that is left and lies level; a molecule that becomes a gas
@@ -525,7 +551,13 @@
       S('rect', { class: 'lens-ring', x: X0 - 3, y: Y0 - 3, width: X1 - X0 + 6, height: Y1 - Y0 + 6, rx: 11 }, g);
       const inner = S('g', { 'clip-path': `url(#${cid})` }, g);
       S('text', { class: 'note', x: X0 + 12, y: Y0 + 24 }, inner, 'air');
-      const lens = PSim({ g: inner, x0: X0, x1: X1, y0: Y0, y1: Y1, n: 15, r: 15, cols: 4, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8, liqKick: 1.6, smooth: true, exitTop: true });
+      /* the particles' box reaches just past the window's sides and bottom (a section of the water: molecules slide in
+         and out of view, the lowest row runs on below); evaporation at any temperature while there is liquid below its
+         boiling point, faster when hotter, each escaped molecule replaced by one drifting in from the water around */
+      const lens = PSim({ g: inner, x0: X0 - 15, x1: X1 + 15, y0: Y0, y1: Y1 + 9, n: 15, r: 15, cols: 4, kind: 'H2O', hb: true, state: 'solid', T: .1, seed: 8, liqKick: 1.6,
+        smooth: true, exitTop: true, section: true,
+        evap: () => (phase === 'water' || phase === 'melting' || phase === 'freezing') ? .1 + .3 * Math.max(0, temp) / 100 : 0,
+        refill: () => phase !== 'boiling' });
       k.svg.lens = lens;                                /* read by tools/particles-check.mjs */
       const lt = S('text', { class: 'ttl', x: LX, y: Y1 + 34, 'text-anchor': 'middle' }, g, 'Ice');
       S('text', { class: 'note', x: LX, y: Y1 + 56, 'text-anchor': 'middle' }, g, 'zoomed in: the surface, in the beaker');
@@ -552,7 +584,7 @@
       const SAY = {
         ice: () => temp < 0 ? `<b>Ice at ${temp === 0 ? 0 : '−' + (-temp)} °C.</b> The water molecules are held in a regular pattern by forces of attraction between them (the dashed lines: hydrogen bonds). They vibrate in place.` : '<b>Ice at 0 °C.</b> Heat it once more and it starts to melt.',
         melting: () => '<b>Melting at 0 °C.</b> The molecules at the surface of the ice gain energy and leave their fixed places in the pattern. They slide past each other and flow down beside the ice that is left, taking the shape of the bottom of the beaker. While the ice melts, the thermometer stays at 0 °C.',
-        water: () => `<b>Liquid water at ${temp} °C.</b> The molecules touch and slide past each other; hydrogen bonds break and form again all the time.`,
+        water: () => `<b>Liquid water at ${temp} °C.</b> The molecules touch and slide past each other; hydrogen bonds break and form again all the time. ${temp > 0 ? 'Hotter water moves faster. ' : ''}Even below 100 °C, now and then a molecule at the surface escapes as a gas: evaporation, faster when the water is hotter.`,
         freezing: () => '<b>Freezing at 0 °C.</b> The molecules lose energy and become fixed in a regular pattern again: the same temperature as melting.',
         boiling: () => '<b>Boiling at 100 °C.</b> Bubbles of steam form all through the water. Molecules escape from the liquid as a gas (steam) and leave the beaker, so the water level falls.'
       };
