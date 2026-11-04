@@ -16,6 +16,12 @@
    concentration, variables), from Daniel's knowledge organisers KO_Atoms and KO_States of Matter and his Year 7 syllabus;
    Korean and Chinese checked by an independent reviewer the same day. Later that day: conduct, ratio and recover added, and
    phrasal verbs taken out of the definitions ("takes up", "broken down", "turns into", "stays behind"), as on the page.
+   4 Nov 2026: 40 words for the Year 7 cell game (practicals/ks3-y7-cell-organelles), group "Cells and proteins", from
+   Daniel's Y7 Cells slides (1.Plant-and-Animal-Cells: organelle = a membrane-bound structure with a specific function, so
+   ribosomes, the nucleolus, vesicles and microtubules are not organelles), his KO_Cells and Organisation (cell, nucleus,
+   mitochondria, cell membrane), The Cell.pdf (cytoplasm = the cytosol and the organelles, not the nucleus) and his
+   enzymes and food-test slides (src: 'Y7 Cells'). "nucleus" now has both meanings, the cell's and the atom's (the
+   checker allows each word once); "protein" gained what a protein is, keeping its food sentence.
    ============================================================ */
 (function () {
   'use strict';
@@ -40,7 +46,7 @@
       { k: 'polar',           en: 'polar',           ko: '극성 (극성을 띤)',  zh: '极性的',      d: 'Having a slightly positive end and a slightly negative end. A water molecule is polar: its oxygen end is slightly negative (δ−) and its hydrogen end is slightly positive (δ+).' }
     ]},
     { g: 'Inside atoms', w: [
-      { k: 'nucleus',           en: 'nucleus',             ko: '원자핵',                 zh: '原子核',         d: 'The tiny centre of an atom. It holds the protons and the neutrons.' },
+      { k: 'nucleus',           en: 'nucleus',             ko: '핵 (세포) · 원자핵 (원자)', zh: '细胞核 · 原子核',  src: 'Y7 Cells', d: 'In a cell: the part that contains the genetic material (DNA) and controls the activities of the cell. In an atom: the tiny centre, which holds the protons and the neutrons.' },
       { k: 'proton',            en: 'proton',              ko: '양성자',                 zh: '质子',          d: 'A particle in the nucleus of an atom. It has a positive charge (+).' },
       { k: 'neutron',           en: 'neutron',             ko: '중성자',                 zh: '中子',          d: 'A particle in the nucleus of an atom. It has no charge: it is neutral.' },
       { k: 'electron',          en: 'electron',            ko: '전자',                  zh: '电子',          d: 'A very small particle that moves around the nucleus of an atom. It has a negative charge (−).' },
@@ -96,7 +102,7 @@
       { k: 'colloid',         en: 'colloid',         ko: '콜로이드',          zh: '胶体',        d: 'A heterogeneous mixture in which very small pieces of an insoluble substance are spread through another substance. The pieces are bigger than the particles in a solution and smaller than those in a suspension: they do not settle, they are too small to see, and they scatter light (the Tyndall effect). Milk is a colloid.' },
       { k: 'droplet',         en: 'droplet',         ko: '작은 방울',         zh: '小液滴',      d: 'A very small drop of a liquid.' },
       { k: 'fat',             en: 'fat',             ko: '지방',              zh: '脂肪',        d: 'An oily substance in food, such as butter or olive oil. Milk has tiny droplets of fat.' },
-      { k: 'protein',         en: 'protein',         ko: '단백질',            zh: '蛋白质',      d: 'A substance in food that the body uses to grow and repair itself. Egg white, meat and milk contain protein.' },
+      { k: 'protein',         en: 'protein',         ko: '단백질',            zh: '蛋白质',      src: 'Y7 Cells', d: 'A large molecule made of amino acids joined in a chain. Cells make proteins on their ribosomes, and every enzyme is a protein. In food, egg white, meat and milk contain protein, which the body uses to grow and repair itself.' },
       { k: 'tyndall',         en: 'Tyndall effect',  ko: '틴들 현상',         zh: '丁达尔效应',  d: 'A beam of light shows as it passes through a colloid, because its tiny droplets or pieces scatter the light.' },
       { k: 'suspension',        en: 'suspension',          ko: '현탁액',                 zh: '悬浊液',         d: 'A mixture with small pieces of an insoluble solid spread through a liquid, such as chalk powder stirred into water. It is cloudy, and the pieces settle to the bottom when you leave it to stand (keep it still, with no stirring).' },
       { k: 'concentration',     en: 'concentration',       ko: '농도',                  zh: '浓度',          d: 'The mass of solute dissolved in a certain volume of solution, for example 5 g in 100 cm³.' },
@@ -164,6 +170,49 @@
       { k: 'attract',         en: 'attract',         ko: '끌어당기다',        zh: '吸引',        d: 'To pull something towards itself, as a magnet pulls iron.' },
       { k: 'float',           en: 'float',           ko: '뜨다',              zh: '漂浮',        d: 'To stay on the top of a liquid.' },
       { k: 'settle',          en: 'settle',          ko: '가라앉다',          zh: '沉降',        d: 'To sink slowly to the bottom of a liquid and stay there.' }
+    ]},
+    { g: 'Cells and proteins', w: [
+      { k: 'cell',            en: 'cell',            ko: '세포',              zh: '细胞',        src: 'Y7 Cells', d: 'The smallest unit of a living organism. It contains the structures it needs for life processes.' },
+      { k: 'organelle',       en: 'organelle',       ko: '세포 소기관',       zh: '细胞器',      src: 'Y7 Cells', d: 'A membrane-bound structure with a specific function in a cell, such as the nucleus or a mitochondrion. Ribosomes have no membrane, so they are not organelles.' },
+      { k: 'cell-membrane',   en: 'cell membrane',   ko: '세포막',            zh: '细胞膜',      src: 'Y7 Cells', d: 'The thin layer round a cell. It controls the movement of substances into and out of the cell: for example, oxygen and glucose enter, and carbon dioxide leaves.' },
+      { k: 'membrane',        en: 'membrane',        ko: '막',                zh: '膜',          d: 'A thin layer round a cell, or round a structure inside it such as the nucleus. It is two layers of lipids, with proteins in it, and it controls what passes through it.' },
+      { k: 'cytoplasm',       en: 'cytoplasm',       ko: '세포질',            zh: '细胞质',      src: 'Y7 Cells', d: 'Everything inside the cell membrane except the nucleus: the cytosol and the organelles in it. Most of the chemical reactions of the cell happen here.' },
+      { k: 'cytosol',         en: 'cytosol',         ko: '세포질 기질',       zh: '细胞质基质',  src: 'Y7 Cells', d: 'The jelly-like fluid of the cytoplasm. It is mostly water, with many substances dissolved in it. Ribosomes, microtubules and vesicles are in the cytosol.' },
+      { k: 'nucleolus',       en: 'nucleolus',       ko: '인 (핵소체)',       zh: '核仁',        d: 'A dense region inside the nucleus of a cell. It makes the two parts of ribosomes. It has no membrane, so it is not an organelle.' },
+      { k: 'nuclear-envelope', en: 'nuclear envelope', ko: '핵막',            zh: '核膜',        d: 'The two membranes round the nucleus of a cell. They have holes in them, the nuclear pores.' },
+      { k: 'nuclear-pore',    en: 'nuclear pore',    ko: '핵공',              zh: '核孔',        d: 'A hole through the two membranes round the nucleus. Copies of genes (mRNA) and the parts of ribosomes leave the nucleus through nuclear pores.' },
+      { k: 'chromosome',      en: 'chromosome',      ko: '염색체',            zh: '染色体',      src: 'Y7 Cells', d: 'A long thread of DNA in the nucleus. Most human body cells have 46. In a cell that is not dividing they are long and thin; they look like an X only when a cell divides.' },
+      { k: 'dna',             en: 'DNA',             ko: 'DNA',               zh: 'DNA',         src: 'Y7 Cells', d: 'The genetic material. It carries the instructions (genes) for making the proteins of the cell. Most of it is in the nucleus, and it stays there; mitochondria have a little DNA of their own.' },
+      { k: 'gene',            en: 'gene',            ko: '유전자',            zh: '基因',        d: 'A short section of DNA that carries the instructions for making one protein.' },
+      { k: 'mrna',            en: 'mRNA',            ko: '전령 RNA (mRNA)',   zh: '信使RNA (mRNA)', d: 'Messenger RNA: a copy of a gene, made in the nucleus. It carries the instructions from the DNA to the ribosomes.' },
+      { k: 'ribosome',        en: 'ribosome',        ko: '리보솜',            zh: '核糖体',      src: 'Y7 Cells', d: 'A very small structure where proteins are made: it joins amino acids in the order that a copy of a gene (mRNA) gives. It has no membrane, so it is not an organelle.' },
+      { k: 'amino-acid',      en: 'amino acid',      ko: '아미노산',          zh: '氨基酸',      src: 'Y7 Cells', d: 'A small molecule. Proteins are made of amino acids joined in a chain, and digestion splits proteins into amino acids again.' },
+      { k: 'enzyme',          en: 'enzyme',          ko: '효소',              zh: '酶',          src: 'Y7 Cells', d: 'A protein that increases the rate of a chemical reaction and is not changed by it (a biological catalyst). Amylase is an enzyme.' },
+      { k: 'active-site',     en: 'active site',     ko: '활성 부위',         zh: '活性部位',    d: 'The part of an enzyme where the molecule that it changes fits, as starch fits into amylase. If the shape of the enzyme changes, it no longer works.' },
+      { k: 'amylase',         en: 'amylase',         ko: '아밀레이스',        zh: '淀粉酶',      src: 'Y7 Cells', d: 'An enzyme made in the salivary glands (and in the pancreas). It digests starch into maltose, a sugar.' },
+      { k: 'starch',          en: 'starch',          ko: '녹말',              zh: '淀粉',        src: 'Y7 Cells', d: 'A large molecule made of many glucose molecules joined together. Bread, rice and potatoes contain starch. Iodine solution turns blue-black when starch is present.' },
+      { k: 'iodine',          en: 'iodine solution', ko: '아이오딘 용액',     zh: '碘液',        src: 'Y7 Cells', d: 'An orange-brown solution used to test for starch: if starch is present, it turns blue-black.' },
+      { k: 'glucose',         en: 'glucose',         ko: '포도당',            zh: '葡萄糖',      d: 'A sugar. Cells release energy from glucose by respiration.' },
+      { k: 'oxygen',          en: 'oxygen',          ko: '산소',              zh: '氧气',        d: 'A gas in the air. Cells use oxygen in aerobic respiration.' },
+      { k: 'carbon-dioxide',  en: 'carbon dioxide',  ko: '이산화 탄소',       zh: '二氧化碳',    d: 'A gas produced by respiration. Cells release it as a waste product, and the blood carries it to the lungs.' },
+      { k: 'mitochondria',    en: 'mitochondria',    ko: '미토콘드리아',      zh: '线粒体',      src: 'Y7 Cells', also: ['mitochondrion'], d: 'Organelles that contain the enzymes for aerobic respiration, which releases energy for the cell. One of them is a mitochondrion.' },
+      { k: 'aerobic-respiration', en: 'aerobic respiration', ko: '산소 호흡 (유산소 호흡)', zh: '有氧呼吸', src: 'Y7 Cells', d: 'The chemical reactions that release energy from glucose, using oxygen. They start in the cytosol; most of the energy is released in the mitochondria. Carbon dioxide and water are produced.' },
+      { k: 'rough-er',        en: 'rough ER',        ko: '거친면 소포체',     zh: '粗面内质网',  d: 'Rough endoplasmic reticulum: a network of flattened sacs covered in ribosomes. Proteins made by these ribosomes go inside it and fold into their shape.' },
+      { k: 'smooth-er',       en: 'smooth ER',       ko: '매끈면 소포체',     zh: '光面内质网',  d: 'Smooth endoplasmic reticulum: a network of tubes with no ribosomes. It makes lipids, which build new membrane.' },
+      { k: 'lipid',           en: 'lipid',           ko: '지질',              zh: '脂质',        src: 'Y7 Cells', d: 'A fat, an oil or a similar molecule. A membrane is two layers of lipids, with proteins in it.' },
+      { k: 'golgi',           en: 'Golgi apparatus', ko: '골지체',            zh: '高尔基体',    d: 'A stack of flattened, curved sacs. It modifies proteins, sorts them and packages them into vesicles.' },
+      { k: 'vesicle',         en: 'vesicle',         ko: '소낭',              zh: '囊泡',        src: 'Y7 Cells', d: 'A small bubble of membrane that carries substances in a cell. A vesicle lasts only a short time: it forms, then joins another membrane, so it is not an organelle.' },
+      { k: 'microtubule',     en: 'microtubule',     ko: '미세 소관',         zh: '微管',        src: 'Y7 Cells', d: 'A thin hollow tube made of protein. Motor proteins carry vesicles along microtubules. It has no membrane, so it is not an organelle.' },
+      { k: 'motor-protein',   en: 'motor protein',   ko: '운동 단백질',       zh: '马达蛋白',    d: 'A protein that walks along a track in the cell, such as a microtubule, one step at a time. Some carry vesicles. Each step uses energy from respiration.' },
+      { k: 'lysosome',        en: 'lysosome',        ko: '리소좀',            zh: '溶酶体',      d: 'A small sac of enzymes that digest old parts of the cell and things that have entered the cell.' },
+      { k: 'centrosome',      en: 'centrosome',      ko: '중심체',            zh: '中心体',      d: 'A small structure from which microtubules grow. It has two centrioles: each is a ring of nine groups of short tubes. It has no membrane, so it is not an organelle.' },
+      { k: 'exocytosis',      en: 'exocytosis',      ko: '세포외 배출',       zh: '胞吐',        d: 'Releasing substances from a cell: a vesicle joins the cell membrane and opens to the outside (exo = out, cyto = cell).' },
+      { k: 'carrier-protein', en: 'carrier protein', ko: '운반체 단백질',     zh: '载体蛋白',    d: 'A protein in the cell membrane that lets one kind of substance, such as glucose, pass through.' },
+      { k: 'saliva',          en: 'saliva',          ko: '침 (타액)',         zh: '唾液',        src: 'Y7 Cells', d: 'The liquid made by the salivary glands. It is mostly water, with mucus (a slimy substance) and the enzyme amylase.' },
+      { k: 'salivary-gland',  en: 'salivary gland',  ko: '침샘',              zh: '唾液腺',      src: 'Y7 Cells', d: 'An organ that makes saliva. You have three large pairs round your mouth.' },
+      { k: 'capillary',       en: 'capillary',       ko: '모세 혈관',         zh: '毛细血管',    also: ['capillaries'], d: 'The smallest kind of blood vessel. Its wall is one cell thick, so substances pass between the blood and the cells.' },
+      { k: 'red-blood-cell',  en: 'red blood cell',  ko: '적혈구',            zh: '红细胞',      d: 'A blood cell that carries oxygen. It has no nucleus, and it is a disc that is thinner in the middle.' },
+      { k: 'electron-microscope', en: 'electron microscope', ko: '전자 현미경', zh: '电子显微镜', src: 'Y7 Cells', d: 'A microscope that uses a beam of electrons instead of light. It shows much smaller details than a light microscope, such as ribosomes.' }
     ]},
     { g: 'Investigations', w: [
       { k: 'independent-variable', en: 'independent variable', ko: '조작 변인 (독립 변인)',       zh: '自变量',         d: 'The thing you change in an experiment, to see what effect it has. On a graph, you plot it on the x-axis (across).' },
