@@ -45,7 +45,7 @@ computer. Answers survive a reload.
 learn in English as an additional language, and a bright and a dark version. Purple boxes are extension and do not count
 in a part's bar. On a phone, each picture keeps a size that can be read, and the pupil swipes it sideways.
 
-**Made by** Dr Daniel Mompel Riera, NLCS Jeju. Something wrong, or a suggestion? dmompelriera@nlcsjeju.kr
+**Made by** Dr Daniel Mompel Riera. Something wrong, or a suggestion? dmompelriera@nlcsjeju.kr
 
 **Licence.** Code: AGPL-3.0 (`LICENSE`). Teaching material: CC BY-NC-SA 4.0 (`LICENSE-CONTENT`): free for teaching, not
 for selling. Every picture on the page was drawn for it. The graphs use published data: freezing points of salt water
