@@ -736,7 +736,45 @@
       regQ(id, q);
       DRAW[q.kind](box, id, q);
     });
+    fromRecord();
   }
   document.addEventListener('chemrev:build', drawAll);
+
+  /* ---------- a signed-in pupil's right answers back from their record (16 Nov 2026) ----------
+     Daniel, 16 Nov 2026: when Year 7 pupils "reconnect, even if they erase that, their answers are saved and it shows
+     that it is completed". The tabs' bars and "Checks n/n" already came from the record (core.js qDone), but each check
+     was drawn from this browser only (chemrev.answers): on a cleared or another computer the bar said done and every
+     check stood empty. Now, when the record arrives (js/lesson.js 'lesson:who'), a check right in the record's newest
+     round (f: right first time; 1: right after more checks) is drawn right here too, unless this browser already has it.
+     Its right answer is the one "Show the answers" gives (the first word of each gap). A round closed by the page's
+     Start again (e) does not count, and nothing is sent to the record again. A written answer stays as it is: the record
+     holds that it was written, never its words. Only for a pupil on the class list (the record is theirs). */
+  const okIn = (rec, id) => { const x = rec[id], r = x && Array.isArray(x.r) && x.r[x.r.length - 1]; return !!(r && !r.e && (r.s === 'f' || r.s === '1')); };
+  function rightAnswer(q) {
+    switch (q.kind) {
+      case 'mcq': return { ok: 1 };
+      case 'gaps': return { ok: 1, v: parseGaps(q.text).gaps.map(g => g[0]), marked: 1 };
+      case 'num': return { ok: 1, v: q.show || String(q.ans) };
+      case 'sort': { const place = {}; q.items.forEach((it, i) => { place[i] = Array.isArray(it) ? it[1] : it.b; }); return { ok: 1, place }; }
+      case 'label': { const at = {}; q.slots.forEach((sl, i) => { at[i] = q.words.indexOf(sl.w); }); return { ok: 1, at }; }
+      case 'order': return { ok: 1, ord: q.items.map((_, i) => i) };
+      case 'faults': return { ok: 1, found: q.faults.map(f => f.part) };
+      default: return null;
+    }
+  }
+  function fromRecord() {
+    const L1 = window.Lesson, w = L1 && L1.who && L1.who();
+    if (!w || !w.onList || !L1.record) return;
+    const rec = (L1.record() || {}).q || {}, QS = window.QS || {};
+    $$('.q[data-q]').forEach(box => {
+      const id = box.dataset.q, q = QS[id], A = ans.get(id) || {};
+      if (!q || !DRAW[q.kind] || A.ok || A.shown || A.listed || !okIn(rec, id)) return;
+      const r = rightAnswer(q); if (!r) return;
+      ans.put(id, r); DRAW[q.kind](box, id, q);
+    });
+  }
+  /* the tabs' bars and "Checks n/n" count from the record, so they are drawn again when it arrives (before 16 Nov 2026
+     they waited for the pupil's next answer, and a cleared browser showed 0 done until then) */
+  window.addEventListener('lesson:who', () => { fromRecord(); S.progressSoon(); });
   window.REVchecks = { canon, markGaps, parseGaps };
 })();

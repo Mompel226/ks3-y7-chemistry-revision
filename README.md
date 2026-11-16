@@ -39,7 +39,9 @@ pupils write those words (compress, contract, reversible, transparent, saturated
 sees it live on the teacher page's 🔬 Practicals board: right first time, the number of checks, and what they struggled
 with. A first letter, the word list or a hint counts as a try, so a question answered with help never shows as "right first time", and
 the board names the help ("first letter, gap 2", "word list", "hint"). Signed out, the page works the same and nothing leaves the
-computer. Answers survive a reload.
+computer. Answers survive a reload. A signed-in pupil's right answers also come back from the teacher's record on a
+cleared browser or another computer (16 Nov 2026), and the bars count them at once; a written answer's words do not come
+back, because the record keeps only that it was written.
 
 **Made for Year 7.** Big text, what to press written beside its button and highlighted, plain sentences for pupils who
 learn in English as an additional language, and a bright and a dark version. Purple boxes are extension and do not count
@@ -69,7 +71,9 @@ The `tools/` named here stay on Daniel's computer: they are not in this reposito
   `--part n`). `?still=1` makes every picture jump to its end state.
 - Before a push, also: `node tools/sweep.mjs` (every check: a wrong answer is marked wrong, the right one right),
   `node tools/signin-check.mjs` (a stand-in labs script: only a listed pupil's work is sent, with the help named; a
-  teacher and a pupil not on the list send nothing), `node tools/board-check.mjs` (the real teacher page draws this page's
+  teacher and a pupil not on the list send nothing), `node tools/restore-check.mjs` (a signed-in pupil's right answers
+  come back from the record on a cleared browser, one check of each kind, and the bars count them; never a written answer's
+  words, a round closed by Start again, or for a teacher), `node tools/board-check.mjs` (the real teacher page draws this page's
   squares), `node tools/widths.mjs` (every picture after every press at six laptop window sizes, `--small-screens` for a
   tablet and a phone: no button over another, off the picture or over its words) and `node tools/phone-check.mjs` (a
   finger swipes the picture and drags a graph's ruler), `node tools/restart-check.mjs` (Start again, and the keyboard alone), `node tools/anyorder-check.mjs` (typed words that
