@@ -88,6 +88,9 @@
 
   /* ---------------- parts as tabs ---------------- */
   let cur = 0;
+  /* to the top of the open part: always up; down too where the picture is pinned beside the words (wider than 980 px), so it is
+     seen whole; on a phone or a tablet held upright the page moves down to the part no more than it did before */
+  function toPart() { const top = $('.layout').getBoundingClientRect().top + scrollY - 70; if (scrollY > top || (scrollY < top - 4 && innerWidth > 980)) scrollTo({ top, behavior: 'auto' }); }
   function openPart(n, focus) {
     n = Math.max(1, Math.min(PARTS.length, n | 0));
     if (n === cur) return;
@@ -98,8 +101,11 @@
     /* #p5, never #part-5: a fragment naming an element makes the browser jump to it when the page finishes loading */
     if (location.hash !== '#p' + n) history.replaceState(null, '', location.pathname + location.search + '#p' + n);
     document.dispatchEvent(new CustomEvent('part', { detail: n }));
-    if (focus) { const top = $('.layout').getBoundingClientRect().top + scrollY - 70; if (scrollY > top) scrollTo({ top, behavior: 'auto' }); }
-    /* only the strip of tabs scrolls to show the open one; the page never jumps */
+    /* a part opened by its tab or its Next/Back: the page stands at the top of the part, so the picture beside it is pinned under
+       the tabs and seen whole (28 Nov 2026, Daniel: "when you show an image on the left, you don't have to scroll down"; until
+       then the page only moved up, and from the top of the page the picture's foot stayed below the window) */
+    if (focus) toPart();
+    /* the strip of tabs scrolls sideways to show the open one */
     const tb = $(`#tab-${n}`), strip = $('.tabs');
     if (tb && strip) { const l = tb.offsetLeft - strip.offsetLeft, r = l + tb.offsetWidth; if (l < strip.scrollLeft) strip.scrollLeft = l - 8; else if (r > strip.scrollLeft + strip.clientWidth) strip.scrollLeft = r - strip.clientWidth + 8; }
   }
@@ -115,7 +121,7 @@
     vs.forEach(v => io.observe(v));
   }
   function initTabs() {
-    $$('.tabs button').forEach((b, i) => b.addEventListener('click', () => openPart(i + 1, true)));
+    $$('.tabs button').forEach((b, i) => b.addEventListener('click', () => (i + 1 === cur ? toPart() : openPart(i + 1, true))));   /* the open part's tab brings the page to it too */
     $$('.partnav .next').forEach(b => b.addEventListener('click', () => openPart(cur + 1, true)));
     $$('.partnav .back').forEach(b => b.addEventListener('click', () => openPart(cur - 1, true)));
     $('.tabs').addEventListener('keydown', e => {
